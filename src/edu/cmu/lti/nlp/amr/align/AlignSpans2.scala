@@ -4,7 +4,7 @@ import java.util.regex.Pattern
 
 import edu.cmu.lti.nlp.amr.graph.{Graph, Node}
 import edu.cmu.lti.nlp.amr.span.{Span, SpanLoader}
-import edu.cmu.lti.nlp.amr.{Node, SpanLoader, Wordnet, logger, max, min}
+import edu.cmu.lti.nlp.amr.{ Wordnet, logger, max, min}
 
 import scala.collection.mutable.Map
 import scala.util.matching.Regex

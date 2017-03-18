@@ -4,7 +4,7 @@ import java.util.regex.Pattern
 
 import edu.cmu.lti.nlp.amr.graph.{Graph, Node}
 import edu.cmu.lti.nlp.amr.span.{Span, SpanLoader}
-import edu.cmu.lti.nlp.amr.{Node, SpanLoader, logger, max}
+import edu.cmu.lti.nlp.amr.{Wordnet, logger, max}
 
 import scala.collection.mutable.Map
 import scala.util.matching.Regex
@@ -571,7 +571,7 @@ object AlignSpans3 {
 
     def matchLength(string1: String, string2: String) : Int = {
         var length = 0
-        for (i <- Range(0, min(string1.size, string2.size))) {
+        for (i <- Range(0, Math.min(string1.size, string2.size))) {
             if (string1(i) == string2(i) && length == i) {
                 length = i + 1
             }

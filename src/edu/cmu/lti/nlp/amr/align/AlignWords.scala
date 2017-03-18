@@ -1,7 +1,7 @@
 package edu.cmu.lti.nlp.amr.align
 
 import edu.cmu.lti.nlp.amr.graph.{Graph, Node}
-import edu.cmu.lti.nlp.amr.{Node, Wordnet, logger, min}
+import edu.cmu.lti.nlp.amr.{ Wordnet, logger, min}
 
 /****************************** Align Words *****************************/
 object AlignWords {

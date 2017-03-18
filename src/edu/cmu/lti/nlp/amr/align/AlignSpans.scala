@@ -2,7 +2,7 @@ package edu.cmu.lti.nlp.amr.align
 
 import edu.cmu.lti.nlp.amr.graph.{Graph, Node}
 import edu.cmu.lti.nlp.amr.span.Span
-import edu.cmu.lti.nlp.amr.{Node, logger, max, min}
+import edu.cmu.lti.nlp.amr.{logger, max, min}
 
 import scala.collection.mutable.{ArrayBuffer, Set}
 
