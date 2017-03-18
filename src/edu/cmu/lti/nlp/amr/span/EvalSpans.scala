@@ -1,10 +1,8 @@
-package edu.cmu.lti.nlp.amr
+package edu.cmu.lti.nlp.amr.span
 
-import scala.util.matching.Regex
+import edu.cmu.lti.nlp.amr.{Corpus, Source, logger, verbosity}
+
 import scala.collection.mutable.Map
-import scala.collection.mutable.Set
-import scala.collection.mutable.ArrayBuffer
-import scala.util.parsing.combinator._
 
 object EvalSpans {
 

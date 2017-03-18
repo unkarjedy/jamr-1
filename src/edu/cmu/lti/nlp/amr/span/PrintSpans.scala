@@ -1,11 +1,9 @@
-package edu.cmu.lti.nlp.amr
+package edu.cmu.lti.nlp.amr.span
 
-import scala.util.matching.Regex
+import edu.cmu.lti.nlp.amr.Corpus.splitOnNewline
+import edu.cmu.lti.nlp.amr.{AMRTrainingData, Source, logger, verbosity}
+
 import scala.collection.mutable.Map
-import scala.collection.mutable.Set
-import scala.collection.mutable.ArrayBuffer
-
-import Corpus._
 
 // TODO: this class can be removed
 

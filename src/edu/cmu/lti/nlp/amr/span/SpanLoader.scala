@@ -1,7 +1,8 @@
-package edu.cmu.lti.nlp.amr
+package edu.cmu.lti.nlp.amr.span
 
-import scala.util.matching.Regex
-import scala.collection.mutable.{Map, Set, ArrayBuffer}
+import edu.cmu.lti.nlp.amr.{Graph, Node, logger}
+
+import scala.collection.mutable.ArrayBuffer
 
 /************************************* Span Loader *******************************
 
