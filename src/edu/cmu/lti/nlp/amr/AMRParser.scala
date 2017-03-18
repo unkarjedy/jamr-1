@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat
 import edu.cmu.lti.nlp.amr.GraphDecoder._
 import edu.cmu.lti.nlp.amr.ConceptInvoke.PhraseConceptPair
 import edu.cmu.lti.nlp.amr.graph.Graph
+import edu.cmu.lti.nlp.amr.utils.F1
 
 /****************************** Driver Program *****************************/
 object AMRParser {
@@ -202,12 +203,7 @@ scala -classpath . edu.cmu.lti.nlp.amr.AMRParser --stage2-decode -w weights -l l
                 new Array(0)
             }
 
-            case class F1(var correct: Double, var predicted: Double, var total: Double) {
-                def precision : Double = correct / predicted
-                def recall : Double = correct / total
-                def f1 : Double = 2 * (precision * recall) / (precision + recall)
-                override def toString : String = { "Precision: "+precision.toString+"\nRecall: "+recall.toString+"\nF1: "+f1.toString }
-            }
+
             val spanF1 = F1(0,0,0)
 
             for ((block, i) <- input.zipWithIndex) {

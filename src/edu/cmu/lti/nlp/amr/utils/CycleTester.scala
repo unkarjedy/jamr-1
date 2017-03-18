@@ -1,5 +1,5 @@
 // Copyright (c) 2014, Sam Thomson
-package edu.cmu.lti.nlp.amr
+package edu.cmu.lti.nlp.amr.utils
 
 import scala.annotation.tailrec
 
