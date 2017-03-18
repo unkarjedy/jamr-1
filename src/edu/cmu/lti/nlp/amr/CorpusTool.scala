@@ -19,14 +19,14 @@ object CorpusTool {
                       parseOptions(map ++ Map('tokenized -> value), tail)
             case "-v" :: value :: tail =>
                       parseOptions(map ++ Map('verbosity -> value.toInt), tail)
-            case option :: tail => println("Error: Unknown option "+option)
+            case option :: tail => System.out.println("Error: Unknown option "+option)
                                sys.exit(1)
       }
     }
 
     def main(args: Array[String]) {
 
-        if (args.length == 0) { println(usage); sys.exit(1) }
+        if (args.length == 0) { System.out.println(usage); sys.exit(1) }
 
         val options = parseOptions(Map(),args.toList)
         if (options.contains('verbosity)) {
@@ -44,12 +44,12 @@ object CorpusTool {
             if (block.split("\n").exists(_.startsWith("("))) {  // needs to contain come AMR
                 val extras : String = block.split("\n[(]")(0)
                 val amr : String = block.split("\n[(]").tail.mkString("\n(")
-                println(extras)
-                println("# ::tok " + tokenized(i))
-                println("("+amr+"\n")
+                System.out.println(extras)
+                System.out.println("# ::tok " + tokenized(i))
+                System.out.println("("+amr+"\n")
                 i += 1
             } else {
-                println(block+"\n")
+                System.out.println(block+"\n")
             }
         }
     }

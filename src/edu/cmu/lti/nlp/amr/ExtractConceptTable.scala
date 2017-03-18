@@ -41,7 +41,7 @@ object ExtractConceptTable {
         val conceptTable : m.Map[String, List[PhraseConceptPair]] = extract(splitOnNewline(Source.stdin.getLines).toArray, stage1Features, maxCount)
         for { (_, list) <- conceptTable
               concept <- list } {
-            println(concept)
+            System.out.println(concept)
         }
     }
 

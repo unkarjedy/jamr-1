@@ -19,17 +19,17 @@ for (line <- stdin.getLines()) {
             begin = true
         } else if(!word.endsWith("]") || word.size == 1) {
             if(tag != "O") {
-                println(word + "\t" + (if (begin) { "B-" } else { "I-" }) + tag)
+                System.out.println(word + "\t" + (if (begin) { "B-" } else { "I-" }) + tag)
             } else {
-                println(word + "\t" + tag)
+                System.out.println(word + "\t" + tag)
             }
             begin = false
         } else {
             if (tag == "O") {
                 System.err.println(" *** WARNING *** : Closing bracket outside of tag in Illinois NER output.\nLine = "+line+"\nSuggestion: you may want to remove any [ or ] from the input.")
-                println(word.slice(0,word.size-1) + "\tO")
+                System.out.println(word.slice(0,word.size-1) + "\tO")
             } else {
-                println(word.slice(0,word.size-1) + "\t" + (if (begin) { "B-" } else { "I-" }) + tag)
+                System.out.println(word.slice(0,word.size-1) + "\t" + (if (begin) { "B-" } else { "I-" }) + tag)
             }
             tag = "O"
         }

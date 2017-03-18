@@ -34,7 +34,7 @@ object FString {
 /***************** Demo *******************/
     def main(args: Array[String]) {
         if(args.size != 1) {
-            println("usage: scala -classpath . edu.cmu.lti.nlp.amr.FString ../aligner/snt")
+            System.out.println("usage: scala -classpath . edu.cmu.lti.nlp.amr.FString ../aligner/snt")
             sys.exit(1)
         }
 
@@ -43,7 +43,7 @@ object FString {
 
         for (x <- Range(0,10)) {
         { // Test 1 (fast)
-        println("Starting Test 1")
+        System.out.println("Starting Test 1")
         val startTime = System.currentTimeMillis
         val tokens = ArrayBuffer.empty[FString]
         val unigrams = Map.empty[FString, Double]
@@ -60,10 +60,10 @@ object FString {
             prev2 = prev1
             prev1 = token
         }
-        println("Tokens: " + corpus.size.toString)
-        println("Unigrams: " + unigrams.size.toString)
-        println("Bigrams: " + bigrams.size.toString)
-        println("Trigrams: " + trigrams.size.toString)
+        System.out.println("Tokens: " + corpus.size.toString)
+        System.out.println("Unigrams: " + unigrams.size.toString)
+        System.out.println("Bigrams: " + bigrams.size.toString)
+        System.out.println("Trigrams: " + trigrams.size.toString)
 
         val size = tokens.size
         print("Performing 1 million lookups... ")
@@ -75,13 +75,13 @@ object FString {
             bigrams.getOrElse(word1 + word2, 0.0)
             trigrams.getOrElse(word1 + word2 + word3, 0.0)
         }
-        println("done")
+        System.out.println("done")
         val endTime = System.currentTimeMillis
-        println(endTime-startTime)
+        System.out.println(endTime-startTime)
         }
 
         { // Test 2
-        println("Starting Test 2")
+        System.out.println("Starting Test 2")
         val startTime = System.currentTimeMillis
         val tokens = ArrayBuffer.empty[String]
         val unigrams = Map.empty[String, Double]
@@ -98,10 +98,10 @@ object FString {
             prev2 = prev1
             prev1 = token
         }
-        println("Tokens: " + corpus.size.toString)
-        println("Unigrams: " + unigrams.size.toString)
-        println("Bigrams: " + bigrams.size.toString)
-        println("Trigrams: " + trigrams.size.toString)
+        System.out.println("Tokens: " + corpus.size.toString)
+        System.out.println("Unigrams: " + unigrams.size.toString)
+        System.out.println("Bigrams: " + bigrams.size.toString)
+        System.out.println("Trigrams: " + trigrams.size.toString)
 
         val size = tokens.size
         print("Performing 1 million lookups... ")
@@ -113,9 +113,9 @@ object FString {
             bigrams.getOrElse(word1 + ":" + word2, 0.0)
             trigrams.getOrElse(word1 + ":" + word2 + ":" + word3, 0.0)
         }
-        println("done")
+        System.out.println("done")
         val endTime = System.currentTimeMillis
-        println(endTime-startTime)
+        System.out.println(endTime-startTime)
         }
         }
     }

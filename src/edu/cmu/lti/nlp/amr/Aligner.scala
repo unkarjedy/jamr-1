@@ -34,14 +34,14 @@ object Aligner {
              //case string :: opt2 :: tail if isSwitch(opt2) => 
             //          parseOptions(map ++ Map('infile -> string), list.tail)
             //case string :: Nil =>  parseOptions(map ++ Map('infile -> string), list.tail)
-            case option :: tail => println("Error: Unknown option "+option) 
+            case option :: tail => System.out.println("Error: Unknown option "+option)
                                sys.exit(1) 
       }
     }
 
     def main(args: Array[String]) {
         val options = parseOptions(Map(),args.toList)
-        if (options.contains('help)) { println(usage); sys.exit(1) }
+        if (options.contains('help)) { System.out.println(usage); sys.exit(1) }
 
         if (options.contains('verbosity)) {
             verbosity = options('verbosity).asInstanceOf[Int]
@@ -60,7 +60,7 @@ object Aligner {
                 logger(2,"****************************")
                 val extrastr : String = block.split("\n").filter(_.matches("^# ::.*")).mkString("\n")
                 val amrstr : String = block.split("\n").filterNot(_.matches("^#.*")).mkString("\n")
-                println(extrastr)
+                System.out.println(extrastr)
                 val amr = Graph.parse(amrstr)
                 val extras = AMRTrainingData.getUlfString(extrastr)
                 val tokenized = extras("::tok").split(" ")
@@ -76,23 +76,23 @@ object Aligner {
                     logger(3, "* "+span.format)
                 }
                 if (aligner3) {
-                    println("# ::alignments "+spans.map(_.format).mkString(" ")+" ::annotator Aligner v.03 ::date "+sdf.format(new Date))
+                    System.out.println("# ::alignments "+spans.map(_.format).mkString(" ")+" ::annotator Aligner v.03 ::date "+sdf.format(new Date))
                 } else {
-                    println("# ::alignments "+spans.map(_.format).mkString(" ")+" ::annotator Aligner v.01 ::date "+sdf.format(new Date))
+                    System.out.println("# ::alignments "+spans.map(_.format).mkString(" ")+" ::annotator Aligner v.01 ::date "+sdf.format(new Date))
                 }
                 if (options.contains('logUnalignedConcepts)) {
                     amr.logUnalignedNodes()
                 }
                 if (options.contains('printNodesAndEdges)) {
-                    println(amr.printNodes.map(x => "# ::node\t" + x).mkString("\n"))
-                    println(amr.printRoot)
+                    System.out.println(amr.printNodes.map(x => "# ::node\t" + x).mkString("\n"))
+                    System.out.println(amr.printRoot)
                     if (amr.root.relations.size > 0) {
-                        println(amr.printEdges.map(x => "# ::edge\t" + x).mkString("\n"))
+                        System.out.println(amr.printEdges.map(x => "# ::edge\t" + x).mkString("\n"))
                     }
                 }
-                println(amrstr+"\n")
+                System.out.println(amrstr+"\n")
             } else {
-                println(block+"\n")
+                System.out.println(block+"\n")
             }
         }
     }

@@ -20,14 +20,14 @@ object EvalSpans {
                       parseOptions(map ++ Map('help -> value.toInt), tail)
             case "-v" :: value :: tail =>
                       parseOptions(map ++ Map('verbosity -> value.toInt), tail)
-            case string :: Nil =>  println(usage); sys.exit(1)
-            case option :: tail => println(usage); sys.exit(1)
+            case string :: Nil =>  System.out.println(usage); sys.exit(1)
+            case option :: tail => System.out.println(usage); sys.exit(1)
       }
     }
 
     def main(args: Array[String]) {
         val options = parseOptions(Map(),args.toList)
-        if (options.contains('help)) { println(usage); sys.exit(1) }
+        if (options.contains('help)) { System.out.println(usage); sys.exit(1) }
 
         verbosity = 0
         if (options.contains('verbosity)) {
@@ -93,10 +93,10 @@ object EvalSpans {
         val r = correct/gold_total
         val f1 = 2.0*p*r/(p+r)
 
-        println("Number of AMR: "+n.toString)
-        println("Precision = "+p.toString)
-        println("Recall = "+r.toString)
-        println("F1 = "+f1.toString)
+        System.out.println("Number of AMR: "+n.toString)
+        System.out.println("Precision = "+p.toString)
+        System.out.println("Recall = "+r.toString)
+        System.out.println("F1 = "+f1.toString)
     }
 }
 

@@ -30,13 +30,13 @@ object CycleTester {
       2 -> Set(3),
       3 -> Set(1)
     )
-    println(hasCycle(1 to 3, graphA) + " should be true")
+    System.out.println(hasCycle(1 to 3, graphA) + " should be true")
 
     val graphB = Map(
       1 -> Set(2, 3),
       2 -> Set(3)
     )
-    println(hasCycle(1 to 3, graphB) + " should be false")
+    System.out.println(hasCycle(1 to 3, graphB) + " should be false")
 
     val graphC = Map(
       1 -> Set(2),
@@ -45,7 +45,7 @@ object CycleTester {
       5 -> Set(6),
       6 -> Set(3)
     )
-    println(hasCycle(1 to 6, graphC) + " should be false")
+    System.out.println(hasCycle(1 to 6, graphC) + " should be false")
 
     val graphD = Map(
       1 -> Set(2),
@@ -54,6 +54,6 @@ object CycleTester {
       5 -> Set(6),
       6 -> Set(3, 4)
     )
-    println(hasCycle(1 to 6, graphD) + " should be true")
+    System.out.println(hasCycle(1 to 6, graphD) + " should be true")
   }
 }

@@ -83,7 +83,7 @@ scala -classpath . edu.cmu.lti.nlp.amr.AMRParser --stage2-decode -w weights -l l
 
             //case string :: opt2 :: tail if isSwitch(opt2) => parseOptions(map ++ m.Map('infile -> string), list.tail)
             //case string :: Nil =>  parseOptions(map ++ m.Map('infile -> string), list.tail)
-            case option :: tail => println("Error: Unknown option "+option) 
+            case option :: tail => System.out.println("Error: Unknown option "+option)
                                    sys.exit(1)
       }
     }
@@ -98,7 +98,7 @@ scala -classpath . edu.cmu.lti.nlp.amr.AMRParser --stage2-decode -w weights -l l
 
     def main(args: Array[String]) {
 
-        if (args.length == 0) { println(usage); sys.exit(1) }
+        if (args.length == 0) { System.out.println(usage); sys.exit(1) }
         val options = parseOptions(m.Map(), args.toList)
 
         verbosity = options.getOrElse('verbosity, "0").toInt
@@ -284,17 +284,17 @@ scala -classpath . edu.cmu.lti.nlp.amr.AMRParser --stage2-decode -w weights -l l
                                 spanF1.correct += 1
                             } else {
                                 if (oracleResult.graph.spans.count(x => x.start == span.start && x.end == span.end) > 0) {
-                                    println("# Incorrect span: "+span.words+" => "+span.amr)
+                                    System.out.println("# Incorrect span: "+span.words+" => "+span.amr)
                                     logger(0, "Incorrect span: "+span.words+" => "+span.amr)
                                 } else {
-                                    println("# Extra span: "+span.words+" => "+span.amr)
+                                    System.out.println("# Extra span: "+span.words+" => "+span.amr)
                                     logger(0, "Extra span: "+span.words+" => "+span.amr)
                                 }
                             }
                         }
                         for (span <- oracleResult.graph.spans) {
                             if (stage1Result.graph.spans.count(x => x.start == span.start && x.end == span.end && x.amr.toString == span.amr.toString) == 0) {
-                                println("# Missing span: "+span.words+" => "+span.amr)
+                                System.out.println("# Missing span: "+span.words+" => "+span.amr)
                                 logger(0, "Missing span: "+span.words+" => "+span.amr)
                             }
                         }
@@ -316,58 +316,58 @@ scala -classpath . edu.cmu.lti.nlp.amr.AMRParser --stage2-decode -w weights -l l
                         //"\n"+decoder.features.ffDependencyPathv2(node1, node2, relation).toString.split("\n").filter(_.matches("^C1.*")).toList.toString+"\nScore = "+decoder.features.localScore(node1, node2, relation).toString+"  Relevent weights:\n"+decoder.features.weights.slice(decoder.features.localFeatures(node1, node2, relation)).toString
                     })+"\n")
 
-                    println("# ::snt "+line)
-                    println("# ::tok "+tok)
+                    System.out.println("# ::snt "+line)
+                    System.out.println("# ::tok "+tok)
                     val sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
                     decoderResultGraph.assignOpN()
                     if (!options.contains('stage2NotConnected)) {
                         decoderResultGraph.makeTopologicalOrdering()
                         decoderResultGraph.sortRelations()
                         decoderResultGraph.makeIds()
-                        println("# ::alignments "+decoderResultGraph.spans.map(_.format).mkString(" ")+" ::annotator "+VERSION+" ::date "+sdf.format(new Date))
+                        System.out.println("# ::alignments "+decoderResultGraph.spans.map(_.format).mkString(" ")+" ::annotator "+VERSION+" ::date "+sdf.format(new Date))
                     }
                     if (outputFormat.contains("nodes")) {
-                        println(decoderResultGraph.printNodes.map(x => "# ::node\t" + x).mkString("\n"))
+                        System.out.println(decoderResultGraph.printNodes.map(x => "# ::node\t" + x).mkString("\n"))
                     }
                     if (outputFormat.contains("root")) {
-                        println(decoderResultGraph.printRoot)
+                        System.out.println(decoderResultGraph.printRoot)
                     }
                     if (outputFormat.contains("edges") && decoderResultGraph.root.children.size > 0) {
-                        println(decoderResultGraph.printEdges.map(x => "# ::edge\t" + x).mkString("\n"))
+                        System.out.println(decoderResultGraph.printEdges.map(x => "# ::edge\t" + x).mkString("\n"))
                     }
                     if (outputFormat.contains("AMR")) {
                         if (options.contains('trainingData)) {
                             val amrdata2 = AMRTrainingData(oracleData(i))
-                            println(amrdata2.graph.prettyString(detail=1, pretty=true, indent="#"))
+                            System.out.println(amrdata2.graph.prettyString(detail=1, pretty=true, indent="#"))
                         }
-                        println(decoderResultGraph.prettyString(detail=1, pretty=true))
+                        System.out.println(decoderResultGraph.prettyString(detail=1, pretty=true))
                     }
                     if (outputFormat.contains("triples")) {
-                        println(decoderResultGraph.printTriples(detail = 1))
+                        System.out.println(decoderResultGraph.printTriples(detail = 1))
                     }
                     if (outputFormat.contains("disconnectedAMR")) {
-                        println(decoderResultGraph.printDisconnected())
+                        System.out.println(decoderResultGraph.printDisconnected())
                     }
-                    println()
+                    System.out.println()
                 }
             } // time
             } catch { // try
                 case e : java.lang.VirtualMachineError => throw e
                 case e : Throwable => if (options.contains('ignoreParserErrors)) {
-                    println("# ::snt "+input(i))
-                    println("# ::tok "+tokenized(i))
+                    System.out.println("# ::snt "+input(i))
+                    System.out.println("# ::tok "+tokenized(i))
                     val sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
-                    println("# ::alignments 0-1|0 ::annotator "+VERSION+" ::date "+sdf.format(new Date))
-                    println("# THERE WAS AN EXCEPTION IN THE PARSER.  Returning an empty graph.")
+                    System.out.println("# ::alignments 0-1|0 ::annotator "+VERSION+" ::date "+sdf.format(new Date))
+                    System.out.println("# THERE WAS AN EXCEPTION IN THE PARSER.  Returning an empty graph.")
                     if (options.contains('printStackTraceOnErrors)) {
                         val sw = new StringWriter()
                         e.printStackTrace(new PrintWriter(sw))
-                        println(sw.toString.split("\n").map(x => "# "+x).mkString("\n"))
+                        System.out.println(sw.toString.split("\n").map(x => "# "+x).mkString("\n"))
                     }
                     logger(-1, " ********** THERE WAS AN EXCEPTION IN THE PARSER. *********")
                     if (verbosity >= -1) { e.printStackTrace }
                     logger(-1, "Continuing. To exit on errors, please run without --ignore-parser-errors")
-                    println(Graph.AMREmpty.prettyString(detail=1, pretty=true) + '\n')
+                    System.out.println(Graph.AMREmpty.prettyString(detail=1, pretty=true) + '\n')
                 } else {
                     throw e
                 }

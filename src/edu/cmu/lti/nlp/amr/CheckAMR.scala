@@ -17,7 +17,7 @@ object CheckAMR {
                       parseOptions(map ++ Map('tokenized -> value), tail)
             case "-v" :: value :: tail =>
                       parseOptions(map ++ Map('verbosity -> value.toInt), tail)
-            case option :: tail => println("Error: Unknown option "+option)
+            case option :: tail => System.out.println("Error: Unknown option "+option)
                                sys.exit(1)
       }
     }
@@ -37,9 +37,9 @@ object CheckAMR {
                 val graph = Graph.parse(block)
                 //graph.normalizeInverseRelations
                 if (CycleTester.hasCycle(graph.nodes.toList, graph.nodes.map(x => (x, x.relations.map(y => y._2))).toMap)) {
-                    println("Contains a cycle")
+                    System.out.println("Contains a cycle")
                 } else {
-                    println("No cycle")
+                    System.out.println("No cycle")
                 }
                 var simple = true
                 for (node1 <- graph.nodes) {
@@ -61,13 +61,13 @@ object CheckAMR {
                     }
                 }
                 if (simple) {
-                    println("Graph simple")
+                    System.out.println("Graph simple")
                 } else {
-                    println("Graph not simple")
+                    System.out.println("Graph not simple")
                 }
                 i += 1
             //} else {
-            //    println(block+"\n")
+            //    System.out.println(block+"\n")
             //}
         }
     }

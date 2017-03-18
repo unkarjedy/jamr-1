@@ -34,7 +34,7 @@ object Test {
                       parseOptions(map ++ Map('help -> true), tail)
             case "-v" :: value :: tail =>
                       parseOptions(map ++ Map('verbosity -> value.toInt), tail)
-            case option :: tail => println("Error: Unknown option "+option) 
+            case option :: tail => System.out.println("Error: Unknown option "+option)
                                sys.exit(1) 
       }
     }
@@ -52,7 +52,7 @@ object Test {
 
     def main(args: Array[String]) {
         val options = parseOptions(Map(),args.toList)
-        if (options.contains('help)) { println(usage); sys.exit(1) }
+        if (options.contains('help)) { System.out.println(usage); sys.exit(1) }
 
         if (options.contains('verbosity)) {
             verbosity = options('verbosity).asInstanceOf[Int]
@@ -66,7 +66,7 @@ object Test {
     }
 
     def test1() {
-        println("Test1")
+        System.out.println("Test1")
         val nodes = Map("1" -> node("1"),
                         "2" -> node("2"),
                         "3" -> node("3"))
@@ -82,7 +82,7 @@ object Test {
     }
 
     def test2() {
-        println("Test2")
+        System.out.println("Test2")
         val nodes = Map("1" -> node("1"),
                         "2" -> node("2"),
                         "3" -> node("3"))
@@ -92,23 +92,23 @@ object Test {
             List(("1", "2", ":r", 6),
                  ("2", "3", ":r", -6),
                  ("1", "3", ":r", 3)))
-        println("weights:")
+        System.out.println("weights:")
         print(decoder.features.weights)
         val result = decoder.decode(Input(graph, Array(), Annotation(Array(), Array(), Array()), Annotation(Array(), Array(), Array())))
-        println("In test2()")
-        for (node <- result.graph.nodes) { println(node.topologicalOrdering.map(x => (x._1, x._2.id))) }
-        println("Triples:")
+        System.out.println("In test2()")
+        for (node <- result.graph.nodes) { System.out.println(node.topologicalOrdering.map(x => (x._1, x._2.id))) }
+        System.out.println("Triples:")
         result.graph.printTriples(detail = 1)
-        println("TopologicalOrdering:")
+        System.out.println("TopologicalOrdering:")
         for (node <- result.graph.nodes) {
-            println(node.id + "=" + node.topologicalOrdering.map(x => (x._1, x._2.id)))
+            System.out.println(node.id + "=" + node.topologicalOrdering.map(x => (x._1, x._2.id)))
         }
-        println("Graph:")
-        println(result.graph.root.prettyString(detail = 1, pretty = true))
+        System.out.println("Graph:")
+        System.out.println(result.graph.root.prettyString(detail = 1, pretty = true))
     }
 
     def test3() {
-        println("Test3")
+        System.out.println("Test3")
         val nodes = Map("1" -> node("1"),
                         "2" -> node("2"),
                         "3" -> node("3"))
@@ -123,7 +123,7 @@ object Test {
     }
 
     def test4() {
-        println("Test4")
+        System.out.println("Test4")
         val nodes = Map("1" -> node("1"),
                         "2" -> node("2"),
                         "3" -> node("3"),
@@ -141,7 +141,7 @@ object Test {
     }
 
     def test5() {
-        println("Test5")
+        System.out.println("Test5")
         val nodes = Map("1" -> node("1"),
                         "2" -> node("2"),
                         "3" -> node("3"),
@@ -158,7 +158,7 @@ object Test {
     }
 
     def samTest() {
-        println("samTest")
+        System.out.println("samTest")
         val nodes = Map("1" -> node("1"),
                         "2" -> node("2"),
                         "3" -> node("3"),

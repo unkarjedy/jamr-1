@@ -19,14 +19,14 @@ object PrintSpans {
             case Nil => map
             case "-v" :: value :: tail =>
                       parseOptions(map ++ Map('verbosity -> value.toInt), tail)
-            case option :: tail => println("Error: Unknown option "+option)
+            case option :: tail => System.out.println("Error: Unknown option "+option)
                                sys.exit(1)
       }
     }
 
     def main(args: Array[String]) {
 
-        if (args.length != 0) { println(usage); sys.exit(1) }
+        if (args.length != 0) { System.out.println(usage); sys.exit(1) }
 
         val options = parseOptions(Map(),args.toList)
         if (options.contains('verbosity)) {
@@ -37,13 +37,13 @@ object PrintSpans {
         for { b <- splitOnNewline(Source.stdin.getLines)
               if (b.split("\n").exists(_.startsWith("("))) } {  // needs to contain come AMR
             val block = AMRTrainingData(b)
-            println(b)
+            System.out.println(b)
             block.loadSpans()
             for ((span, i) <- block.graph.spans.zipWithIndex) {
                 logger(1, "Span "+(i+1).toString+":  "+span.words+" => "+span.amr)
                 logger(3, "* "+span.format)
             }
-            println()
+            System.out.println()
         }
     }
 }

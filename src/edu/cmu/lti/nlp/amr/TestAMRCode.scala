@@ -17,23 +17,23 @@ object TestAMRCode {
                       parseOptions(map ++ Map('help -> true), tail)
             case "-v" :: value :: tail =>
                       parseOptions(map ++ Map('verbosity -> value.toInt), tail)
-            case option :: tail => println("Error: Unknown option "+option) 
+            case option :: tail => System.out.println("Error: Unknown option "+option)
                                sys.exit(1) 
       }
     }
 
     def main(args: Array[String]) {
         val options = parseOptions(Map(),args.toList)
-        if (options.contains('help)) { println(usage); sys.exit(1) }
+        if (options.contains('help)) { System.out.println(usage); sys.exit(1) }
 
         if (options.contains('verbosity)) {
             verbosity = options('verbosity).asInstanceOf[Int]
         }
 
         for (block <- Corpus.getAMRBlocks(io.Source.stdin.getLines())) {
-            println(block)
+            System.out.println(block)
             AMRTrainingData(block).toOracleGraph(clearUnalignedNodes = false).printTriples(0)
-            println()
+            System.out.println()
         }
     }
 }

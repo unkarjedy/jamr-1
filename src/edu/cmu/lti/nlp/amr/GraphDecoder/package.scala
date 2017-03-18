@@ -53,7 +53,7 @@ package object GraphDecoder {
 
         val outputFormat = options.getOrElse('outputFormat,"triples").split(",").toList
         if (outputFormat.contains("AMR") && !connected) {
-            println("Cannot have both -stage2NotConnected flag and --outputFormat \"AMR\""); sys.exit(1)
+            System.out.println("Cannot have both -stage2NotConnected flag and --outputFormat \"AMR\""); sys.exit(1)
         }
 
         if (options('stage2Decoder) == "Alg1" && outputFormat.contains("AMR")) {

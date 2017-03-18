@@ -109,31 +109,31 @@ class AnnotationTest /*extends Suite*/ {
         val test1 = Annotation[String](Array("The", "Riyadh", "-", "based", "Naif", "Arab", "Academy"),
                                        Array("The", "Riyadh-based", "Naif", "Arab", "Academy"),
                                        Array())
-        println("test1")
-        println("tokenized = "+test1.snt.toList)
-        println("myTokenized = "+test1.annoTok.toList)
+        System.out.println("test1")
+        System.out.println("tokenized = "+test1.snt.toList)
+        System.out.println("myTokenized = "+test1.annoTok.toList)
         for (i <- Range(0, test1.annoTok.size)) {
-            println("i=" + i + " l=" + test1.getSpan(i,i+1)._1 + " r=" + test1.getSpan(i,i+1)._2)
+            System.out.println("i=" + i + " l=" + test1.getSpan(i,i+1)._1 + " r=" + test1.getSpan(i,i+1)._2)
         }
         val test2 = Annotation[String](Array("The", "Riyadh-based", "NaifArab", "Academy"),
                                        Array("The", "Riyadh", "-", "based", "Naif", "ArabAcademy"),
                                        Array())
-        println("test2")
-        println("tokenized = "+test2.snt.toList)
-        println("myTokenized = "+test2.annoTok.toList)
+        System.out.println("test2")
+        System.out.println("tokenized = "+test2.snt.toList)
+        System.out.println("myTokenized = "+test2.annoTok.toList)
         for (i <- Range(0, test2.annoTok.size)) {
-            println("i=" + i + " l=" + test2.getSpan(i,i+1)._1 + " r=" + test2.getSpan(i,i+1)._2)
+            System.out.println("i=" + i + " l=" + test2.getSpan(i,i+1)._1 + " r=" + test2.getSpan(i,i+1)._2)
         }
-        println("getSpan(1,4)="+test2.getSpan(1,4))
-        println("getSpan(1,5)="+test2.getSpan(1,5))
+        System.out.println("getSpan(1,4)="+test2.getSpan(1,4))
+        System.out.println("getSpan(1,5)="+test2.getSpan(1,5))
         val test3 = Annotation[String](Array("The", "Riyadh-", "based", "NaifArab", "Academy"),
                                        Array("The", "Riy", "adh", "-", "based", "Naif", "ArabAcademy"),
                                        Array())
-        println("test3")
-        println("tokenized = "+test3.snt.toList)
-        println("myTokenized = "+test3.annoTok.toList)
+        System.out.println("test3")
+        System.out.println("tokenized = "+test3.snt.toList)
+        System.out.println("myTokenized = "+test3.annoTok.toList)
         for (i <- Range(0, test3.annoTok.size)) {
-            println("i=" + i + " l=" + test3.getSpan(i,i+1)._1 + " r=" + test3.getSpan(i,i+1)._2)
+            System.out.println("i=" + i + " l=" + test3.getSpan(i,i+1)._1 + " r=" + test3.getSpan(i,i+1)._2)
         }
 
     }

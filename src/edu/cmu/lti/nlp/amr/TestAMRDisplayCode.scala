@@ -17,14 +17,14 @@ object TestAMRDisplayCode {
                       parseOptions(map ++ Map('help -> value.toInt), tail)
             case "-v" :: value :: tail =>
                       parseOptions(map ++ Map('verbosity -> value.toInt), tail)
-            case option :: tail => println("Error: Unknown option "+option) 
+            case option :: tail => System.out.println("Error: Unknown option "+option)
                                sys.exit(1) 
       }
     }
 
     def main(args: Array[String]) {
         val options = parseOptions(Map(),args.toList)
-        if (options.contains('help)) { println(usage); sys.exit(1) }
+        if (options.contains('help)) { System.out.println(usage); sys.exit(1) }
 
         if (options.contains('verbosity)) {
             verbosity = options('verbosity).asInstanceOf[Int]
@@ -42,8 +42,8 @@ object TestAMRDisplayCode {
             logger(1,graph.prettyString(detail = 2, pretty = true))
             graph.normalizeInverseRelations
             graph.makeTopologicalOrdering
-            println(graph.prettyString(detail = 1, pretty = true))
-            println()
+            System.out.println(graph.prettyString(detail = 1, pretty = true))
+            System.out.println()
         }
 
     }
