@@ -165,7 +165,7 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
         return edges.sorted
     }
 
-    def printTriples(detail: Int = 1,
+    def printTriples(detail: Int,
                      extra: (Node, Node, String) => String = (n1, n2, r) => "",   // Optional string to print after each relation
                      sorted: Boolean = true
                      ) : String = {

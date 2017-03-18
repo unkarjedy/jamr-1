@@ -1,10 +1,8 @@
 package edu.cmu.lti.nlp.amr
 
-//import org.scalatest.Suite
-
 object Corpus {
+  // This treats more than one newline in a row as a single newline
   def splitOnNewline(iterator: Iterator[String]): Iterator[String] = {
-    // This treats more than one newline in a row as a single newline
     for {
       x <- iterator if x != ""
       p = (x :: iterator.takeWhile(_ != "").toList).mkString("\n")
