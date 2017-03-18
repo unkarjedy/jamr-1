@@ -1,9 +1,11 @@
-package edu.cmu.lti.nlp.amr
+package edu.cmu.lti.nlp.amr.align
 
-import scala.util.matching.Regex
-import scala.collection.mutable.{Map, Set, ArrayBuffer}
-import java.util.Date
 import java.text.SimpleDateFormat
+import java.util.Date
+
+import edu.cmu.lti.nlp.amr.{AMRTrainingData, Corpus, Graph, Source, logger, verbosity}
+
+import scala.collection.mutable.Map
 
 /****************************** Driver Program *****************************/
 object Aligner {

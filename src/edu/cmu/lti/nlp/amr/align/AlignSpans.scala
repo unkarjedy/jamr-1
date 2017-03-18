@@ -1,8 +1,8 @@
-package edu.cmu.lti.nlp.amr
+package edu.cmu.lti.nlp.amr.align
 
-import scala.collection.mutable.Map
-import scala.collection.mutable.Set
-import scala.collection.mutable.ArrayBuffer
+import edu.cmu.lti.nlp.amr.{Graph, Node, Span, logger, max, min}
+
+import scala.collection.mutable.{ArrayBuffer, Set}
 
 /****************************** Align Spans *****************************/
 object AlignSpans {

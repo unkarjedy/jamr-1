@@ -1,13 +1,14 @@
-package edu.cmu.lti.nlp.amr
+package edu.cmu.lti.nlp.amr.align
 
 import java.util.regex.Pattern
-import scala.util.matching.Regex
+
+import edu.cmu.lti.nlp.amr.{Graph, Node, Span, SpanLoader, logger, max}
+
 import scala.collection.mutable.Map
-import scala.collection.mutable.Set
-import scala.collection.mutable.ArrayBuffer
+import scala.util.matching.Regex
 
 /****************************** Align Words *****************************/
-object AlignSpans2 {
+object AlignSpans3 {
 
     def align(sentence: Array[String], graph: Graph) {
         val stemmedSentence = sentence.map(stemmer(_))
@@ -15,7 +16,7 @@ object AlignSpans2 {
         logger(3, "Stemmed sentence "+stemmedSentence.toList.toString)
 
         val namedEntity = new SpanAligner(sentence, graph) {
-            concept = "name"
+            concept = _.matches("name")
             tabSentence = "\t"+sentence.mkString("\t").toLowerCase+"\t"/*.replaceAll("[^a-zA-Z0-9\t]","")*/
             nodes = node => {
                 if (node.children.exists(_._1.matches(":op.*"))) {
@@ -28,8 +29,22 @@ object AlignSpans2 {
             words = nodes => { ("\t"+nodes.tail.map(x => getConcept(x._2.concept).toLowerCase/*.replaceAll("[^a-zA-Z0-9\t]","")*/.map(x => Pattern.quote(x.toString)).mkString("\t?")).mkString("[^a-zA-Z]*")+"\t").r }
         }
 
+        val namedEntityAcronym = new SpanAligner(sentence, graph) {     // Matches an acronym that is the first letter of every :op child
+            concept = _.matches("name")
+            tabSentence = "\t"+sentence.mkString("\t").toLowerCase+"\t"/*.replaceAll("[^a-zA-Z0-9\t]","")*/
+            nodes = node => {
+                if (node.children.exists(_._1.matches(":op.*"))) {
+                    ("", node) :: node.children.filter(_._1.matches(":op.*"))
+                } else {
+                    List()
+                }
+            }
+            //words = nodes => { nodes.tail.map(x => Pattern.quote(getConcept(x._2.concept).toLowerCase.replaceAll("[^a-zA-Z0-9\t]",""))).mkString("[^a-zA-Z]*").r }
+            words = nodes => { ("\t"+nodes.tail.map(x => getConcept(x._2.concept).head.toString.toLowerCase/*.replaceAll("[^a-zA-Z0-9\t]","")*/.map(x => Pattern.quote(x.toString)).mkString("\t?")).mkString("[^a-zA-Z]*")+"\t").r }
+        }
+
         val fuzzyNamedEntity = new SpanAligner(sentence, graph) {
-            concept = "name"
+            concept = _.matches("name")
             tabSentence = "\t"+sentence.mkString("\t").toLowerCase+"\t"/*.replaceAll("[^a-zA-Z0-9\t]","")*/
             nodes = node => {
                 if (node.children.exists(_._1.matches(":op.*"))) {
@@ -47,14 +62,14 @@ object AlignSpans2 {
                 //map(x => getConcept(x._2.concept).toLowerCase/*.replaceAll("[^a-zA-Z0-9\t]","")*/.map(x => Pattern.quote(x.toString)).mkString("\t?")).mkString("[^\t]*[^a-zA-Z]*")+"[^\t]*\t").r }
         }
 
-        val namedEntityCollect = new SpanUpdater(sentence, graph, wordToSpan) {
+        val namedEntityCollect = new SpanUpdater(sentence, graph, wordToSpan) { // aligns a NE if all the children have been aligned
             concept = "name"
             nodes = node => {
                 if (node.children.count(x => x._1.matches(":op.*") && isAligned(x._2, graph)) == node.children.size && node.children.size > 0) {
                     (("", node) :: node.children) :: node.children.tail.map(x => List())
                 } else {
                     List()
-                } 
+                }
             }
             spanIndex = list => { list(0)(0)._2.children.map(x => getAlignment(x._2, graph)) }  // we are always given a list of size > 0
             spans = (node, spanIndices) => {
@@ -64,8 +79,24 @@ object AlignSpans2 {
             }
         }
 
+        val namedEntityCollectSingle = new SpanUpdater(sentence, graph, wordToSpan) { // aligns a NE if one of the childen has been aligned
+            concept = "name"
+            nodes = node => {
+                if (node.children.count(x => x._1.matches(":op.*")) == node.children.size && node.children.count(x => isAligned(x._2, graph)) == 1 && node.children.size > 0) {
+                    List(("", node) :: node.children)
+                } else {
+                    List()
+                }
+            }
+            spanIndex = list => { List(getAlignment(list(0)(0)._2.children.find(x => isAligned(x._2, graph)).get._2, graph)) }  // we are always given a list of size > 0 (list(0)(0) is the first node in the nodes list, which is the root node)
+            spans = (node, spanIndices) => { 
+                val span = graph.spans(getAlignment(node.children.find(x => isAligned(x._2, graph)).get._2, graph))
+                (span.start, span.end) :: spanIndices.tail.map(x => (0,0))                                // we are always given a list of size > 0
+            }
+        }
+
         val dateEntity = new SpanAligner(sentence, graph) {
-            concept = "date-entity"
+            concept = _.matches("date-entity")
             tabSentence = "\t"+replaceAll(sentence.mkString("\t").toLowerCase+"\t",
                 Map("january" -> "1",
                     "february" -> "2",
@@ -105,20 +136,21 @@ object AlignSpans2 {
         }
 
         val minusPolarity = new SpanAligner(sentence, graph) {
-            concept = "-"
+            concept = _.matches("-")
             tabSentence = "\t"+sentence.mkString("\t").toLowerCase+"\t"
-            var word = List("no", "not", "non")     // TODO: Add anti, anti- Anti
-            nodes = node => { if (sentence.exists(x=> word.contains(x))) {
+            var word = List("no", "not", "non", "nt", "n't")     // TODO: Add anti, anti- Anti
+            nodes = node => { if (sentence.exists(x=> word.contains(x.toLowerCase))) {
                     List(("", node))
                 } else {
                     List()
                 }
             }
-            words = nodes => { ("\t" + word.mkString("\t|") + "\t").r }
+            words = nodes => { ("\t" + word.mkString("\t|\t") + "\t").r }
         }
 
         val singleConcept = new SpanAligner(sentence, graph) {
-            concept = "[^-].*"  // so :polarity - doesn't get matched (:op1 "-" still does though)
+            val conceptRegex = "[^-].*".r  // so :polarity - doesn't get matched (:op1 "-" still does thought
+            concept = c => conceptRegex.unapplySeq(getConcept(c)) != None
             nodes = node => {
                 if (alignWord(stemmedSentence, node, wordToSpan) != None) {
                     List(("", node))
@@ -133,7 +165,9 @@ object AlignSpans2 {
         }
 
         val fuzzyConcept = new SpanAligner(sentence, graph) {
-            concept = "[^-].*"  // so :polarity - doesn't get matched (:op1 "-" still does though)
+            val conceptRegex = "[^-].*".r  // so :polarity - doesn't get matched (:op1 "-" still does thought
+            val notMatch = "have-org-role-91|have-rel-role-91"
+            concept = c => ((conceptRegex.unapplySeq(getConcept(c)) != None) && (notMatch.r.unapplySeq(c) == None))
             nodes = node => {
                 if (fuzzyAlign(stemmedSentence, node, wordToSpan) != None) {
                     List(("", node))
@@ -152,15 +186,18 @@ object AlignSpans2 {
         val argOf = new UnalignedConcept(sentence, graph, wordToSpan) { concept="person|thing"; label=":.*-of" } // ARG?-of, instrument-of 
         val personOf = new UnalignedConcept(sentence, graph, wordToSpan) { concept="person"; label=":.*"; num=1 } // Koreans = (person :poss ..)
         val governmentOrg = new UnalignedChild(sentence, graph, wordToSpan) { concept="government-organization"; label=":ARG.*-of" }
-        val polarityChild = new UnalignedChild(sentence, graph, wordToSpan) { concept=".*"; label=":polarity"; words="un.*|in.*|il.*" }  // il.* for illegal // TODO:add anti(-)
+        val polarityChild = new UnalignedChild(sentence, graph, wordToSpan) { concept=".*"; label=":polarity"; words="un.*|in.*|il.*|.*less|.*n't|.*nt" }  // il.* for illegal // TODO:add anti(-)
         val est = new UnalignedChild(sentence, graph, wordToSpan) { concept=".*"; label=":degree"; words=".*est" }
         val er = new UnalignedChild(sentence, graph, wordToSpan) { concept=".*"; label=":degree"; words=".*er" }
         val US = new ConceptAndChildren(sentence, graph) {
-            concept="name";
+            concept = _.matches("name");
             children = Map(":op1" -> "United",
                            ":op2" -> "States")
             words = x => { "\tus\t|\tu[.]\t?s[.]\t".r }
         }
+        val haveRoleArg2 = new UnalignedConcept(sentence, graph, wordToSpan) { concept="have-org-role-91|have-rel-role-91"; label=":ARG2" } // have-org-role-91 or have-rel-role-91 aligned with to ARG2 child
+        val haveOrgRoleArg1 = new UnalignedConcept(sentence, graph, wordToSpan) { concept="have-org-role-91"; label=":ARG1" } // have-org-role-91 aligned with to ARG1 child
+        val wiki = new UnalignedChild(sentence, graph, wordToSpan) { concept=".*"; label=":wiki" }
 
         addAllSpans(namedEntity, graph, wordToSpan, addCoRefs=false)
         addAllSpans(fuzzyNamedEntity, graph, wordToSpan, addCoRefs=false)
@@ -169,18 +206,25 @@ object AlignSpans2 {
         addAllSpans(dateEntity, graph, wordToSpan, addCoRefs=false)
 //        dateEntity.coRef = true
 //        addAllSpans(dateEntity, graph, wordToSpan, addCoRefs=true)
-        addAllSpans(minusPolarity, graph, wordToSpan, addCoRefs=false)
         addAllSpans(singleConcept, graph, wordToSpan, addCoRefs=false)
         addAllSpans(fuzzyConcept, graph, wordToSpan, addCoRefs=false)
         addAllSpans(US, graph, wordToSpan, addCoRefs=false)
+        addAllSpans(namedEntityAcronym, graph, wordToSpan, addCoRefs=false)
         try { updateSpans(namedEntityCollect, graph) } catch { case e : Throwable => Unit }
+        try { updateSpans(namedEntityCollectSingle, graph) } catch { case e : Throwable => Unit }
         try { updateSpans(unalignedEntity, graph) } catch { case e : Throwable => Unit }
+        try { updateSpans(haveRoleArg2, graph) } catch { case e : Throwable => Unit }
+        try { updateSpans(haveOrgRoleArg1, graph) } catch { case e : Throwable => Unit }
         try { updateSpans(quantity, graph) } catch { case e : Throwable => Unit }
         try { updateSpans(argOf, graph) } catch { case e : Throwable => Unit }
         try { updateSpans(personOf, graph) } catch { case e : Throwable => Unit }
         try { updateSpans(governmentOrg, graph) } catch { case e : Throwable => Unit }
+        addAllSpans(minusPolarity, graph, wordToSpan, addCoRefs=false)
         try { updateSpans(polarityChild, graph) } catch { case e : Throwable => Unit }
         try { updateSpans(est, graph) } catch { case e : Throwable => Unit }
+        try { updateSpans(haveRoleArg2, graph) } catch { case e : Throwable => Unit }       //  TODO: maybe remove (since done twice)
+        try { updateSpans(haveOrgRoleArg1, graph) } catch { case e : Throwable => Unit }
+        try { updateSpans(wiki, graph) } catch { case e : Throwable => Unit }
         //try { updateSpans(er, graph) } catch { case e : Throwable => Unit }
         //dateEntities(sentence, graph)
         //namedEntities(sentence, graph)
@@ -203,7 +247,7 @@ object AlignSpans2 {
                       val graph: Graph) {
 
         var tabSentence: String = ""
-        var concept: String = ""
+        var concept: (String => Boolean) = x => false           // function that returns true if the rule might apply
         var nodes: Node => List[(String, Node)] = x => List()   // function that returns the nodes
         var words: (List[(String,Node)]) => Regex = x => "".r   // function that returns the words
         var coRef = false
@@ -219,7 +263,7 @@ object AlignSpans2 {
         def getSpans(node: Node) : List[Span] = {
             logger(2, "Processing node: " + node.concept)
             return node match {
-                case Node(_,_,c,_,_,_,_,_) if ((concept.r.unapplySeq(getConcept(c)) != None) && !node.isAligned(graph)) => {
+                case Node(_,_,c,_,_,_,_,_) if (concept(c) && !node.isAligned(graph)) => {
                     logger(2, "Matched concept regex: " + concept)
                     logger(2, "tabSentence: " + tabSentence)
                     val allNodes = nodes(node)
@@ -250,32 +294,30 @@ object AlignSpans2 {
         }
 
         def update(node: Node) {
+            logger(2, "SpanUpdater concept regex: " + concept)
             logger(2, "SpanUpdater processing node: " + node.concept)
-            node match {
-                case Node(_,_,c,_,_,_,_,_) if ((concept.r.unapplySeq(getConcept(c)) != None) && (!node.isAligned(graph) || !unalignedOnly)) => {
-                    logger(2, "SpanUpdater matched concept regex: " + concept)
-                    val allNodes = nodes(node)
-                    logger(2, "allNodes = "+allNodes.toString)
-                    val updateIndices = if (!allNodes.isEmpty) { spanIndex(allNodes) } else { List() }
-                    logger(2, "updateIndices = "+updateIndices.toString)
-                    val wordSpans = if (!allNodes.isEmpty) { spans(node, updateIndices) } else { List() }
-                    //for ((spanIndex, (nodes, span)) <- updateIndices.zip(allNodes.zip(wordSpans))) {
-                    //    assert(spans == (graph.spans(spanIndex).start, graph.spans(spanIndex).end), "SpanUpdater does not support changing the word span")  // If you want to do this, you must call graph.updateSpan, AND fix up the wordToSpan map
-                    assert(allNodes.size == updateIndices.size && allNodes.size == wordSpans.size, "SpanUpdater: Number of spans do not match")
-                    for (((spanIndex, nodes), span) <- updateIndices.zip(allNodes).zip(wordSpans)) {
-                        if (nodes.size > 0) {
-                            logger(2, "Calling updateSpan( span="+spanIndex.toString+", start="+span._1+", end="+span._2+", nodes="+nodes.map(_._2.id).toString+" )")
-                            updateWordMap(spanIndex, (graph.spans(spanIndex).start, graph.spans(spanIndex).end), span, wordToSpan)
-                            graph.updateSpan(spanIndex, span._1, span._2, nodes.map(_._2.id), graph.spans(spanIndex).coRef, sentence)
-                            //logger(2, "Calling updateSpan( "+spanIndex.toString+", "+nodes.map(_._2.id).toString+" )")
-                            //graph.updateSpan(spanIndex, nodes.map(_._2.id), sentence)
-                        } else {
-                            logger(2, "Deleting span")
-                            graph.updateSpan(spanIndex, 0, 0, List(), false, sentence) // this effectively deletes the span
-                        }
+            if (node.concept.matches(concept) && (!node.isAligned(graph) || !unalignedOnly)) {
+                logger(2, "SpanUpdater matched concept regex: " + concept)
+                val allNodes = nodes(node)
+                logger(2, "allNodes = "+allNodes.toString)
+                val updateIndices = if (!allNodes.isEmpty) { spanIndex(allNodes) } else { List() }
+                logger(2, "updateIndices = "+updateIndices.toString)
+                val wordSpans = if (!allNodes.isEmpty) { spans(node, updateIndices) } else { List() }
+                //for ((spanIndex, (nodes, span)) <- updateIndices.zip(allNodes.zip(wordSpans))) {
+                //    assert(spans == (graph.spans(spanIndex).start, graph.spans(spanIndex).end), "SpanUpdater does not support changing the word span")  // If you want to do this, you must call graph.updateSpan, AND fix up the wordToSpan map
+                assert(allNodes.size == updateIndices.size && allNodes.size == wordSpans.size, "SpanUpdater: Number of spans do not match")
+                for (((spanIndex, nodes), span) <- updateIndices.zip(allNodes).zip(wordSpans)) {
+                    if (nodes.size > 0) {
+                        logger(2, "Calling updateSpan( span="+spanIndex.toString+", start="+span._1+", end="+span._2+", nodes="+nodes.map(_._2.id).toString+" )")
+                        updateWordMap(spanIndex, (graph.spans(spanIndex).start, graph.spans(spanIndex).end), span, wordToSpan)
+                        graph.updateSpan(spanIndex, span._1, span._2, nodes.map(_._2.id), graph.spans(spanIndex).coRef, sentence)
+                        //logger(2, "Calling updateSpan( "+spanIndex.toString+", "+nodes.map(_._2.id).toString+" )")
+                        //graph.updateSpan(spanIndex, nodes.map(_._2.id), sentence)
+                    } else {
+                        logger(2, "Deleting span")
+                        graph.updateSpan(spanIndex, 0, 0, List(), false, sentence) // this effectively deletes the span
                     }
                 }
-            case _ => Unit
             }
         }
     }
@@ -433,7 +475,7 @@ object AlignSpans2 {
         return overlap
     }
 
-    private def addAllSpans(f: AlignSpans2.SpanAligner, graph: Graph, wordToSpan: Array[Option[Int]], addCoRefs: Boolean) {
+    private def addAllSpans(f: AlignSpans3.SpanAligner, graph: Graph, wordToSpan: Array[Option[Int]], addCoRefs: Boolean) {
         def add(node: Node) {
             var added = false
             for (span <- f.getSpans(node)) {
@@ -449,7 +491,7 @@ object AlignSpans2 {
         graph.doRecursive(add)
     }
 
-    private def updateSpans(f: AlignSpans2.SpanUpdater, graph: Graph) {
+    private def updateSpans(f: AlignSpans3.SpanUpdater, graph: Graph) {
         graph.doRecursive(f.update)
     }
 
@@ -565,36 +607,78 @@ object AlignSpans2 {
             case _ => List()
         }
         var exceptions = word.toLowerCase match {
+            case "/" => List("slash")
             case ";" => List("and")
+            case ":" => List("mean")
+            case "!" => List("expressive")
+            case ".." => List("expressive")
+            case "..." => List("expressive")
+            case "...." => List("expressive")
+            case "?" => List("interrogative")
+            case "%" => List("percentage-entity")
             case "able" => List("possible")
+            case "according" => List("say")
             case "also" => List("include")
             case "anti" => List("oppose","counter")
+            case "anyway" => List("have-concession")
+            case "as" => List("same")
             case "because" => List("cause")
             //case "biggest" => List("most")  //anything est
-            case "but" => List("contrast")
+            case "but" => List("contrast","have-concession")
             case "can" => List("possible")
+            case "cant" => List("possible")
+            case "can't" => List("possible")
+            case "choice" => List("choose")
             case "could" => List("possible")
             case "death" => List("die")
             case "French" => List("france","France")
             case "french" => List("france","France")
+            case "have" => List("obligate") // as in "have to submit the assignment"  maybe later in pipeline?
+            case "her" => List("she")
+            case "his" => List("he")
+            case "how" => List("amr-unknown")
             case "if" => List("cause")
             case "illegal" => List("law")
+            case "like" => List("resemble")
+            case "life" => List("live")
             case "may" => List("possible")
+            case "me" => List("i")
+            case "might" => List("possible")
+            case "my" => List("i")
+            case "n't" => List("-")
             case "no" => List("-")
+            case "non" => List("-")
             case "not" => List("-")
-            case "of" => List("include")
-            case "speech" => List("speak")
+            case "of" => List("include","have-manner")
+            case "ok" => List("okay")
+            case "o.k." => List("okay")
+            case "our" => List("we")
+            case "people" => List("person")
+            case "similar" => List("resemble")
+            case "since" => List("cause")
             case "should" => List("recommend")
+            case "so" => List("infer","cause")  // maybe cause should come later in pipeline
+            case "speech" => List("speak")
             case "statement" => List("state")
+            case "them" => List("they")
+            case "these" => List("this")
+            case "those" => List("that") // also "person", see DF-225-195986-849_2659.9
+            case "thought" => List("think")
+            case "thoughts" => List("think")
+            case "uni" => List("university")
+            case "well" => List("good")
+            case "what" => List("amr-unknown")  // also "thing" sometimes
+            case "who" => List("amr-unknown")  // also "thing" sometimes
+            //case "yet" => List("have-concession")  // should come later in pipeline 
             case _ => List()
         }
-        if (word.matches("""(in|un).*""")) {
+        if (word.toLowerCase.matches("""(in|un|ir).*""")) {
             exceptions = word.drop(2) :: exceptions  // should include "-"
         }
-        if (word.matches(""".*er""")) {
+        if (word.toLowerCase.matches(""".*er""")) {
             exceptions = word.dropRight(2) :: exceptions  // should include "-"
         }
-        if (word.matches(""".*ers""")) {
+        if (word.toLowerCase.matches(""".*ers""")) {
             exceptions = word.dropRight(3) :: exceptions  // should include "-"
         }
         //if (word.matches("""^[0-9]*$""")) {

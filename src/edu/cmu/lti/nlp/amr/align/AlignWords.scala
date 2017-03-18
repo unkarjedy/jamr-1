@@ -1,9 +1,6 @@
-package edu.cmu.lti.nlp.amr
+package edu.cmu.lti.nlp.amr.align
 
-import scala.util.matching.Regex
-import scala.collection.mutable.Map
-import scala.collection.mutable.Set
-import scala.collection.mutable.ArrayBuffer
+import edu.cmu.lti.nlp.amr.{Graph, Node, Wordnet, logger, min}
 
 /****************************** Align Words *****************************/
 object AlignWords {
