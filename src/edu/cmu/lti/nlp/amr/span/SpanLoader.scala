@@ -1,6 +1,7 @@
 package edu.cmu.lti.nlp.amr.span
 
-import edu.cmu.lti.nlp.amr.{Graph, Node, logger}
+import edu.cmu.lti.nlp.amr.graph.{Graph, Node}
+import edu.cmu.lti.nlp.amr.{Node, logger}
 
 import scala.collection.mutable.ArrayBuffer
 

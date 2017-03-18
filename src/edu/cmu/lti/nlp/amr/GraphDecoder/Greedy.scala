@@ -1,9 +1,10 @@
 package edu.cmu.lti.nlp.amr.GraphDecoder
 import edu.cmu.lti.nlp.amr._
 import edu.cmu.lti.nlp.amr.FastFeatureVector._
+import edu.cmu.lti.nlp.amr.graph.{Graph, Node}
 
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.{mutable => m, immutable => i}  // m.Set, m.Map, i.Set, i.Map
+import scala.collection.{immutable => i, mutable => m}
 import scala.collection.mutable.PriorityQueue
 
 class Greedy(options: m.Map[Symbol, String], featureNames: List[String], labelSet: Array[(String, Int)]) extends Decoder {

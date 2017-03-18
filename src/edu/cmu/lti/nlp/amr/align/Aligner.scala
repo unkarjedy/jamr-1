@@ -3,7 +3,8 @@ package edu.cmu.lti.nlp.amr.align
 import java.text.SimpleDateFormat
 import java.util.Date
 
-import edu.cmu.lti.nlp.amr.{AMRTrainingData, Corpus, Graph, Source, logger, verbosity}
+import edu.cmu.lti.nlp.amr.graph.Graph
+import edu.cmu.lti.nlp.amr.{AMRTrainingData, Corpus, Source, logger, verbosity}
 
 import scala.collection.mutable.Map
 

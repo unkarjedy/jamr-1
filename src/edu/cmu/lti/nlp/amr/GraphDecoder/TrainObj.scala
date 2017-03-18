@@ -2,7 +2,6 @@ package edu.cmu.lti.nlp.amr.GraphDecoder
 import edu.cmu.lti.nlp.amr._
 import edu.cmu.lti.nlp.amr.Train._
 import edu.cmu.lti.nlp.amr.FastFeatureVector._
-
 import java.io.StringWriter
 import java.io.PrintWriter
 import java.lang.Math.abs
@@ -12,6 +11,9 @@ import java.lang.Math.random
 import java.lang.Math.floor
 import java.lang.Math.min
 import java.lang.Math.max
+
+import edu.cmu.lti.nlp.amr.graph.Graph
+
 import scala.io.Source
 import scala.io.Source.stdin
 import scala.io.Source.fromFile

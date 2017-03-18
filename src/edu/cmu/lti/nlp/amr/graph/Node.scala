@@ -1,7 +1,8 @@
-package edu.cmu.lti.nlp.amr
+package edu.cmu.lti.nlp.amr.graph
 
-import scala.util.matching.Regex
-import scala.collection.mutable.{Map, Set, ArrayBuffer}
+import edu.cmu.lti.nlp.amr.logger
+
+import scala.collection.mutable.{ArrayBuffer, Set}
 
 //case class Var(node: Node, name: String)    // TODO: Remove this? Var is redundant, because the name can be found using node.name (but node.name sometimes can be None, which it should not be)
 

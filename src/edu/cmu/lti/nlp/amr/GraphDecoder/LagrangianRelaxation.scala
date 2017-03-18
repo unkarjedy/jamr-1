@@ -1,7 +1,6 @@
 package edu.cmu.lti.nlp.amr.GraphDecoder
 import edu.cmu.lti.nlp.amr._
 import edu.cmu.lti.nlp.amr.FastFeatureVector._
-
 import java.io.File
 import java.io.FileOutputStream
 import java.io.PrintStream
@@ -15,6 +14,9 @@ import java.lang.Math.floor
 import java.lang.Math.min
 import java.lang.Math.max
 import java.lang.Math.sqrt
+
+import edu.cmu.lti.nlp.amr.graph.{Graph, Node}
+
 import scala.io.Source
 import scala.util.matching.Regex
 import scala.collection.mutable.Map

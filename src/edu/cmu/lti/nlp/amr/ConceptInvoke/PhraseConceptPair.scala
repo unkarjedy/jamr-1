@@ -1,9 +1,10 @@
 package edu.cmu.lti.nlp.amr.ConceptInvoke
 import edu.cmu.lti.nlp.amr._
 import edu.cmu.lti.nlp.amr.BasicFeatureVector._
+import edu.cmu.lti.nlp.amr.graph.Graph
 
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.{mutable => m, immutable => i}
+import scala.collection.{immutable => i, mutable => m}
 
 case class PhraseConceptPair(words: List[String], graphFrag: String, features: FeatureVector, trainingIndices: List[Int] = List()) {
 

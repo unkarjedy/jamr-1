@@ -1,5 +1,7 @@
 package edu.cmu.lti.nlp.amr
 
+import edu.cmu.lti.nlp.amr.graph.Graph
+
 import scala.collection.mutable.Map
 import scala.collection.mutable.Set
 import scala.collection.mutable.ArrayBuffer

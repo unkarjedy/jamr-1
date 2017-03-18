@@ -1,15 +1,17 @@
 package edu.cmu.lti.nlp.amr
 
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.{mutable => m, immutable => i}
+import scala.collection.{immutable => i, mutable => m}
 import java.io.StringWriter
 import java.io.PrintWriter
+
 import scala.io.Source.fromFile
 import java.util.Date
 import java.text.SimpleDateFormat
 
 import edu.cmu.lti.nlp.amr.GraphDecoder._
 import edu.cmu.lti.nlp.amr.ConceptInvoke.PhraseConceptPair
+import edu.cmu.lti.nlp.amr.graph.Graph
 
 /****************************** Driver Program *****************************/
 object AMRParser {

@@ -1,11 +1,11 @@
 package edu.cmu.lti.nlp.amr.GraphDecoder
-import edu.cmu.lti.nlp.amr._  
+import edu.cmu.lti.nlp.amr._
 import edu.cmu.lti.nlp.amr.FastFeatureVector._
+import edu.cmu.lti.nlp.amr.graph.{Graph, Node}
 
 import scala.io.Source.fromFile
-
 import scala.util.matching.Regex
-import scala.collection.mutable.{Map, Set, ArrayBuffer}
+import scala.collection.mutable.{ArrayBuffer, Map, Set}
 import scala.collection.immutable
 
 /**************************** Feature Functions *****************************/

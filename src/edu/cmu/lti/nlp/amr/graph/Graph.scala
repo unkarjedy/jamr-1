@@ -1,14 +1,12 @@
-package edu.cmu.lti.nlp.amr
+package edu.cmu.lti.nlp.amr.graph
 
+import edu.cmu.lti.nlp.amr.logger
 import edu.cmu.lti.nlp.amr.span.{Span, SpanLoader}
 
-import scala.collection.mutable.Map
-import scala.collection.mutable.Set
-import scala.collection.mutable.ArrayBuffer
-import scala.collection.immutable.Queue
 import scala.collection.immutable
+import scala.collection.immutable.Queue
+import scala.collection.mutable.{ArrayBuffer, Map, PriorityQueue, Set}
 import scala.util.parsing.combinator._
-import scala.collection.mutable.PriorityQueue
 
 case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[String, Node], getNodeByName: Map[String, Node]) {
 

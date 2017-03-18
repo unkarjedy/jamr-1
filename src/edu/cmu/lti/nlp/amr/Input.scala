@@ -1,7 +1,9 @@
 package edu.cmu.lti.nlp.amr
 
+import edu.cmu.lti.nlp.amr.graph.Graph
+
 import scala.util.matching.Regex
-import scala.collection.mutable.{Map, Set, ArrayBuffer}
+import scala.collection.mutable.{ArrayBuffer, Map, Set}
 import scala.io.Source.fromFile
 
 case class Input(var graph: Option[Graph],  // var so we can update for the input to stage 2. TODO: maybe should remove?
