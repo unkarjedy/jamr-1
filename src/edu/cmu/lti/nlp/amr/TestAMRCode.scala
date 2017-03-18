@@ -27,7 +27,7 @@ object TestAMRCode {
         if (options.contains('help)) { System.out.println(usage); sys.exit(1) }
 
         if (options.contains('verbosity)) {
-            verbosity = options('verbosity).asInstanceOf[Int]
+            verbosityGlobal = options('verbosity).asInstanceOf[Int]
         }
 
         for (block <- Corpus.getAMRBlocks(io.Source.stdin.getLines())) {

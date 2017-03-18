@@ -1,6 +1,6 @@
 package edu.cmu.lti.nlp.amr.span
 
-import edu.cmu.lti.nlp.amr.{Corpus, Source, logger, verbosity}
+import edu.cmu.lti.nlp.amr.{Corpus, Source, logger, verbosityGlobal}
 
 import scala.collection.mutable.Map
 
@@ -27,9 +27,9 @@ object EvalSpans {
         val options = parseOptions(Map(),args.toList)
         if (options.contains('help)) { System.out.println(usage); sys.exit(1) }
 
-        verbosity = 0
+        verbosityGlobal = 0
         if (options.contains('verbosity)) {
-            verbosity = options('verbosity).asInstanceOf[Int]
+            verbosityGlobal = options('verbosity).asInstanceOf[Int]
         }
 
         var correct = 0.0

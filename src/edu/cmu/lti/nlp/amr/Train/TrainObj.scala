@@ -105,7 +105,7 @@ abstract class TrainObj[FeatureVector <: AbstractFeatureVector](options: Map[Sym
         } catch {
             case e : Throwable => if (options.contains('ignoreParserErrors)) {
                 logger(-1, " ********** THERE WAS AN EXCEPTION IN THE PARSER. *********")
-                if (verbosity >= -1) { e.printStackTrace }
+                if (verbosityGlobal >= -1) { e.printStackTrace }
                 logger(-1, "Continuing. To exit on errors, please run without --ignore-parser-errors")
                 (zeroVector , 0.0)
             } else {

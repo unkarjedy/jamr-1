@@ -31,8 +31,8 @@ package object amr {
     }
 
     implicit def AnnotationToBaseAnnotation[T](a: Annotation[T]) = a.annotations
-    var verbosity = 1
-    def logger(n: Int, s: Any) { if(n<=verbosity) System.err.println(s) }
+    var verbosityGlobal = 1
+    def logger(n: Int, s: Any) { if(n<=verbosityGlobal) System.err.println(s) }
 
 
     /*********** string.splitStr ***********/

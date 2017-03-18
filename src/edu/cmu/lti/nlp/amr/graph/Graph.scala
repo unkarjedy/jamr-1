@@ -97,7 +97,7 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
 
         // Add all the non-coref spans
         for (span <- spans if !span.coRef) {
-            span.nodeIds = addRec(span.amr)._2
+            span.nodeIds = addRec(span.amrNode)._2
         }
 
         // Set the span ids for the coref spans correctly
@@ -401,7 +401,7 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
         val oldToNew = makeIds(root)
         for (span <- spans) {
             span.nodeIds = span.nodeIds.map(x => oldToNew(x))
-            doRecursive(x => x.id = oldToNew.getOrElse(x.id, { logger(0, "WARNING: makeIds can't find span Id: "+x.id); x.id }), span.amr)
+            doRecursive(x => x.id = oldToNew.getOrElse(x.id, { logger(0, "WARNING: makeIds can't find span Id: "+x.id); x.id }), span.amrNode)
         }
     }
 

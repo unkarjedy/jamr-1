@@ -1,7 +1,7 @@
 package edu.cmu.lti.nlp.amr.span
 
 import edu.cmu.lti.nlp.amr.Corpus.splitOnNewline
-import edu.cmu.lti.nlp.amr.{AMRTrainingData, Source, logger, verbosity}
+import edu.cmu.lti.nlp.amr.{AMRTrainingData, Source, logger, verbosityGlobal}
 
 import scala.collection.mutable.Map
 
@@ -28,7 +28,7 @@ object PrintSpans {
 
         val options = parseOptions(Map(),args.toList)
         if (options.contains('verbosity)) {
-            verbosity = options('verbosity).asInstanceOf[Int]
+            verbosityGlobal = options('verbosity).asInstanceOf[Int]
         }
 
         var i = 0
@@ -38,7 +38,7 @@ object PrintSpans {
             System.out.println(b)
             block.loadSpans()
             for ((span, i) <- block.graph.spans.zipWithIndex) {
-                logger(1, "Span "+(i+1).toString+":  "+span.words+" => "+span.amr)
+                logger(1, "Span "+(i+1).toString+":  "+span.words+" => "+span.amrNode)
                 logger(3, "* "+span.format)
             }
             System.out.println()

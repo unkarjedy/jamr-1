@@ -1,57 +1,89 @@
 package edu.cmu.lti.nlp.amr
 
-import scala.util.matching.Regex
+import java.io.{InputStream, PrintStream}
+
+import edu.cmu.lti.nlp.amr.Corpus._
+import edu.cmu.lti.nlp.amr.CorpusTool._
+
 import scala.collection.mutable.Map
-import scala.collection.mutable.Set
-import scala.collection.mutable.ArrayBuffer
 
-import Corpus._
+class CorpusTool(in: InputStream,
+                 out: PrintStream,
+                 tokenizedFileName: String) extends Runnable {
 
-object CorpusTool {
-    val usage = """Usage: scala -classpath . edu.cmu.lti.nlp.amr.CorpusTool < amr_corpus --tokenized tokenized_sentences > new_amr_corpus"""
-    type OptionMap = Map[Symbol, Any]
+  override def run(): Unit = {
+    val tokenizedFileLines = Source.fromFile(tokenizedFileName).getLines.toArray
 
-    def parseOptions(map : OptionMap, list: List[String]) : OptionMap = {
-        def isSwitch(s : String) = (s(0) == '-')
-        list match {
-            case Nil => map
-            case "--tokenized" :: value :: tail =>
-                      parseOptions(map ++ Map('tokenized -> value), tail)
-            case "-v" :: value :: tail =>
-                      parseOptions(map ++ Map('verbosity -> value.toInt), tail)
-            case option :: tail => System.out.println("Error: Unknown option "+option)
-                               sys.exit(1)
+    var amrBlockId = 0
+    val blocks = splitOnNewline(Source.fromInputStream(in).getLines)
+    for (block <- blocks) {
+      if (doesContainSomeAmr(block)) {
+        val split = block.split(AMR_BEGINNING)
+        val extras = split.head
+        val amr = split.tail.mkString("\n(") // needs to contain come AMR
+        out.println(extras)
+        out.println(s"# ::tok ${tokenizedFileLines(amrBlockId)}")
+        out.println(s"($amr\n")
+        amrBlockId += 1
+      } else {
+        out.println(block + "\n")
       }
     }
+  }
+}
 
-    def main(args: Array[String]) {
+object CorpusTool {
+  private val usage =
+    """Usage: scala -classpath . \
+      |edu.cmu.lti.nlp.amr.CorpusTool \
+      |--tokenized tokenized_sentences \
+      |< amr_corpus \
+      |> new_amr_corpus
+      |""".stripMargin
 
-        if (args.length == 0) { System.out.println(usage); sys.exit(1) }
+  type OptionMap = Map[Symbol, Any]
 
-        val options = parseOptions(Map(),args.toList)
-        if (options.contains('verbosity)) {
-            verbosity = options('verbosity).asInstanceOf[Int]
-        }
-        if (!options.contains('tokenized)) {
-            System.err.println("Error: No tokenized file specified")
-            sys.exit(1)
-        }
-
-        val tokenized = Source.fromFile(options('tokenized).asInstanceOf[String]).getLines.toArray
-
-        var i = 0
-        for (block <- splitOnNewline(Source.stdin.getLines)) {
-            if (block.split("\n").exists(_.startsWith("("))) {  // needs to contain come AMR
-                val extras : String = block.split("\n[(]")(0)
-                val amr : String = block.split("\n[(]").tail.mkString("\n(")
-                System.out.println(extras)
-                System.out.println("# ::tok " + tokenized(i))
-                System.out.println("("+amr+"\n")
-                i += 1
-            } else {
-                System.out.println(block+"\n")
-            }
-        }
+  def parseOptions(map: OptionMap, args: List[String]): OptionMap = {
+    args match {
+      case Nil => map
+      case "--tokenized" :: value :: tail => parseOptions(map ++ Map('tokenized -> value), tail)
+      case "-v" :: value :: tail => parseOptions(map ++ Map('verbosity -> value.toInt), tail)
+      case option :: tail =>
+        System.out.println("Error: Unknown option " + option)
+        sys.exit(1)
     }
+  }
+
+  /* Actually this script only reads and writes info, no super logic is presented */
+  def main(args: Array[String]) {
+    validateArgs(args)
+
+    val options = parseOptions(Map(), args.toList)
+    if (options.contains('verbosity)) {
+      verbosityGlobal = options('verbosity).asInstanceOf[Int]
+    }
+    if (!options.contains('tokenized)) {
+      System.err.println("Error: No tokenized file specified")
+      sys.exit(1)
+    }
+
+    val tool = new CorpusTool(System.in,
+                              System.out,
+                              options('tokenized).asInstanceOf[String])
+    tool.run()
+  }
+
+  private def validateArgs(args: Array[String]) = {
+    if (args.length == 0) {
+      System.out.println(usage)
+      sys.exit(1)
+    }
+  }
+  private val AMR_BEGINNING = "\n[(]"
+
+  def doesContainSomeAmr(block: String): Boolean = {
+    block.split("\n").exists(_.startsWith("("))
+  }
+
 }
 

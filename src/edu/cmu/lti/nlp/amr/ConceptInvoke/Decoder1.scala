@@ -86,7 +86,7 @@ class Decoder1(options: m.Map[Symbol, String],
         }
         logger(1, "Decoder1 Spans:")
         for ((span, i) <- graph.spans.sortBy(x => x.words.toLowerCase).zipWithIndex) {
-            logger(1, "Span "+(i+1).toString+":  "+span.words+" => "+span.amr)
+            logger(1, "Span "+(i+1).toString+":  "+span.words+" => "+span.amrNode)
         }
         logger(1, "Decoder1 feats:\n"+feats.toString)
         return DecoderResult(graph, feats, score)

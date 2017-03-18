@@ -29,7 +29,7 @@ object ExtractConceptTable {
 
         val options = parseOptions(m.Map(),args.toList)
         if (options.contains('verbosity)) {
-            verbosity = options('verbosity).toInt
+            verbosityGlobal = options('verbosity).toInt
         }
         if (!options.contains('stage1Features)) {
             System.err.println("Error: no stage1 features specified during concept table extraction"); sys.exit(1)
@@ -58,7 +58,7 @@ object ExtractConceptTable {
             tokenized(i) = block.sentence
             block.loadSpans()
             for (span <- block.graph.spans) {
-                val amr = span.amr.toString.replaceAll(""":op[0-9]*""",":op")
+                val amr = span.amrNode.toString.replaceAll(""":op[0-9]*""", ":op")
                 fragmentCounts(amr) = fragmentCounts.getOrElse(amr,0) + 1
                 for (concept <- span.nodeIds.map(id => block.graph.getNodeById(id).concept)) {
                     singleConceptCounts(concept) = singleConceptCounts.getOrElse(concept,0) + 1

@@ -29,7 +29,7 @@ object TestAMRDisplayCode {
         if (options.contains('help)) { System.out.println(usage); sys.exit(1) }
 
         if (options.contains('verbosity)) {
-            verbosity = options('verbosity).asInstanceOf[Int]
+            verbosityGlobal = options('verbosity).asInstanceOf[Int]
         }
 
         val Block = """((?:\n|.)*)\n(\((?:\n|.)*)""".r  // (?: ) is non-capturing group

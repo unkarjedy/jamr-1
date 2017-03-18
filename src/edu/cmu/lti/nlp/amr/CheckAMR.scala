@@ -29,7 +29,7 @@ object CheckAMR {
 
         val options = parseOptions(Map(),args.toList)
         if (options.contains('verbosity)) {
-            verbosity = options('verbosity).asInstanceOf[Int]
+            verbosityGlobal = options('verbosity).asInstanceOf[Int]
         }
 
         val Block = """((?:\n|.)*)\n(\((?:\n|.)*)""".r  // (?: ) is non-capturing group

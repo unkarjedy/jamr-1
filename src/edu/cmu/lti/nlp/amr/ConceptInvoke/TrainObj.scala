@@ -67,7 +67,7 @@ class TrainObj(val options : m.Map[Symbol, String]) extends edu.cmu.lti.nlp.amr.
         val oracleConcepts : i.Set[(Int, Int, String)] = oracleGraph.nodes.map(x => (spanStart(x), spanEnd(x), x.concept)).toSet
         val oracleSpans : i.Map[(Int,Int), String] = oracleGraph.nodes.filter(_.spans.size != 0).map(x => {
             val span = oracleGraph.spans(x.spans(0))
-            ((span.start, span.end), normalizeFrag(span.amr.toString))
+            ((span.start, span.end), normalizeFrag(span.amrNode.toString))
             }).toMap
         val oracleStart : i.Map[Int, (Int, String)] = oracleSpans.map(x => (x._1._1, (x._1._2, x._2)))
         val oracleEdges : i.Set[(Int, Int, String, String, String)] = oracleGraph.edges.map(x => (spanStart(x._1), spanEnd(x._1), x._1.concept, x._2, x._3.concept)).toSet // x._1.spans(0) = x._3.spans(0) because in same fragment
@@ -174,8 +174,8 @@ class TrainObj(val options : m.Map[Symbol, String]) extends edu.cmu.lti.nlp.amr.
     def evalDev(options: m.Map[Symbol, String], pass: Int, weights: FeatureVector) {
         if (options.contains('trainingDev)) {
         logger(-1, "Decoding dev...")
-        val verbosity_save = verbosity  // TODO: could also just change the logging stream (add a var for the logging stream in amr.logger, and change it)
-        verbosity = java.lang.Integer.MIN_VALUE     // Like Double.NEGATIVE_INFINITY, but for integers
+        val verbosity_save = verbosityGlobal  // TODO: could also just change the logging stream (add a var for the logging stream in amr.logger, and change it)
+        verbosityGlobal = java.lang.Integer.MIN_VALUE     // Like Double.NEGATIVE_INFINITY, but for integers
         //try {
         val devDecode = options('trainingOutputFile)+".iter"+pass.toString+".decode_dev"
         val dev = options('trainingDev) // assumes .aligned, .aligned.no_opN, .snt, .tok, .snt.deps, .snt.IllinoisNER
@@ -210,26 +210,26 @@ class TrainObj(val options : m.Map[Symbol, String]) extends edu.cmu.lti.nlp.amr.
             val oracleGraph = (new Input(amrData, dependencies(i), oracle = true, index = i)).graph.get
 
             for (span <- stage1Result.graph.spans) {
-                if (oracleGraph.spans.count(x => x.start == span.start && x.end == span.end && x.amr.toString == span.amr.toString) > 0) {
+                if (oracleGraph.spans.count(x => x.start == span.start && x.end == span.end && x.amrNode.toString == span.amrNode.toString) > 0) {
                     spanF1.correct += 1
                 } else {
                     if (oracleGraph.spans.count(x => x.start == span.start && x.end == span.end) > 0) {
-                        file.println("Incorrect span: "+span.words+" => "+span.amr)
+                        file.println("Incorrect span: "+span.words+" => "+span.amrNode)
                     } else {
-                        file.println("Extra span: "+span.words+" => "+span.amr)
+                        file.println("Extra span: "+span.words+" => "+span.amrNode)
                     }
                 }
             }
             for (span <- oracleGraph.spans) {
-                if (stage1Result.graph.spans.count(x => x.start == span.start && x.end == span.end && x.amr.toString == span.amr.toString) == 0) {
-                    file.println("Missing span: "+span.words+" => "+span.amr)
+                if (stage1Result.graph.spans.count(x => x.start == span.start && x.end == span.end && x.amrNode.toString == span.amrNode.toString) == 0) {
+                    file.println("Missing span: "+span.words+" => "+span.amrNode)
                 }
             }
             spanF1.predicted += stage1Result.graph.spans.size
             spanF1.total += oracleGraph.spans.size
             file.println("")
         }
-        verbosity = verbosity_save
+        verbosityGlobal = verbosity_save
         logger(-1, "--- Performance on Dev ---\n" + spanF1.toString + "\n")
         file.println("--- Performance on Dev ---\n" + spanF1.toString)
         file.close

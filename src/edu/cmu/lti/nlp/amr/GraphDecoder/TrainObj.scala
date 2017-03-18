@@ -73,7 +73,7 @@ class TrainObj(val options : Map[Symbol, String]) extends edu.cmu.lti.nlp.amr.Tr
         val result = decoder.decode(getInput(i))
         logger(0, "Spans:")
         for ((span, i) <- result.graph.spans.zipWithIndex) {
-            logger(0, "Span "+(i+1).toString+":  "+span.words+" => "+span.amr)
+            logger(0, "Span "+(i+1).toString+":  "+span.words+" => "+span.amrNode)
         }
         logger(0, "AMR:")
         if (outputFormat.contains("AMR")) {
@@ -142,7 +142,7 @@ class TrainObj(val options : Map[Symbol, String]) extends edu.cmu.lti.nlp.amr.Tr
                                     if (options.contains('stage2TrainPredictedConcepts)) { getInput(i).graph } else { None } )
         logger(0, "Spans:")
         for ((span, i) <- amrdata1.graph.spans.zipWithIndex) {
-            logger(0, "Span "+(i+1).toString+":  "+span.words+" => "+span.amr)
+            logger(0, "Span "+(i+1).toString+":  "+span.words+" => "+span.amrNode)
         }
         logger(0, "AMR:")
         if (outputFormat.contains("AMR")) {

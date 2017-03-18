@@ -104,7 +104,7 @@ scala -classpath . edu.cmu.lti.nlp.amr.AMRParser --stage2-decode -w weights -l l
         if (args.length == 0) { System.out.println(usage); sys.exit(1) }
         val options = parseOptions(m.Map(), args.toList)
 
-        verbosity = options.getOrElse('verbosity, "0").toInt
+        verbosityGlobal = options.getOrElse('verbosity, "0").toInt
 
         val outputFormat = options.getOrElse('outputFormat,"triples").split(",").toList
         // Output format is comma separated list of: nodes,edges,AMR,triples
@@ -226,7 +226,7 @@ scala -classpath . edu.cmu.lti.nlp.amr.AMRParser --stage2-decode -w weights -l l
                 }
                 logger(0, "Spans:")
                 for ((span, i) <- stage1Result.graph.spans.sortBy(x => x.words.toLowerCase).zipWithIndex) {
-                    logger(0, "Span "+span.start.toString+"-"+span.end.toString+":  "+span.words+" => "+span.amr)
+                    logger(0, "Span "+span.start.toString+"-"+span.end.toString+":  "+span.words+" => "+span.amrNode)
                 }
                 logger(0, "")
 
@@ -271,29 +271,29 @@ scala -classpath . edu.cmu.lti.nlp.amr.AMRParser --stage2-decode -w weights -l l
                     val oracle = stage2Oracle.get
                     val oracleResult = oracle.decode(new Input(amrdata2, dependencies(i), oracle = true, index = i))
                     for ((span, i) <- amrdata2.graph.spans.sortBy(x => x.words.toLowerCase).zipWithIndex) {
-                        logger(0, "Oracle Span "+span.start.toString+"-"+span.end.toString+":  "+span.words+" => "+span.amr)
+                        logger(0, "Oracle Span "+span.start.toString+"-"+span.end.toString+":  "+span.words+" => "+span.amrNode)
                     }
                     logger(0, "")
                     if (options.contains('stage1Eval)) {
                         for (span <- stage1Result.graph.spans) {
                             //if (oracleResult.graph.spans.count(x => x.start == span.start && x.end == span.end /*&& x.amr.prettyString(detail = 0, pretty = false).replaceAll("""\([^ ]* :name ""","") == span.amr.prettyString(detail = 0, pretty = false).replaceAll("""\([^ ]* :name ""","")*/) > 0) {
                             //if (oracleResult.graph.spans.count(x => x.start == span.start && x.end == span.end && x.amr.prettyString(detail = 0, pretty = false, vars = m.Set()).replaceAll("""\([^ ]* :name ""","") == span.amr.prettyString(detail = 0, pretty = false, vars = m.Set()).replaceAll("""\([^ ]* :name ""","")) > 0) {
-                            if (oracleResult.graph.spans.count(x => x.start == span.start && x.end == span.end && x.amr.toString == span.amr.toString) > 0) {
+                            if (oracleResult.graph.spans.count(x => x.start == span.start && x.end == span.end && x.amrNode.toString == span.amrNode.toString) > 0) {
                                 spanF1.correct += 1
                             } else {
                                 if (oracleResult.graph.spans.count(x => x.start == span.start && x.end == span.end) > 0) {
-                                    System.out.println("# Incorrect span: "+span.words+" => "+span.amr)
-                                    logger(0, "Incorrect span: "+span.words+" => "+span.amr)
+                                    System.out.println("# Incorrect span: "+span.words+" => "+span.amrNode)
+                                    logger(0, "Incorrect span: "+span.words+" => "+span.amrNode)
                                 } else {
-                                    System.out.println("# Extra span: "+span.words+" => "+span.amr)
-                                    logger(0, "Extra span: "+span.words+" => "+span.amr)
+                                    System.out.println("# Extra span: "+span.words+" => "+span.amrNode)
+                                    logger(0, "Extra span: "+span.words+" => "+span.amrNode)
                                 }
                             }
                         }
                         for (span <- oracleResult.graph.spans) {
-                            if (stage1Result.graph.spans.count(x => x.start == span.start && x.end == span.end && x.amr.toString == span.amr.toString) == 0) {
-                                System.out.println("# Missing span: "+span.words+" => "+span.amr)
-                                logger(0, "Missing span: "+span.words+" => "+span.amr)
+                            if (stage1Result.graph.spans.count(x => x.start == span.start && x.end == span.end && x.amrNode.toString == span.amrNode.toString) == 0) {
+                                System.out.println("# Missing span: "+span.words+" => "+span.amrNode)
+                                logger(0, "Missing span: "+span.words+" => "+span.amrNode)
                             }
                         }
                         spanF1.predicted += stage1Result.graph.spans.size
@@ -363,7 +363,7 @@ scala -classpath . edu.cmu.lti.nlp.amr.AMRParser --stage2-decode -w weights -l l
                         System.out.println(sw.toString.split("\n").map(x => "# "+x).mkString("\n"))
                     }
                     logger(-1, " ********** THERE WAS AN EXCEPTION IN THE PARSER. *********")
-                    if (verbosity >= -1) { e.printStackTrace }
+                    if (verbosityGlobal >= -1) { e.printStackTrace }
                     logger(-1, "Continuing. To exit on errors, please run without --ignore-parser-errors")
                     System.out.println(Graph.AMREmpty.prettyString(detail=1, pretty=true) + '\n')
                 } else {
