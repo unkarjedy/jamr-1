@@ -4,12 +4,10 @@ import java.io.{InputStream, PrintStream}
 import java.text.SimpleDateFormat
 import java.util.Date
 
-import edu.cmu.lti.nlp.amr.align.Aligner.{OptionMap, dateFormat}
 import edu.cmu.lti.nlp.amr.graph.Graph
 import edu.cmu.lti.nlp.amr.utils.JAMRLogger
 import edu.cmu.lti.nlp.amr.{AMRTrainingData, Corpus, CorpusTool, Source}
 
-import scala.collection.mutable
 import scala.collection.mutable.Map
 
 class Aligner(in: InputStream,
@@ -17,7 +15,8 @@ class Aligner(in: InputStream,
               err: PrintStream,
               useAligner3: Boolean,
               verbosity: Int,
-              options: OptionMap) extends Runnable {
+              logUnalignedConcepts: Boolean,
+              printNodesAndEdges: Boolean) extends Runnable {
 
   private val logger = JAMRLogger(err, verbosity)
   private val log = logger.log _
@@ -61,18 +60,18 @@ class Aligner(in: InputStream,
 
         out.println(extraStr)
         if (useAligner3) {
-          println("# ::alignments " + spans.map(_.format()).mkString(" ") + " ::annotator Aligner v.03 ::date " + sdf.format(new Date))
+          out.println("# ::alignments " + spans.map(_.format()).mkString(" ") + " ::annotator Aligner v.03 ::date " + sdf.format(new Date))
         } else {
-          println("# ::alignments " + spans.map(_.format()).mkString(" ") + " ::annotator Aligner v.01 ::date " + sdf.format(new Date))
+          out.println("# ::alignments " + spans.map(_.format()).mkString(" ") + " ::annotator Aligner v.01 ::date " + sdf.format(new Date))
         }
-        if (options.contains('logUnalignedConcepts)) {
+        if (logUnalignedConcepts) {
           amr.logUnalignedNodes()
         }
-        if (options.contains('printNodesAndEdges)) {
-          println(amr.printNodes.map(x => "# ::node\t" + x).mkString("\n"))
-          println(amr.printRoot)
-          if (amr.root.relations.size > 0) {
-            println(amr.printEdges.map(x => "# ::edge\t" + x).mkString("\n"))
+        if (printNodesAndEdges) {
+          out.println(amr.printNodes.map(x => "# ::node\t" + x).mkString("\n"))
+          out.println(amr.printRoot)
+          if (amr.root.relations.nonEmpty) {
+            out.println(amr.printEdges.map(x => "# ::edge\t" + x).mkString("\n"))
           }
         }
         out.println(amrStr + "\n")
@@ -131,7 +130,8 @@ object Aligner {
                               System.err,
                               useAligner3 = !options.contains('aligner1),
                               verbosity,
-                              options)
+                              logUnalignedConcepts = options.contains('logUnalignedConcepts),
+                              printNodesAndEdges = options.contains('printNodesAndEdges))
     aligner.run()
   }
 

@@ -37,24 +37,26 @@ object ExtractConceptTable {
       sys.exit(1)
     }
 
-    val tokenizedSentences = args(0)
-    val runner = new ExtractConceptTable(options, System.in, System.out, System.err)
+    val stage1Features = options('stage1Features).split(",").toList
+    val maxCount = options.getOrElse('maxTrainingInstances, "10000").toInt
+
+    val runner = new ExtractConceptTable(stage1Features, maxCount,
+                                         System.in, System.out, System.err)
     runner.run()
   }
 }
 
-class ExtractConceptTable(options: OptionMap,
+class ExtractConceptTable(stage1Features: List[String],
+                          maxTrainingInstances: Int,
                           in: InputStream,
                           out: PrintStream,
                           err: PrintStream) extends Runnable {
 
   override def run(): Unit = {
-    val stage1Features = options('stage1Features).split(",").toList
-    val maxCount = options.getOrElse('maxTrainingInstances, "10000").toInt
     logger(0, "stage1Features = " + stage1Features)
 
     val inputLines = Corpus.splitOnNewline(Source.fromInputStream(in).getLines).toArray
-    val conceptTable: m.Map[String, List[PhraseConceptPair]] = extract(inputLines, stage1Features, maxCount)
+    val conceptTable: m.Map[String, List[PhraseConceptPair]] = extract(inputLines, stage1Features, maxTrainingInstances)
 
     for {(_, list) <- conceptTable
          concept <- list} {
