@@ -3,6 +3,7 @@ package scripts.train
 import java.io.{FileInputStream, PrintStream}
 
 import edu.cmu.lti.nlp.amr.ExtractConceptTable
+import scripts.preprocess.Preprocessor
 import scripts.utils.context.{Context, ContextBuilder, ContextLike}
 import scripts.utils.logger.SimpleLoggerLike
 import scripts.utils.{AMRParserRunner, FileUtils}
@@ -13,22 +14,21 @@ import scala.io.Source
 case class Train(context: Context) extends ContextLike(context) with Runnable with SimpleLoggerLike {
 
   def run(): Unit = {
-    FileUtils.mkDir(context.modelFolder)
-    FileUtils.saveFiles(context.modelFolder, "old", Seq("RESULTS.txt"))
+    // If there are some results file in model folder, save them it the inner folder
+    FileUtils.saveFiles(baseFolder = context.modelFolder,
+                        saveToFolder = "old",
+                        filesToSave = Seq("RESULTS.txt"))
 
-    //    Preprocessor(context).run()
+    Preprocessor(context).run()
 
     logger.info("Train core start")
-//        createTrainConceptTable()
-//        countWordFrequences()
-//    runTrainingStage1()
-//    runTrainingStage2()
+    createTrainConceptTable()
+    countWordFrequences()
+    runTrainingStage1()
+    runTrainingStage2()
 
-        SmatchEvaluator(context).runSmatchEvaluations()
+    SmatchEvaluator(context).runSmatchEvaluations()
   }
-
-  // If there are some results file in model folder, save them it the inner folder
-
 
   // Analogue of mkConceptTable
   def createTrainConceptTable(): Unit = {

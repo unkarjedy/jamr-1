@@ -49,19 +49,19 @@ case class Node(var id: String, var name: Option[String], concept: String, var r
         prettyString(0, false, Set.empty[String], sorted = true)    // need to be sorted so there is a canonical representation of graph fragments (used in concept ID eval, etc)
     }
 
-    def prettyString(detail: Int, pretty: Boolean, vars: Set[String], sorted: Boolean = false, indent: String = "") : String = {
     // detail = 0: Least detail. No variables names or node ids.
     //             (date-entity :day 5 :month 1 :year 2002)
-
     // detail = 1: Variable names included.
     //             (d / date-entity :day 5 :month 1 :year 2002)
-
     // detail = 2: Nodes are labelled with id.
     //             ([0] d / date-entity :day [0.2] 5 :month [0.1] 1 :year [0.0] 2002)
-
     // Boolean 'pretty' indicates whether to indent into pretty format or leave on one line
-
-        def sort(list: List[(String, Node)]) = if (sorted) { list.sortBy(x => x._1+" "+x._2.concept) } else { list }
+    def prettyString(detail: Int, pretty: Boolean, vars: Set[String], sorted: Boolean = false, indent: String = "") : String = {
+        def sort(list: List[(String, Node)]) = if (sorted) {
+            list.sortBy(x => x._1 + " " + x._2.concept)
+        } else {
+            list
+        }
 
         var nextIndent = ""
         var prefix = "" 

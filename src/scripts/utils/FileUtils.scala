@@ -14,9 +14,9 @@ object FileUtils {
     file
   }
 
-  def saveFiles(baseFolder: String, saveFolder: String, filesToSave: Seq[String]): Unit = {
+  def saveFiles(baseFolder: String, saveToFolder: String, filesToSave: Seq[String]): Unit = {
     val modelPath = new File(baseFolder).toPath
-    val stashPath = FileUtils.mkDir(s"$baseFolder/$saveFolder").toPath
+    val stashPath = FileUtils.mkDir(s"$baseFolder/$saveToFolder").toPath
 
     filesToSave
       .map(modelPath.resolve)

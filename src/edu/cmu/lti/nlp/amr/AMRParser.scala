@@ -368,26 +368,29 @@ object AMRParser {
   private def evaluateStage1(outputSpanF1: F1,
                              stage1Result: BasicFeatureVector.DecoderResult,
                              oracleResult: FastFeatureVector.DecoderResult) = {
+    val problems = m.ArrayBuffer[String]()
     for (span <- stage1Result.graph.spans) {
       if (oracleResult.graph.spans.exists(Span.equalsTo(span))) {
         outputSpanF1.correct += 1
       } else {
         if (oracleResult.graph.spans.exists(Span.equalBorders(span))) {
-          System.out.println("# Incorrect span: " + span.words + " => " + span.amrNode)
-          logger(0, "Incorrect span: " + span.words + " => " + span.amrNode)
+          problems += s"Incorrect span: ${span.words} => ${span.amrNode}"
         } else {
-          System.out.println("# Extra span: " + span.words + " => " + span.amrNode)
-          logger(0, "Extra span: " + span.words + " => " + span.amrNode)
+          problems += s"Extra span: ${span.words} => ${span.amrNode}"
         }
       }
     }
 
     for (span <- oracleResult.graph.spans) {
       if (!stage1Result.graph.spans.exists(Span.equalsTo(span))) {
-        System.out.println("# Missing span: " + span.words + " => " + span.amrNode)
-        logger(0, "Missing span: " + span.words + " => " + span.amrNode)
+        problems += s"Missing span: ${span.words} => ${span.amrNode}"
       }
     }
+
+    problems.foreach(problem => {
+      System.out.println(s"# $problem")
+      logger(0, problem)
+    })
 
     outputSpanF1.predicted += stage1Result.graph.spans.size
     outputSpanF1.total += oracleResult.graph.spans.size
