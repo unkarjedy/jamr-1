@@ -11,10 +11,17 @@ import scala.collection.{mutable => m}
   * or (with no training indices specified)
   * expert ||| (person :ARG1-of expert-41) ||| Count=4 ConceptGivenPhrase=0.3077
   **/
-case class PhraseConceptPair(words: List[String], graphFrag: String, features: FeatureVector, trainingIndices: List[Int] = List()) {
+case class PhraseConceptPair(words: List[String],
+                             graphFrag: String,
+                             features: FeatureVector,
+                             trainingIndices: List[Int] = List()) {
   // TODO: what?
   override def toString: String = {
-    words.mkString(" ") + " ||| " + graphFrag + " ||| " + features.fmap.toList.map(x => x._1 + "=" + x._2).sorted.mkString(" ") + " ||| " + trainingIndices.mkString(" ")
+    val parts = Seq(words.mkString(" "),
+                    graphFrag,
+                    features.fmap.toList.map(x => x._1 + "=" + x._2).sorted.mkString(" "),
+                    trainingIndices.mkString(" "))
+    parts.mkString(" ||| ")
   }
 
   // Be careful, this is a potentially expensive operation
@@ -30,7 +37,7 @@ object PhraseConceptPair {
     val graphFrag = fields(1)
     val FeaturesRegexp = """(.+)=([^=]+)""".r
     val features = m.Map() ++ fields(2).split(" ").map(x => {
-      val FeaturesRegexp(name, v) = x;
+      val FeaturesRegexp(name, v) = x
       (name, v.toDouble)
     }).toMap
 
