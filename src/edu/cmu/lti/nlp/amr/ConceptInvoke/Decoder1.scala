@@ -16,7 +16,7 @@ class Decoder1(options: m.Map[Symbol, String],
 
   def decode(input: Input,
              trainingIndex: Option[Int], // if we are training, index into the training data so we can do leave-one-out decoding
-             cost: (Input, PhraseConceptPair, Int, Int, List[PhraseConceptPair]) => Double): DecoderResult = {
+             extraCost: (Input, PhraseConceptPair, Int, Int, List[PhraseConceptPair]) => Double): DecoderResult = {
 
     logger(1, "\n--- Decoder1 ---\n")
     logger(1, "Sentence: " + input.sentence.mkString(" "))
@@ -29,7 +29,7 @@ class Decoder1(options: m.Map[Symbol, String],
 
     for (wordIdx <- sentence.indices) {
       logger(2, "word = " + sentence(wordIdx))
-      var conceptList = conceptInvoker.invoke(input, wordIdx, trainingIndex)
+      val conceptList = conceptInvoker.invoke(input, wordIdx, trainingIndex)
       //logger(1, "Possible invoked concepts: "+conceptList.map(x => x.toString).mkString("\n"))
 
       // WARNING: the code below assumes that anything in the conceptList will not extend beyond the end of the sentence (and it shouldn't based on the code in Concepts)
@@ -37,15 +37,20 @@ class Decoder1(options: m.Map[Symbol, String],
         if (concept.words.size + wordIdx > sentence.length) {
           logger(0, "WARNING: concept fragment " + concept.graphFrag + " extends beyond the end of the sentence - I will ignore it.")
         } else {
-          val score = (features.localScore(input, concept, wordIdx, wordIdx + concept.words.size)
-            + cost(input, concept, wordIdx, wordIdx + concept.words.size, conceptList))
-          //logger(1, "concept = "+concept.graphFrag)
+          val localScore = features.localScore(input, concept, wordIdx, wordIdx + concept.words.size)
+          val extraCost = extraCost(input, concept, wordIdx, wordIdx + concept.words.size, conceptList)
+          val score = localScore + extraCost
           val endpoint = wordIdx + concept.words.size - 1
-          //logger(2, "score = "+score.toInt)
-          if ((bestState(endpoint).isEmpty && score >= 0) || (bestState(endpoint).isDefined && bestState(endpoint).get.score <= score)) {
-            // we use <= so that earlier concepts (wordIdx.e. ones our conceptTable) have higher priority
+
+          // we use <= so that earlier concepts (wordIdx.e. ones our conceptTable) have higher priority
+          // TODO: NAUMENKO
+          // TODO: upper comment is wierd, you should use < here if you want earlier concepts to have higher priority
+          if ((bestState(endpoint).isEmpty && score >= 0) || bestState(endpoint).exists(_.score <= score)) {
             bestState(endpoint) = Some(State(score, concept, wordIdx))
           }
+
+          //logger(1, "concept = "+concept.graphFrag)
+          //logger(2, "score = "+score.toInt)
         }
       }
     }
@@ -62,15 +67,16 @@ class Decoder1(options: m.Map[Symbol, String],
     while (wordIdx >= 0) {
       if (bestState(wordIdx).isDefined) {
         val State(localScore, concept, backpointer) = bestState(wordIdx).get
-        //logger(1, "Adding concept: "+concept.graphFrag)
         graph.addSpan(sentence, start = backpointer, end = wordIdx + 1, amrStr = concept.graphFrag)
+        //logger(1, "Adding concept: "+concept.graphFrag)
         //logger(1, "words = "+concept.words.mkString(" "))
         val conceptList = conceptInvoker.invoke(input, backpointer, trainingIndex)
-        for (c <- conceptList.filter(x => x.words == concept.words && x.graphFrag == concept.graphFrag)) {
-          // add features for all matching phraseConceptPairs (this is what the Oracle decoder does, so we do the same here)
-          val f = features.localFeatures(input, c, backpointer, backpointer + concept.words.size)
+
+        // add features for all matching phraseConceptPairs (this is what the Oracle decoder does, so we do the same here)
+        for (concept <- conceptList.filter(c => c.words == concept.words && c.graphFrag == concept.graphFrag)) {
+          val f = features.localFeatures(input, concept, backpointer, backpointer + concept.words.size)
           feats += f
-          score += features.weights.dot(f) + cost(input, c, backpointer, backpointer + concept.words.size, conceptList)
+          score += features.weights.dot(f) + extraCost(input, concept, backpointer, backpointer + concept.words.size, conceptList)
           //logger(2, "\nphraseConceptPair: "+concept.toString)
           //logger(1, "feats:\n"+f.toString)
           //logger(1, "score:\n"+score.toString+"\n")
