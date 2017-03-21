@@ -10,60 +10,71 @@ object Concepts {
   val implementedFeatures = m.Set("fromNERTagger", "dateExpression") // TODO: check
 }
 
-// This class contains the code used to invoke concepts.
-// Concepts are invoked by calling the invoke() method, which returns a list of all
-// the concepts that match a span starting at index i of the tokenized sentence.
-/** ***** Concept sources to add *********
-  *- Nominalizations
-  *- List of -er => person ARG0-of things
-  *- Entities from large list
-  * ****************************************/
+/**
+  * This class contains the code used to invoke concepts.
+  * Concepts are invoked by calling the invoke() method, which returns a list of all
+  * the concepts that match a span starting at index i of the tokenized sentence.
+  */
 class Concepts(options: m.Map[Symbol, String],
                phraseConceptPairs: Array[PhraseConceptPair]) {
-  val conceptTable: m.Map[String, List[PhraseConceptPair]] = m.Map() // maps the first word in the phrase to a list of phraseConceptPairs
+
+  // maps the first word in the phrase to a list of phraseConceptPairs
+  val conceptTable: m.Map[String, List[PhraseConceptPair]] = m.Map()
+
   for (pair <- phraseConceptPairs) {
     val word = pair.words.head
     conceptTable(word) = pair :: conceptTable.getOrElse(word, List())
     //logger(2, "conceptTable("+word+") = "+conceptTable(word))
   }
 
-  val conceptSources = options.getOrElse('stage1SyntheticConcepts, "NER,DateExpr").split(",").toSet
-  val implementedConceptSources = m.Set("NER", "DateExpr", "OntoNotes", "NEPassThrough", "PassThrough", "WordNetPassThrough", "WordNetPassThrough", "verbs", "nominalizations")
-  assert(conceptSources.filterNot(x => implementedConceptSources.contains(x)).size == 0,
-         "Unknown conceptSources: " + conceptSources.filterNot(x => implementedConceptSources.contains(x)).toList.mkString(", "))
+  /** ***** Concept sources to add *********
+    *- Nominalizations
+    *- List of -er => person ARG0-of things
+    *- Entities from large list
+    * ****************************************/
+  private val conceptSources = options.getOrElse('stage1SyntheticConcepts, "NER,DateExpr").split(",").toSet
+  private val implementedConceptSources = m.Set("NER", "DateExpr", "OntoNotes", "NEPassThrough", "PassThrough",
+                                                "WordNetPassThrough", "WordNetPassThrough", "verbs", "nominalizations")
+
+  private val unknownConcepts = conceptSources.diff(implementedConceptSources)
+  assert(unknownConcepts.isEmpty, "Unknown conceptSources: " + unknownConcepts.mkString(", "))
 
   private var tokens: Array[String] = Array()
   // stores sentence.drop(i) (used in the dateEntity code to make it more concise)
-  var ontoNotes: m.Set[String] = m.Set()
+  private var ontoNotes: m.Set[String] = m.Set()
   // could be multi-map instead
-  var lemmas: m.Set[String] = m.Set() // TODO: check for lemma in a large morph-analyzed corpus
+  // TODO: check for lemma in a large morph-analyzed corpus
+  private var lemmas: m.Set[String] = m.Set()
 
   if (options.contains('stage1Predicates)) {
-    val Pred = """(.+)-([0-9]+)""".r
+    val PredicateRegexp = """(.+)-([0-9]+)""".r
     for (predicate <- Source.fromFile(options('stage1Predicates)).getLines) {
-      val Pred(verb, sense) = predicate
+      val PredicateRegexp(verb, sense) = predicate
       ontoNotes += verb
     }
   }
 
+  /**
+    * returns a list of all concepts that can be invoke starting at
+    * position wordId in input.sentence (i.e. position wordId in the tokenized input)
+    * Note: none of the concepts returned have spans that go past the end of the sentence
+    */
   def invoke(input: Input, wordId: Int, trainingIndex: Option[Int]): List[PhraseConceptPair] = {
-    // returns a list of all concepts that can be invoke starting at
-    // position i in input.sentence (i.e. position i in the tokenized input)
-    // Note: none of the concepts returned have spans that go past the end of the sentence
     val sentence = input.sentence
-    if (sentence.length <= wordId || wordId < 0) {
+    if (wordId < 0 || wordId >= sentence.length) {
       return List()
     }
 
+    // TODO: is this case insensitive??
     var conceptList = if (options.contains('stage1TrainingLeaveOneOut) && trainingIndex.isDefined) {
-      conceptTable.getOrElse(sentence(wordId), List()).filter(
-        x => x.words == sentence.slice(wordId, wordId + x.words.size).toList && // TODO: is this case insensitive??
-          x.trainingIndices.exists(j => abs(j - trainingIndex.get) > 20) // filter to concepts seen far away
-      ).toList
+      conceptTable.getOrElse(sentence(wordId), List()).filter(conceptPair => {
+        conceptPair.words == sentence.slice(wordId, wordId + conceptPair.words.size).toList &&
+          conceptPair.trainingIndices.exists(j => abs(j - trainingIndex.get) > 20)
+      })
     } else {
-      conceptTable.getOrElse(sentence(wordId), List()).filter(
-        x => x.words == sentence.slice(wordId, wordId + x.words.size).toList // TODO: is this case insensitive??
-      ).toList
+      conceptTable.getOrElse(sentence(wordId), List()).filter(conceptPair => {
+        conceptPair.words == sentence.slice(wordId, wordId + conceptPair.words.size).toList
+      })
     }
 
     if (conceptSources.contains("NER") && options.contains('ner)) {
@@ -76,7 +87,9 @@ class Concepts(options: m.Map[Symbol, String],
     if (conceptSources.contains("DateExpr")) {
       conceptList = dateEntities(input, wordId) ::: conceptList
     }
-    var onlyPassThrough = conceptList.isEmpty // onlyPassThrough indicates the only the pass through rules apply for this span
+
+    // onlyPassThrough indicates the only the pass through rules apply for this span
+    val onlyPassThrough = conceptList.isEmpty
     if (conceptSources.contains("OntoNotes")) {
       conceptList = ontoNotesLookup(input, wordId, onlyPassThrough) ::: conceptList
     }
@@ -118,11 +131,15 @@ class Concepts(options: m.Map[Symbol, String],
 
   def ontoNotesLookup(input: Input, i: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
     val stems = Wordnet.stemmer(input.sentence(i))
-    val concepts = stems.filter(stem => ontoNotes.contains(stem)).map(stem => PhraseConceptPair(
-      List(input.sentence(i)),
-      stem + "-01", // first sense is most common
-      FeatureVector(m.Map("OntoNotes" -> 1.0)),
-      List()))
+    val concepts = stems.filter(stem => ontoNotes.contains(stem)).map(stem => {
+      PhraseConceptPair(
+        List(input.sentence(i)),
+        stem + "-01", // first sense is most common
+        FeatureVector(m.Map("OntoNotes" -> 1.0)),
+        List()
+      )
+    })
+
     if (onlyPassThrough) {
       concepts.foreach(x => x.features.fmap("OntoNotesOnly") = 1.0)
     }
@@ -131,7 +148,7 @@ class Concepts(options: m.Map[Symbol, String],
   }
 
   def NEPassThrough(input: Input, i: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
-    // TOOD: improve this to check if the words were observed other places
+    // TODO: improve this to check if the words were observed other places
     var concepts = List[PhraseConceptPair]()
     for {j <- Range(1, 7)
          if i + j < input.sentence.length
@@ -148,6 +165,7 @@ class Concepts(options: m.Map[Symbol, String],
         FeatureVector(m.Map("NEPassThrough" -> 1.0, "NEPassThrough_len" -> j)),
         List()) :: concepts
     }
+
     if (onlyPassThrough) {
       concepts.foreach(x => x.features.fmap("NEPassThroughOnly") = 1.0)
     }
@@ -155,18 +173,16 @@ class Concepts(options: m.Map[Symbol, String],
     concepts
   }
 
+  private def onlyVal(onlyPassThrough: Boolean) = if (onlyPassThrough) 1 else 0
+
   def passThrough(input: Input, i: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
+    // TODO: improve this regex
     if (input.sentence(i).matches("[A-Za-z0-9]*")) {
-      // TODO: improve this regex
       List(PhraseConceptPair(
         List(input.sentence(i)),
         input.sentence(i),
         FeatureVector(m.Map("PassThrough" -> 1.0,
-                            "PassThroughOnly" -> (if (onlyPassThrough) {
-                              1
-                            } else {
-                              0
-                            }))),
+                            "PassThroughOnly" -> onlyVal(onlyPassThrough))),
         List()))
     } else {
       List()
@@ -182,11 +198,7 @@ class Concepts(options: m.Map[Symbol, String],
         List(word),
         stems.minBy(_.length),
         FeatureVector(m.Map("WordnetPassThrough" -> 1.0,
-                            "WordnetPassThroughOnly" -> (if (onlyPassThrough) {
-                              1
-                            } else {
-                              0
-                            }))),
+                            "WordnetPassThroughOnly" -> onlyVal(onlyPassThrough))),
         List()))
     } else {
       List()
@@ -204,16 +216,13 @@ class Concepts(options: m.Map[Symbol, String],
         stems.minBy(_.length)
       } else {
         word
-      } // TODO: check in large corpus
+      }
+      // TODO: check in large corpus
       concepts = List(PhraseConceptPair(
         List(word),
         stem + "-00", // 00 sense for missing predicates
         FeatureVector(m.Map("AddedVerb" -> 1.0,
-                            "AddedVerbOnly" -> (if (onlyPassThrough) {
-                              1
-                            } else {
-                              0
-                            }))),
+                            "AddedVerbOnly" -> onlyVal(onlyPassThrough))),
         List()))
     }
     concepts
@@ -327,7 +336,7 @@ class Concepts(options: m.Map[Symbol, String],
 
     // 2007-02-27 => (date-entity :day 27 :month 2 :year 2007)
     // 20030106 => (date-entity :day 6 :month 1 :year 2003)
-    val EightDigitDate = ("""(([0-9]?[0-9][0-9]?[0-9])\t?[.-]?\t?([0-9][0-9])\t?[.-]?\t?([0-9][0-9]))(?:\t.*)?""").r // (?: ) non-capturing group
+    val EightDigitDate = """(([0-9]?[0-9][0-9]?[0-9])\t?[.-]?\t?([0-9][0-9])\t?[.-]?\t?([0-9][0-9]))(?:\t.*)?""".r // (?: ) non-capturing group
     if (EightDigitDate.pattern.matcher(string).matches) {
       list += {
         var EightDigitDate(matching, year, month, day) = string
