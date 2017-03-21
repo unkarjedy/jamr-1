@@ -8,11 +8,14 @@ import scala.collection.immutable.Queue
 import scala.collection.mutable.{ArrayBuffer, Map, PriorityQueue, Set}
 import scala.util.parsing.combinator._
 
-case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[String, Node], getNodeByName: Map[String, Node]) {
+case class Graph(var root: Node,
+                 spans: ArrayBuffer[Span],
+                 getNodeById: Map[String, Node],
+                 getNodeByName: Map[String, Node]) {
 
+  // Makes a copy of the graph
+  // Assumes that getNodeById exists and is properly set up (for 'nodes' call)
   def duplicate: Graph = {
-    // Makes a copy of the graph
-    // Assumes that getNodeById exists and is properly set up (for 'nodes' call)
     val getNodeById2: Map[String, Node] = Map()
     for (node <- nodes) {
       val Node(id, name, concept, relations, topologicalOrdering, variableRelations, alignment, spans) = node
@@ -32,23 +35,24 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
     } else {
       Graph.Null().root // sometimes the root is not in the spans (if it is from automatically aligned spans, and the root is not in the spans).  So we create a dummy root which will get re-assigned later
     }
-    return Graph(root2, spans.clone, getNodeById2, getNodeByName2)
+
+    Graph(root2, spans.clone, getNodeById2, getNodeByName2)
   }
 
   def clearUnalignedNodes() {
     // Removes all the unaligned nodes from the graph (useful for oracle experiments)
     // WARNING: this can break the topological ordering
     for (node <- nodes) {
-      if (node.spans.size == 0) {
+      if (node.spans.isEmpty) {
         // Unaligned
         logger(1, "clearUnalignedNodes():  removing unaligned node: " + node.name + " / " + node.concept)
         getNodeById -= node.id
-        if (node.name != None) {
+        if (node.name.isDefined) {
           getNodeByName -= node.name.get
         }
       }
     }
-    if (nodes.filter(x => !getNodeById.contains(x.id)).size > 0) {
+    if (nodes.exists(x => !getNodeById.contains(x.id))) {
       logger(1, "clearUnalignedNodes() deleting relations to the following nodes: " + nodes.filter(x => !getNodeById.contains(x.id)).toList)
     }
     for (node <- nodes) {
@@ -84,10 +88,10 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
       var relations = List[(String, Node)]()
       getNodeById(currentId.toString) = node2
       node.name match {
-        case Some(name) => {
+        case Some(name) =>
           getNodeByName(name) = node2
-        }
-        case None => Unit
+        case None =>
+          Unit
       }
       currentId += 1
       for ((relation, child) <- node.topologicalOrdering) {
@@ -96,7 +100,7 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
         relations = (relation, result._1) :: relations
       }
       node2.relations = relations.reverse
-      return (node2, ids)
+      (node2, ids)
     }
 
     // Add all the non-coref spans
@@ -117,15 +121,16 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
         span.nodeIds = span.nodeIds ::: List(id)
       }
     }
-    return this
+
+    this
   }
 
   def printDisconnected(): String = {
     var result: List[String] = List()
-    for (node <- nodes if node.name != None) {
+    for (node <- nodes if node.name.isDefined) {
       result = "(" + node.name.get + " / " + node.concept :: result
       for ((relation, child) <- node.children) {
-        if (child.name != None) {
+        if (child.name.isDefined) {
           result = "  " + relation + " " + child.name.get :: result
         } else {
           result = "  " + relation + " " + child.concept :: result
@@ -136,16 +141,17 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
       }
       result = result.head + ")" :: result.tail
     }
-    return result.reverse.mkString("\n")
+
+    result.reverse.mkString("\n")
   }
 
   def printRoot: String = {
-    return "# ::root\t" + root.id + "\t" + root.concept
+    "# ::root\t" + root.id + "\t" + root.concept
   }
 
   def printNodes: List[String] = {
     nodes.map(node =>
-                if (node.spans.size > 0) {
+                if (node.spans.nonEmpty) {
                   //node.id + "\t" + node.nameStr + "\t" + node.concept + "\t" + spans(node.spans(0)).start + "-" + spans(node.spans(0)).end
                   node.id + "\t" + node.concept + "\t" + spans(node.spans(0)).start + "-" + spans(node.spans(0)).end
                 } else {
@@ -166,7 +172,8 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
       //edges = node1.id + "\t" + node1.concept + "\t" + relation + "\t" + node2.id + "\t" + node2.concept :: edges
       edges = node1.concept + "\t" + relation + "\t" + node2.concept + "\t" + node1.id + "\t" + node2.id + "\t" :: edges
     }
-    return edges.sorted
+
+    edges.sorted
   }
 
   def printTriples(detail: Int,
@@ -200,12 +207,13 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
     } else {
       triples = triples.reverse
     }
-    return triples.map(x => x._1 + x._2).mkString("\n")
+
+    triples.map(x => x._1 + x._2).mkString("\n")
   }
 
-  def loadSpans(spanStr: String, sentence: Array[String]) = {
+  def loadSpans(spanStr: String, sentence: Array[String]): Unit = {
     //assert(spans.size == 0, "This code does not support re-loading the spans")
-    if (spans.size != 0) {
+    if (spans.nonEmpty) {
       logger(-1, "WARNING: Reloading the spans") // used to be assert
       spans.clear
       for (node <- nodes) {
@@ -270,7 +278,7 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
     }
     logger(2, "nodeIds = " + nodeIds.reverse)
     logger(2, "concepts = " + nodeIds.reverse.map(x => getNodeById(x).concept))
-    spans += Span(start, end, nodeIds, sentence.slice(start, end).mkString(" "), nodes2.reverse.apply(0), coRef = false)
+    spans += Span(start, end, nodeIds, sentence.slice(start, end).mkString(" "), nodes2.reverse.head, coRef = false)
   }
 
   def addSpan(start: Int, end: Int, nodeIds: List[String], coRef: Boolean, sentence: Array[String]) {
@@ -318,11 +326,11 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
   }
 
   def nodes: Iterator[Node] = {
-    return getNodeById.valuesIterator
+    getNodeById.valuesIterator
   }
 
   def nodesByName: Iterator[Node] = {
-    return getNodeByName.valuesIterator
+    getNodeByName.valuesIterator
   }
 
   def edges: List[(Node, String, Node)] = {
@@ -333,7 +341,7 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
     } {
       edges = (node1, label, node2) :: edges
     }
-    return edges
+    edges
   }
 
   def doRecursive(f: (Node) => Unit, node: Node = root) {
@@ -362,11 +370,11 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
 
     val incomingEdges: Map[String, List[(String, String)]] = inverseRelations
     // these edges have -of added
-    val visited: Set[String] = Set()
+    val visited = Set[String]()
     val queue = new PriorityQueue[(Double, Int, String, String, String)]()(Ordering.by(x => -x._1)) // smallest first
     queue.enqueue((0.0, 0, "ROOT", "ROOT", root.id))
     var stable = 0.0 // so we remove nodes in the order we put them into the queue
-    while (!queue.isEmpty) {
+    while (queue.nonEmpty) {
       val (weight, depth, parentId, relation, id): (Double, Int, String, String, String) = queue.dequeue
       val node = getNodeById(id)
       if (!visited.contains(id)) {
@@ -378,7 +386,7 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
           logger(2, "Adding edge: " + parent.concept + " " + relation + " " + node.concept)
           parent.topologicalOrdering = parent.topologicalOrdering ::: List((relation, node))
         }
-        for ((relation, child) <- node.relations.sortBy(x => x._1).filter(x => x._2.id != parentId)) {
+        for ((relation, child) <- node.relations.filter(x => x._2.id != parentId).sortBy(x => x._1)) {
           assert(!relation.endsWith("-of"), "There's a problem. We called normalizeInverse relations, but a relation still ends with -of.")
           queue.enqueue((depth + stable, depth + 1, id, relation, child.id))
           stable += .00001 // so we remove nodes in the order we put them in
@@ -418,7 +426,8 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
     for (span <- spans) {
       span.nodeIds = span.nodeIds.map(x => oldToNew(x))
       doRecursive(x => x.id = oldToNew.getOrElse(x.id, {
-        logger(0, "WARNING: makeIds can't find span Id: " + x.id); x.id
+        logger(0, "WARNING: makeIds can't find span Id: " + x.id)
+        x.id
       }), span.amrNode)
     }
   }
@@ -434,7 +443,7 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
     for (((label, child), i) <- node.topologicalOrdering.zipWithIndex) {
       oldIdToNewId ++= makeIds(child, id ::: List(i))
     }
-    return oldIdToNewId
+    oldIdToNewId
   }
 
   private def makeVariables(node: Node = root) {
@@ -444,7 +453,7 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
     if (node == root) {
       getNodeByName.clear
     }
-    if (node.name != None) {
+    if (node.name.isDefined) {
       var Some(name) = node.name
       if (getNodeByName.contains(name)) {
         logger(-2, "WARNING: Duplicate variable name in annotation: " + name)
@@ -474,6 +483,7 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
         case x => x
       }
     }
+
     for (node <- nodes) {
       node.relations = node.relations.map(x => (normalize(x._1), x._2))
       node.topologicalOrdering = node.topologicalOrdering.map(x => (normalize(x._1), x._2))
@@ -481,14 +491,14 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
     }
   }
 
-  def normalizeInverseRelations {
+  def normalizeInverseRelations(): Unit = {
     // For all nodes, converts all inverse relations in node.relations into forward relations for the corresponding nodes
     // Optionally converts 'domain' edge into opposite direction 'mod' edge (see normalizeMod static member in Graph object)
     for (node1 <- nodes) {
       for ((rel, node2) <- node1.relations) {
         if (rel.endsWith("-of")) {
           // Add non-inverse relation to node2
-          node2.relations = node2.relations ::: List((rel.slice(0, rel.size - 3), node1))
+          node2.relations = node2.relations ::: List((rel.slice(0, rel.length - 3), node1))
         }
         if (rel.matches(":domain") && Graph.normalizeMod) {
           node2.relations = node2.relations ::: List((":mod", node1))
@@ -507,13 +517,13 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
     for {node1 <- nodes
          (rel, node2) <- node1.relations} {
       val relation = if (rel.endsWith("-of")) {
-        rel.slice(0, rel.size - 3)
+        rel.slice(0, rel.length - 3)
       } else {
         rel + "-of"
       }
       inverse(node2.id) = (relation, node1.id) :: inverse.getOrElse(node2.id, List())
     }
-    return inverse
+    inverse
   }
 
   private def unifyVariables(node: Node = root) {
@@ -527,7 +537,7 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
     node.variableRelations = List[(String, Node)]()
     for ((relation, child) <- relations) {
       // figure out if child is a node, or a variable
-      if (child.name == None && getNodeByName.contains(child.concept) && child.topologicalOrdering.size == 0) {
+      if (child.name.isEmpty && getNodeByName.contains(child.concept) && child.topologicalOrdering.isEmpty) {
         // variables have concepts, but no names
         // child is a variable
         val varName = child.concept
@@ -577,7 +587,7 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
           // this is a variable relation
           logger(3, "Adding " + child.id + " as a variable of " + node.id)
           //assert(child.name != None, "Attempting to create a variable relation to a node without a variable name")
-          if (child.name != None) {
+          if (child.name.isDefined) {
             val Some(name) = child.name
             assert(getNodeByName.contains(name), "Variable name not in getNodeByName")
             node.variableRelations = (relation, child) :: node.variableRelations
@@ -593,10 +603,10 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
           node.topologicalOrdering = (relation, child) :: node.topologicalOrdering
         }
       }
-    } while (queue.size != 0)
+    } while (queue.nonEmpty)
     logger(2, "visited = " + visited)
     assert(visited.size == nodes.size, "The graph does not span the nodes")
-    normalizeModOfAndDomainOf
+    normalizeModOfAndDomainOf()
   }
 
   private def getNextVariableName(c: Char): String = {
@@ -613,9 +623,9 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
 
   def addVariableToSpans() {
     for (span <- spans) {
-      if (span.nodeIds.map(x => getNodeById(x)).filter(x => x.name != None).size == 0) {
+      if (span.nodeIds.map(getNodeById).count(_.name.isDefined) == 0) {
         logger(1, "WARNING: Adding a variable name to a span")
-        val node = getNodeById(span.nodeIds(0))
+        val node = getNodeById(span.nodeIds.head)
         var c: Char = node.concept(0)
         if (c == '"') {
           c = node.concept(1)
@@ -630,11 +640,11 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
 
   def prettyString(detail: Int, pretty: Boolean, indent: String = ""): String = {
     val vars = Set.empty[String] // set of variable names to be sure to keep in output
-    if (root.name != None) {
+    if (root.name.isDefined) {
       vars += root.name.get
     }
     doRecursive(node => vars ++= node.variableRelations.map(_._2.name.get)) // if it's in variableRelations, it should have a variable name
-    return indent + root.prettyString(detail, pretty, vars, indent = indent)
+    indent + root.prettyString(detail, pretty, vars, indent = indent)
   }
 
   def assignOpN() {
@@ -643,14 +653,16 @@ case class Graph(var root: Node, spans: ArrayBuffer[Span], getNodeById: Map[Stri
       // hack to get the right order  TODO: should do this properly
       val opNs = ops.sortBy(x => spans(x._2.spans(0)).start).zipWithIndex.map(x => (x._1._1 + (x._2 + 1).toString, x._1._2))
       val notOps = relations.filter(x => x._1 != ":op")
-      return opNs ::: notOps
+      opNs ::: notOps
     }
+
     def numberOpsVar(relations: List[(String, Node)]): List[(String, Node)] = {
       val ops = relations.filter(x => x._1 == ":op")
       val opNs = ops.sortBy(x => spans(x._2.spans(0)).start).zipWithIndex.map(x => (x._1._1 + (x._2 + 1).toString, x._1._2))
       val notOps = relations.filter(x => x._1 != ":op")
-      return opNs ::: notOps
+      opNs ::: notOps
     }
+
     for (node <- nodes) {
       node.relations = numberOps(node.relations)
       node.topologicalOrdering = numberOps(node.topologicalOrdering)
@@ -665,8 +677,11 @@ object Graph {
     // Parser implementation for parsing AMR graphs
     def variable: Parser[String] =
       """[^ \t\n()":]+""".r
+
     def concept: Parser[String] = """([^ \t\n()":]+)|("[^"]+")""".r
+
     def relationStr: Parser[String] = """:[^ \t\n()":]+""".r
+
     // The expressions below work correctly, but are more strict
     //def variable : Parser[String] = """[a-zA-Z0-9]+""".r
     //def concept : Parser[String] = """([a-zA-Z0-9.-]+)|("[^"]+")""".r
@@ -674,16 +689,21 @@ object Graph {
     def relation: Parser[(String, Node)] = relationStr ~ node ^^ {
       case relationStr ~ node => (relationStr, node)
     }
+
     def relations: Parser[List[(String, Node)]] = rep(relation)
+
     def internalNode: Parser[Node] = "(" ~> variable ~ "/" ~ concept ~ relations <~ ")" ^^ {
       case variable ~ "/" ~ concept ~ relations => Node("", Some(variable), concept, List[(String, Node)](), relations, List[(String, Node)](), None, ArrayBuffer[Int]())
     }
+
     def unnamedInternalNode: Parser[Node] = "(" ~> concept ~ relations <~ ")" ^^ {
       case concept ~ relations => Node("", None, concept, List[(String, Node)](), relations, List[(String, Node)](), None, ArrayBuffer[Int]())
     }
+
     def terminalNode: Parser[Node] = concept ^^ {
       case concept => Node("", None, concept, List[(String, Node)](), List[(String, Node)](), List[(String, Node)](), None, ArrayBuffer[Int]())
     }
+
     def node: Parser[Node] = terminalNode | internalNode | unnamedInternalNode
   }
 
@@ -697,16 +717,18 @@ object Graph {
 
   def parse(amr: String): Graph = {
     val graph = parser.parseAll(parser.node, amr) match {
-      case parser.Success(e, _) => Graph(e, new ArrayBuffer[Span](), Map[String, Node](), Map[String, Node]())
-      case _ => {
-        assert(false, "Could not parse AMR: " + amr); Graph.AMREmpty
-      }
+      case parser.Success(root: Node, _) =>
+        Graph(root, new ArrayBuffer[Span](), Map[String, Node](), Map[String, Node]())
+      case _ =>
+        assert(false, "Could not parse AMR: " + amr)
+        Graph.AMREmpty()
     }
     graph.makeVariables()
     graph.unifyVariables()
     graph.makeIds()
     graph.normalizeModOfAndDomainOf()
-    return graph
+
+    graph
   }
 
   var normalizeMod = false // static option to normalize 'domain' to 'mod' in normalizeInverseRelations
@@ -714,13 +736,23 @@ object Graph {
   //def empty() : Graph = { val g = parse("(n / none)"); g.getNodeById.clear; g.getNodeByName.clear; return g }
   //def null() : Graph = { parse("(n / null)") }
   def AMREmpty(): Graph = {
-    val g = parse("(a / amr-empty)"); g.loadSpans("0-1|0", Array()); return g
+    val g = parse("(a / amr-empty)")
+    g.loadSpans("0-1|0", Array())
+    g
   }
+
   def Null(): Graph = {
-    val g = parse("(n / null)"); g.getNodeById.clear; g.getNodeByName.clear; return g
+    val g = parse("(n / null)")
+    g.getNodeById.clear
+    g.getNodeByName.clear
+    g
   }
+
   def empty(): Graph = {
-    val g = parse("(n / null)"); g.getNodeById.clear; g.getNodeByName.clear; return g
+    val g = parse("(n / null)")
+    g.getNodeById.clear
+    g.getNodeByName.clear
+    g
   }
 }
 
