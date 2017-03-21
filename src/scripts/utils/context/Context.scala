@@ -18,7 +18,7 @@ class Context {
   var stage1Weights: String = _
   var stage2Weights: String = _
 
-  var stage1Features: String = _
+  var stage1Features: List[String] = _
 
   // JAMR Parser common options
   var parserOptions: String = _

@@ -6,9 +6,9 @@ import edu.cmu.lti.nlp.amr.AMRParser
 
 object AMRParserRunner {
 
-  private var stdIn = System.in
-  private var stdOut = System.out
-  private var stdErr = System.err
+  private val stdIn = System.in
+  private val stdOut = System.out
+  private val stdErr = System.err
 
   def run(argsString: String,
           inFilePath: String,
