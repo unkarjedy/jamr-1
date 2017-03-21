@@ -7,9 +7,11 @@ abstract class Decoder(featureNames: List[String],
                        phraseCounts: Map[List[String], Int]) {
   val features = new Features(featureNames, phraseCounts) // maybe this should be renamed ff?
 
+  type ExtraCostFunc = (Input, PhraseConceptPair, Int, Int, List[PhraseConceptPair]) => Double
+  private val zeroExtraCost: ExtraCostFunc = (i, c, s, p, l) => 0
+
   def decode(input: Input,
              trainingIndex: Option[Int],
-             cost: (Input, PhraseConceptPair, Int, Int, List[PhraseConceptPair]) => Double = (i, c, s, p, l) => 0
-            ): DecoderResult
+             extraCost: ExtraCostFunc = zeroExtraCost): DecoderResult
 }
 
