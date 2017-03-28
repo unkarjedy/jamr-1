@@ -21,6 +21,8 @@ class Features(featureNames: List[String], phraseCounts: i.Map[List[String], Int
     *   - Fragtype and POS tag
     *   - Concept bigrams, and concepts w/o sense tags
     *   - Edge type to named entity
+    *   TODO: NAUMENKO
+    *   TODO: Concept fragment source
     * ******************/
   private val featureFunctionsMap = m.Map[String, FeatureFunction](
     "bias" -> ffBias,

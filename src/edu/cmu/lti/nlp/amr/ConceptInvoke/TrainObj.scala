@@ -45,7 +45,15 @@ class TrainObj(val options: m.Map[Symbol, String]) extends edu.cmu.lti.nlp.amr.T
 
   // TODO: move this into a cost augmented decoder object? Yes
   def costAugmented(input: Input, oracleInput: Input, trainingIndex: Option[Int], scale: Double): DecoderResult = {
-     decoder.decode(input, trainingIndex, costFunction(oracleInput, scale, options.getOrElse('trainingPrecRecallTradeoff, ".5").toDouble))
+     decoder.decode(
+       input,
+       trainingIndex,
+       costFunction(
+         oracleInput,
+         scale,
+         options.getOrElse('trainingPrecRecallTradeoff, ".5").toDouble
+       )
+     )
   }
 
   private def costFunction(oracle: Input, scale: Double, prec: Double): (Input, PhraseConceptPair, Int, Int, List[PhraseConceptPair]) => Double = {

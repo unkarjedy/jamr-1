@@ -34,7 +34,7 @@ class Concepts(options: m.Map[Symbol, String],
     * ****************************************/
   private val conceptSources = options.getOrElse('stage1SyntheticConcepts, "NER,DateExpr").split(",").toSet
   private val implementedConceptSources = m.Set("NER", "DateExpr", "OntoNotes", "NEPassThrough", "PassThrough",
-                                                "WordNetPassThrough", "WordNetPassThrough", "verbs", "nominalizations")
+                                                "WordNetPassThrough", "verbs", "nominalizations")
 
   private val unknownConcepts = conceptSources.diff(implementedConceptSources)
   assert(unknownConcepts.isEmpty, "Unknown conceptSources: " + unknownConcepts.mkString(", "))

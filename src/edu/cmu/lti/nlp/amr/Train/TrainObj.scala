@@ -90,9 +90,9 @@ abstract class TrainObj[FeatureVector <: AbstractFeatureVector](options: Map[Sym
       } else if (loss == "Infinite_Ramp" || loss == "Latent_Hinge") {
         // I called this Latent_Hinge earlier
         val (grad, score) = costAugmented(i, weights, scale)
-        val o = costAugmented(i, weights, -100000000000.0)
-        grad -= o._1
-        (grad, score - o._2)
+        val (costFeats, costScore) = costAugmented(i, weights, -100000000000.0)
+        grad -= costFeats
+        (grad, score - costScore)
       } else {
         System.err.println("Error: unknown training loss " + loss)
         sys.exit(1)
