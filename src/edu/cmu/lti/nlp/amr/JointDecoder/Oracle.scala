@@ -12,7 +12,7 @@ class Oracle(options: m.Map[Symbol, String],
              stage2FeatureNames: List[String],
              labelSet: Array[(String, Int)]) extends Decoder {
 
-    val weights = FeatureVector(labelSet.map(_._1))
+    val weights = FeatureVectorFast(labelSet.map(_._1))
     val stage1Features = new ConceptInvoke.Features(stage1FeatureNames, phraseCounts)
     val stage2Features = new GraphDecoder.Features(options, stage2FeatureNames, weights.labelset)
 
@@ -24,7 +24,7 @@ class Oracle(options: m.Map[Symbol, String],
         assert(input.graph != None, "Error: oracle joint decoder was not given a graph")
         val graph = input.graph.get
         val sentence = input.sentence
-        var feats = new FeatureVector(weights.labelset)
+        var feats = new FeatureVectorFast(weights.labelset)
 
         // ConceptInvoke features
         for (span <- graph.spans) {

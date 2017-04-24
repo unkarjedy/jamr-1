@@ -3,6 +3,7 @@ package edu.cmu.lti.nlp.amr.GraphDecoder
 import java.io.{PrintWriter, StringWriter}
 
 import edu.cmu.lti.nlp.amr.FastFeatureVector._
+import edu.cmu.lti.nlp.amr.Train.TrainObjAbstract
 import edu.cmu.lti.nlp.amr._
 import edu.cmu.lti.nlp.amr.graph.Graph
 
@@ -11,7 +12,7 @@ import scala.io.Source
 import scala.io.Source.fromFile
 import scala.sys.process._
 
-class TrainObj(val options: Map[Symbol, String]) extends edu.cmu.lti.nlp.amr.Train.TrainObj[FeatureVector](options) {
+class TrainObjGraph(val options: Map[Symbol, String]) extends TrainObjAbstract(classOf[FeatureVectorFast], options) {
 
   //val decoder = Decoder(options)
   //val oracle = new Oracle(getFeatures(options))
@@ -20,8 +21,8 @@ class TrainObj(val options: Map[Symbol, String]) extends edu.cmu.lti.nlp.amr.Tra
   //oracle.features.weights = weights
   //costAug.features.weights = weights
 
-  def zeroVector: FeatureVector = {
-    new FeatureVector(getLabelset(options).map(_._1))
+  def zeroVector: FeatureVectorFast = {
+    new FeatureVectorFast(getLabelset(options).map(_._1))
   }
 
   val input: Array[Input] = Input.loadInputfiles(options)
@@ -49,7 +50,7 @@ class TrainObj(val options: Map[Symbol, String]) extends edu.cmu.lti.nlp.amr.Tra
     }
   }
 
-  def decode(i: Int, weights: FeatureVector): (FeatureVector, Double, String) = {
+  def decode(i: Int, weights: FeatureVectorFast): (FeatureVectorFast, Double, String) = {
     val decoder = Decoder(options)
     decoder.features.weights = weights
     val amrdata = AMRTrainingData(training(i))
@@ -83,7 +84,7 @@ class TrainObj(val options: Map[Symbol, String]) extends edu.cmu.lti.nlp.amr.Tra
     (result.features, result.score, amrString)
   }
 
-  def oracle(i: Int, weights: FeatureVector): (FeatureVector, Double) = {
+  def oracle(i: Int, weights: FeatureVectorFast): (FeatureVectorFast, Double) = {
     val oracle = Oracle(options)
     oracle.features.weights = weights
     val amrdata = AMRTrainingData(training(i))
@@ -107,7 +108,7 @@ class TrainObj(val options: Map[Symbol, String]) extends edu.cmu.lti.nlp.amr.Tra
     (result.features, result.score)
   }
 
-  def costAugmented(i: Int, weights: FeatureVector, scale: Double): (FeatureVector, Double) = {
+  def costAugmented(i: Int, weights: FeatureVectorFast, scale: Double): (FeatureVectorFast, Double) = {
     if (scale >= 0) {
       logger(0, "CostAug Prediction")
     } else {
@@ -158,14 +159,14 @@ class TrainObj(val options: Map[Symbol, String]) extends edu.cmu.lti.nlp.amr.Tra
   }
 
   def train() {
-    val initialWeights = FeatureVector(getLabelset(options).map(x => x._1))
+    val initialWeights = FeatureVectorFast(getLabelset(options).map(x => x._1))
     if (options.contains('trainingInitialWeights)) {
       initialWeights.read(Source.fromFile(options('trainingInitialWeights)).getLines)
     }
     train(initialWeights)
   }
 
-  def evalDev(options: Map[Symbol, String], pass: Int, weights: FeatureVector) {
+  def evalDev(options: Map[Symbol, String], pass: Int, weights: FeatureVectorFast) {
     val devDecode = options('trainingOutputFile) + ".iter" + pass.toString + ".decode_dev"
     val dev = options('trainingDev) // assumes .aligned, .aligned.no_opN, .snt, .tok, .snt.deps, .snt.IllinoisNER
 

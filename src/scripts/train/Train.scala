@@ -21,13 +21,13 @@ case class Train(context: Context) extends ContextLike(context) with Runnable wi
     logger.addHandler(new FileHandler(s"${context.modelFolder}/Train.log"))
 
     time(logger) {
-      Preprocessor(context).run()
+//      Preprocessor(context).run()
     }
 
     logger.info("Make concept table")
     time(logger) {
       createTrainConceptTable()
-      countWordFrequences()
+//      countWordFrequences()
     }
 
     logger.info("Train core start")
@@ -46,8 +46,6 @@ case class Train(context: Context) extends ContextLike(context) with Runnable wi
 
   // Analogue of mkConceptTable
   def createTrainConceptTable(): Unit = {
-    logger.info("Create concept table")
-
     //val in = new FileInputStream(s"$inputFileName.aligned.concepts_no_opN")
     val in = new FileInputStream(s"${context.trainFile}.aligned")
     val out = new PrintStream(s"${context.modelFolder}/conceptTable.train")

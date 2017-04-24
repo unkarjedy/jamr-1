@@ -1,6 +1,6 @@
 package edu.cmu.lti.nlp.amr.FastFeatureVector
 import edu.cmu.lti.nlp.amr._
-import edu.cmu.lti.nlp.amr.Train.AbstractFeatureVector
+import edu.cmu.lti.nlp.amr.Train.FeatureVectorAbstract
 
 import scala.math.sqrt
 //import scala.collection.mutable.Map
@@ -9,10 +9,10 @@ import scala.collection.immutable
 import scala.io.Source
 
 case class fastmul(scale: Double, v: List[(String, ValuesList)])
-case class fastmul2(scale: Double, v: FeatureVector)
+case class fastmul2(scale: Double, v: FeatureVectorFast)
 // Trickyness below: see p.452 Programming Scala 2nd Edition (21.5 Implicit conversions)
 case class FastMulAssoc(x: Double) { def * (v: List[(String, ValuesList)]) = fastmul(x, v) }
-case class FastMul2Assoc(x: Double) { def * (v: FeatureVector) = fastmul2(x, v) }
+case class FastMul2Assoc(x: Double) { def * (v: FeatureVectorFast) = fastmul2(x, v) }
 //    def * (v: FeatureVector) = fastmul(x, v.fmap.view.toList.map(x => (x._1, ValuesList(x._2.unconjoined, x._2.conjoined.view.toList.map(y => Conjoined(y._1, y._2)).toList))).toList) // TODO: change this to be faster
 
 // In package.scala:
@@ -26,14 +26,12 @@ case class ValuesMap(var unconjoined: Double, var conjoined: Map[Int, Double]) {
     override def clone : ValuesMap = { ValuesMap(unconjoined, conjoined.clone) }
 }
 object ValuesMap {
-    def apply() : ValuesMap = {
-        return ValuesMap(0.0, Map())
-    }
+    def apply(): ValuesMap = ValuesMap(0.0, Map())
 }
 case class Value(unconjoined: Double, conjoined: Double)
 
-case class FeatureVector(labelset : Array[String],
-                         fmap : Map[String, ValuesMap] = Map()) extends AbstractFeatureVector(labelset) {
+case class FeatureVectorFast(labelset : Array[String],
+                             fmap : Map[String, ValuesMap] = Map()) extends FeatureVectorAbstract(labelset) {
     val labelToIndex : Map[String, Int] = Map()
     labelToIndex ++= labelset.zipWithIndex
     def iterateOverLabels(v: List[(String, Value)], f: (Conjoined) => Unit) {
@@ -46,7 +44,7 @@ case class FeatureVector(labelset : Array[String],
                 conjoinedTotal(myValue._1) += myValue._2 * value.conjoined
             }
         }
-        for (i <- 0 until labelset.size) {
+        for (i <- labelset.indices) {
             f(Conjoined(i, unconjoinedTotal + conjoinedTotal(i)))
         }
     }
@@ -63,13 +61,13 @@ case class FeatureVector(labelset : Array[String],
                 conjoinedTotal(myValue._1) += myValue._2 * value.conjoined
             }
         }
-        for (i <- 0 until labelset.size) {
+        for (i <- labelset.indices) {
             f(Conjoined(i, unconjoinedTotal + conjoinedTotal(i)))
         }
     }
     def apply(feature: String, label: Option[Int]) : Double = {
         if (fmap.contains(feature)) {
-            if (label == None) {
+            if (label.isEmpty) {
                 fmap(feature).unconjoined
             } else {
                 fmap(feature).conjoined.getOrElse(label.get, 0.0)
@@ -90,8 +88,8 @@ case class FeatureVector(labelset : Array[String],
             }
         }
     }
-    def += (v: AbstractFeatureVector) = { this.+=(v.asInstanceOf[FeatureVector]) }
-    def -= (v: AbstractFeatureVector) = { this.-=(v.asInstanceOf[FeatureVector]) }
+    def += (v: FeatureVectorAbstract) = { this.+=(v.asInstanceOf[FeatureVectorFast]) }
+    def -= (v: FeatureVectorAbstract) = { this.-=(v.asInstanceOf[FeatureVectorFast]) }
     def += (v: List[(String, ValuesList)]) = updateList(v, (feat, label, x, y) => x + y)
     def -= (v: List[(String, ValuesList)]) = updateList(v, (feat, label, x, y) => x - y)
     def updateAll(f: (String, Option[Int], Double) => Double) {
@@ -105,7 +103,7 @@ case class FeatureVector(labelset : Array[String],
         }
     }
     def *= (scalar : Double) = updateAll((feat, label, x) => scalar * x)
-    def update(v: FeatureVector, f: (String, Option[Int], Double, Double) => Double) {
+    def update(v: FeatureVectorFast, f: (String, Option[Int], Double, Double) => Double) {
         for ((feature, values) <- v.fmap) {
             val myValues : ValuesMap = fmap.getOrElseUpdate(feature, ValuesMap(0.0, Map()))
             myValues.unconjoined = f(feature, None, myValues.unconjoined, values.unconjoined)
@@ -117,9 +115,9 @@ case class FeatureVector(labelset : Array[String],
             }
         }
     }
-    def += (v: FeatureVector) = update(v, (feat, label, x, y) => x + y)
-    def -= (v: FeatureVector) = update(v, (feat, label, x, y) => x - y)
-    def updateAll(v: FeatureVector, f: (String, Option[Int], Double, Double) => Double) { // TODO: maybe this should be f: (String, ValuesMap, ValuesMap) => ValuesMap.  And also have + and - for ValuesMap objects
+    def += (v: FeatureVectorFast) = update(v, (feat, label, x, y) => x + y)
+    def -= (v: FeatureVectorFast) = update(v, (feat, label, x, y) => x - y)
+    def updateAll(v: FeatureVectorFast, f: (String, Option[Int], Double, Double) => Double) { // TODO: maybe this should be f: (String, ValuesMap, ValuesMap) => ValuesMap.  And also have + and - for ValuesMap objects
         for ((feature, myValues) <- fmap) {
             val values = v.fmap.getOrElse(feature, ValuesMap())
             myValues.unconjoined = f(feature, None, myValues.unconjoined, values.unconjoined)
@@ -131,8 +129,8 @@ case class FeatureVector(labelset : Array[String],
             }
         }
     }
-    def dotDivide(v: FeatureVector) = updateAll(v, (feat, label, x, y) => { if ( y==0.0 ) { x } else {  x / y } } )
-    def updateWithFilter(v: FeatureVector, featNames: Iterator[String], f: (String, Option[Int], Double, Double) => Double) {
+    def dotDivide(v: FeatureVectorFast) = updateAll(v, (feat, label, x, y) => { if ( y==0.0 ) { x } else {  x / y } } )
+    def updateWithFilter(v: FeatureVectorFast, featNames: Iterator[String], f: (String, Option[Int], Double, Double) => Double) {
         for (feature <- featNames) {
             val values = v.fmap.getOrElse(feature, ValuesMap())
             val myValues : ValuesMap = fmap.getOrElseUpdate(feature, ValuesMap())
@@ -145,8 +143,8 @@ case class FeatureVector(labelset : Array[String],
             }
         }
     }
-    def plusEqFilter(v: FeatureVector, featNames: Iterator[String]) = updateWithFilter(v, featNames, (feat, label, x, y) => x + y)
-    def minusEqFilter(v: FeatureVector, featNames: Iterator[String]) = updateWithFilter(v, featNames, (feat, label, x, y) => x - y)
+    def plusEqFilter(v: FeatureVectorFast, featNames: Iterator[String]) = updateWithFilter(v, featNames, (feat, label, x, y) => x + y)
+    def minusEqFilter(v: FeatureVectorFast, featNames: Iterator[String]) = updateWithFilter(v, featNames, (feat, label, x, y) => x - y)
     def dot(v: List[(String, ValuesList)]) : Double = {
         var total : Double = 0.0
         for ((feature, value) <- v if fmap.contains(feature)) {
@@ -158,7 +156,7 @@ case class FeatureVector(labelset : Array[String],
         }
         return total
     }
-    def dot(v: FeatureVector) : Double = {
+    def dot(v: FeatureVectorFast) : Double = {
         //logger(1, "Computing dot product")
         var total : Double = 0.0
         for ((feature, value) <- v.fmap if fmap.contains(feature)) {
@@ -214,7 +212,7 @@ case class FeatureVector(labelset : Array[String],
         val iterator = Source.fromFile(filename).getLines()
         read(iterator)
     }
-    def toFile(filename: String) {
+    def toFile(filename: String): Unit = {
         val file = new java.io.PrintWriter(new java.io.File(filename), "UTF-8")
         try { file.print(this.toString) }
         finally { file.close }
@@ -254,8 +252,8 @@ case class FeatureVector(labelset : Array[String],
             fmap(feature).conjoined(label.get) = value
         }
     }
-    def filter(f: (String) => Boolean) : FeatureVector = {
-        val newvec = FeatureVector(labelset)
+    def filter(f: (String) => Boolean) : FeatureVectorFast = {
+        val newvec = FeatureVectorFast(labelset)
         for ((feature, value) <- fmap if f(feature)) {
             newvec.fmap(feature) = value.clone
         }
@@ -263,11 +261,11 @@ case class FeatureVector(labelset : Array[String],
     }
 }
 
-object FeatureVector {
-    def apply(labelset: Array[String], v: List[(String, ValuesList)]) : FeatureVector = {
-        val newvec = FeatureVector(labelset)
+object FeatureVectorFast {
+    def apply(labelset: Array[String], v: List[(String, ValuesList)]) : FeatureVectorFast = {
+        val newvec = FeatureVectorFast(labelset)
         newvec += v
-        return newvec
+        newvec
     }
 }
 

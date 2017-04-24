@@ -153,13 +153,13 @@ object AMRParser {
       }
 
       if (options.contains('stage1Train)) {
-        val stage1 = new ConceptInvoke.TrainObj(options)
-        stage1.train
+        val stage1 = new ConceptInvoke.TrainObjConcept(options)
+        stage1.train()
       }
 
       if (options.contains('stage2Train)) {
-        val stage2 = new GraphDecoder.TrainObj(options)
-        stage2.train
+        val stage2 = new GraphDecoder.TrainObjGraph(options)
+        stage2.train()
       }
     }
 

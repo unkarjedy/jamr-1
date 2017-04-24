@@ -2,7 +2,7 @@ package edu.cmu.lti.nlp.amr.Train
 
 import scala.collection.mutable.Map
 
-abstract class Optimizer[FeatureVector <: AbstractFeatureVector] {
+abstract class Optimizer[FeatureVector <: FeatureVectorAbstract] {
     def learnParameters(gradient: (Int, FeatureVector) => (FeatureVector, Double),
                         initialWeights: FeatureVector,
                         trainingSize: Int,

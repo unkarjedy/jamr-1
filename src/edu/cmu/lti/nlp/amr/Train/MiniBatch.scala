@@ -19,7 +19,7 @@ import scala.math.sqrt
 import scala.collection.parallel._
 import scala.concurrent.forkjoin.ForkJoinPool
 
-class MiniBatch[FeatureVector <: AbstractFeatureVector](optimizer: Optimizer[FeatureVector], miniBatchSize: Int, numThreads: Int) extends Optimizer[FeatureVector] {
+class MiniBatch[FeatureVector <: FeatureVectorAbstract](optimizer: Optimizer[FeatureVector], miniBatchSize: Int, numThreads: Int) extends Optimizer[FeatureVector] {
     def learnParameters(gradient: (Option[Int], Int, FeatureVector) => (FeatureVector, Double),
                         initialWeights: FeatureVector,
                         trainingSize: Int,

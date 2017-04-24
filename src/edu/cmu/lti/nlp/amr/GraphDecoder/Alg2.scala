@@ -103,7 +103,7 @@ class Alg2(options: Map[Symbol, String], featureNames: List[String], labelSet: A
         def getSet(nodeIndex : Int) : Set[Int] = { setArray(set(nodeIndex)) }
 
         var score = 0.0
-        var feats = new FeatureVector(features.weights.labelset)
+        var feats = new FeatureVectorFast(features.weights.labelset)
         def addEdge(node1: Node, index1: Int, node2: Node, index2: Int, label: String, weight: Double, addRelation: Boolean = true) {
             if (!node1.relations.exists(x => ((x._1 == label) && (x._2.id == node2.id))) || !addRelation) { // Prevent adding an edge twice
                 //logger(0, "Adding edge ("+node1.concept+", "+label +", "+node2.concept + ") with weight "+weight.toString)

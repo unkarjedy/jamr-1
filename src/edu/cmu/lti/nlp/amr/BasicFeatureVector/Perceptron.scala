@@ -5,13 +5,13 @@ import edu.cmu.lti.nlp.amr.Train._
 /******************************** Perceptron Training **********************************/
 
 object Perceptron {
-    def learnParameters(decoder: Int => FeatureVector,
-                        oracle: Int => FeatureVector,
-                        weights: FeatureVector,
+    def learnParameters(decoder: Int => FeatureVectorBasic,
+                        oracle: Int => FeatureVectorBasic,
+                        weights: FeatureVectorBasic,
                         trainingSize: Int,
                         passes: Int,
-                        avg: Boolean) : FeatureVector = {
-        var avg_weights = FeatureVector()
+                        avg: Boolean) : FeatureVectorBasic = {
+        var avg_weights = FeatureVectorBasic()
         val permutations = Range(0, trainingSize).permutations
         var corpus = permutations.next
         for (i <- Range(1,passes+1)) {

@@ -12,7 +12,7 @@ class Oracle(options: Map[Symbol, String], featureNames: List[String], labelSet:
     def decode(input: Input) : DecoderResult = {
         features.input = input
         val graph = input.graph.get
-        var feats = new FeatureVector(labelSet)
+        var feats = new FeatureVectorFast(labelSet)
 
         for { node1 <- graph.nodes
               (label, node2) <- node1.relations } {

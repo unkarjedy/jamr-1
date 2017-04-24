@@ -24,7 +24,7 @@ class Oracle(options: m.Map[Symbol, String],
         val graph = input.graph.get
         val sentence = input.sentence
         var score = 0.0
-        val feats = new FeatureVector()
+        val feats = new FeatureVectorBasic()
 
         logger(1, "\n--- Oracle Decoder ---\n")
         for ((span, i) <- graph.spans.sortBy(x => x.words.toLowerCase).zipWithIndex) {

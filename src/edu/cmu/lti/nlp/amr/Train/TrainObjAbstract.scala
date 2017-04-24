@@ -1,31 +1,19 @@
 package edu.cmu.lti.nlp.amr.Train
 
-import edu.cmu.lti.nlp.amr.BasicFeatureVector.SSGD
-import edu.cmu.lti.nlp.amr.FastFeatureVector.Adagrad
+import edu.cmu.lti.nlp.amr.BasicFeatureVector.{AdagradBasic, FeatureVectorBasic, SSGDBasic}
+import edu.cmu.lti.nlp.amr.FastFeatureVector.{AdagradFast, FeatureVectorFast, SSGDFast}
 import edu.cmu.lti.nlp.amr._
 
 import scala.collection.mutable.Map
 
-abstract class TrainObj[FeatureVector <: AbstractFeatureVector](options: Map[Symbol, String]) {
+abstract class TrainObjAbstract[FeatureVector <: FeatureVectorAbstract](
+                                                                         featureVectorClass: Class[_ >: FeatureVector],
+                                                                         options: Map[Symbol, String]
+                                                                       ) {
   if (options.contains('trainingSaveInterval) && !options.contains('trainingOutputFile)) {
     System.err.println("Error: trainingSaveInterval specified but output weights filename given")
     sys.exit(1)
   }
-
-  def decode(i: Int, weights: FeatureVector): (FeatureVector, Double, String)
-
-  def oracle(i: Int, weights: FeatureVector): (FeatureVector, Double)
-
-  def costAugmented(i: Int, weights: FeatureVector, scale: Double): (FeatureVector, Double)
-
-  def train(): Unit
-
-  def evalDev(options: Map[Symbol, String], pass: Int, weights: FeatureVector): Unit
-
-  def zeroVector: FeatureVector
-
-  def trainingSize: Int
-
 
   ////////////////// Default Options ////////////////
   options('trainingPasses) = options.getOrElse('trainingPasses, "20")
@@ -33,31 +21,42 @@ abstract class TrainObj[FeatureVector <: AbstractFeatureVector](options: Map[Sym
   options('trainingL2RegularizerStrength) = options.getOrElse('trainingL2RegularizerStrength, "0.0")
   options('trainingWarmStartSaveInterval) = options.getOrElse('trainingWarmStartSaveInterval, "200")
 
-
   ////////////////// Training Setup ////////////////
   private val loss = options.getOrElse('trainingLoss, "Perceptron")
+  private val numThreads = options.getOrElse('numThreads, "4").toInt
 
-  var optimizer: Optimizer[FeatureVector] = {
-    val result = options.getOrElse('trainingOptimizer, "Adagrad") match {
-      case "SSGD" => new SSGD()
-      case "Adagrad" => new Adagrad()
+  private var optimizer: Optimizer[FeatureVector] = {
+    val method = options.getOrElse('trainingOptimizer, "Adagrad")
+
+    val FVBasic = classOf[FeatureVectorBasic]
+    val FVFast= classOf[FeatureVectorFast]
+    val result = (method, featureVectorClass) match {
+      case ("Adagrad", FVBasic) => new AdagradBasic()
+      case ("Adagrad", FVFast) => new AdagradFast()
+      case ("SSGD", FVBasic) => new SSGDBasic()
+      case ("SSGD", FVFast) => new SSGDFast()
       case x =>
         System.err.println("Error: unknown training optimizer " + x)
         sys.exit(1)
     }
 
-    // no actual conversion proceeded for FeatureVector cause it is a generic type
-    // it is needed just for compiler
+    // no actual conversion proceeded for FeatureVector cause it is a generic type, it is needed just for compiler
     result.asInstanceOf[Optimizer[FeatureVector]]
   }
 
-  private val numThreads = options.getOrElse('numThreads, "4").toInt
   if (options.getOrElse('trainingMiniBatchSize, "1").toInt > 1) {
     optimizer = new MiniBatch(optimizer, options('trainingMiniBatchSize).toInt, numThreads)
   }
 
-  /////////////////////////////////////////////////
+  def decode(i: Int, weights: FeatureVector): (FeatureVector, Double, String)
+  def oracle(i: Int, weights: FeatureVector): (FeatureVector, Double)
+  def costAugmented(i: Int, weights: FeatureVector, scale: Double): (FeatureVector, Double)
+  def train(): Unit
+  def evalDev(options: Map[Symbol, String], pass: Int, weights: FeatureVector): Unit
+  def zeroVector: FeatureVector
+  def trainingSize: Int
 
+  /////////////////////////////////////////////////
   def gradient(i: Int, weights: FeatureVector): (FeatureVector, Double) = {
     val scale = options.getOrElse('trainingCostScale, "1.0").toDouble
     try {

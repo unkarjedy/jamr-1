@@ -25,7 +25,7 @@ object Features {
 }
 
 class Features(options: mutable.Map[Symbol, String], private var myFeatureNames: List[String], labelSet: Array[String]) {
-  var weights = FeatureVector(labelSet: Array[String])
+  var weights = FeatureVectorFast(labelSet: Array[String])
   // TODO: maybe weights should be passed in to the constructor
   private var inputSave: Input = _
   private var graph: Graph = _

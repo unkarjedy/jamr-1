@@ -35,7 +35,7 @@ class CostAugmented(val decoder: Decoder, costScale: Double, precRecTradeoff: Do
                                        decoder.features.featureNames,   // "CostAugEdgeId" and "rootCostAug" already in featureNames
                                        decoder.features.weights.labelset)
         val oracle = oracleDecoder.decode(input)
-        val addCost = new FeatureVector(oracle.features.labelset)
+        val addCost = new FeatureVectorFast(oracle.features.labelset)
         var edgeFeatures : List[(String, ValuesList)] = List()
         for { node1 <- input.graph.get.nodes
               node2 <- input.graph.get.nodes

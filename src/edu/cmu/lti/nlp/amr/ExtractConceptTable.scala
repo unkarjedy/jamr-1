@@ -103,10 +103,10 @@ class ExtractConceptTable(stage1Features: List[String],
               trainingIndices = List()
             }
             phraseConceptPairCount += 1
-            phraseConceptPairs(key) = (PhraseConceptPair(words, amr, FeatureVector(), trainingIndices), phraseConceptPairCount, trainingInstanceCount)
+            phraseConceptPairs(key) = (PhraseConceptPair(words, amr, FeatureVectorBasic(), trainingIndices), phraseConceptPairCount, trainingInstanceCount)
           } else {
             // Could extract more features here
-            phraseConceptPairs(key) = (PhraseConceptPair(words, amr, FeatureVector(), List(idx)), 1, 1)
+            phraseConceptPairs(key) = (PhraseConceptPair(words, amr, FeatureVectorBasic(), List(idx)), 1, 1)
           }
         }
         idx += 1
@@ -136,24 +136,24 @@ class ExtractConceptTable(stage1Features: List[String],
          phraseConceptPair <- list} {
       val count = phraseConceptPairs((phraseConceptPair.words, phraseConceptPair.graphFrag))._2.toDouble
       if (featureNames.contains("corpusIndicator")) {
-        phraseConceptPair.features += FeatureVector(m.Map("corpus" -> 1.0))
+        phraseConceptPair.features += FeatureVectorBasic(m.Map("corpus" -> 1.0))
       }
       if (featureNames.contains("corpusLength")) {
-        phraseConceptPair.features += FeatureVector(m.Map("corpus_len" -> phraseConceptPair.words.size))
+        phraseConceptPair.features += FeatureVectorBasic(m.Map("corpus_len" -> phraseConceptPair.words.size))
       }
       if (featureNames.contains("count")) {
-        phraseConceptPair.features += FeatureVector(m.Map("N" -> count))
+        phraseConceptPair.features += FeatureVectorBasic(m.Map("N" -> count))
       }
       if (featureNames.contains("logPrConcept")) {
         for (node <- phraseConceptPair.graph.nodes) {
-          phraseConceptPair.features += FeatureVector(m.Map("logPrConcept" -> log(singleConceptCounts(node.concept) / totalConcepts)))
+          phraseConceptPair.features += FeatureVectorBasic(m.Map("logPrConcept" -> log(singleConceptCounts(node.concept) / totalConcepts)))
         }
       }
       if (featureNames.contains("conceptGivenPhrase")) {
-        phraseConceptPair.features += FeatureVector(m.Map("c|p" -> log(count / phraseCounts(phraseConceptPair.words).toDouble)))
+        phraseConceptPair.features += FeatureVectorBasic(m.Map("c|p" -> log(count / phraseCounts(phraseConceptPair.words).toDouble)))
       }
       if (featureNames.contains("phraseGivenConcept")) {
-        phraseConceptPair.features += FeatureVector(m.Map("p|c" -> log(count / fragmentCounts(phraseConceptPair.graphFrag).toDouble)))
+        phraseConceptPair.features += FeatureVectorBasic(m.Map("p|c" -> log(count / fragmentCounts(phraseConceptPair.graphFrag).toDouble)))
       }
     }
 

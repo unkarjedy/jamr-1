@@ -303,6 +303,34 @@ case class SpansAlignerWrapper3(logger: JAMRLogger) {
 
   }
 
+  private def addAllSpans(f: SpanAligner3, graph: Graph, wordToSpan: Array[Option[Int]], addCoRefs: Boolean) {
+    def add(node: Node) {
+      var added = false
+      for (span <- f.getSpans(node)) {
+        if (!overlap(span, graph, wordToSpan) && (!added || addCoRefs) || (span.coRef && addCoRefs)) {
+          added = true
+          graph.addSpan(span)
+          for (i <- Range(span.start, span.end)) {
+            wordToSpan(i) = Some(graph.spans.size - 1)
+          }
+        }
+      }
+    }
+    graph.doRecursive(add)
+  }
+
+  private def updateSpansSafe(f: SpanUpdater3, graph: Graph): Unit = {
+    try {
+      updateSpans(f, graph)
+    } catch {
+      case e: Throwable => Unit
+    }
+  }
+
+  private def updateSpans(f: SpanUpdater3, graph: Graph) {
+    graph.doRecursive(f.update)
+  }
+
   class SpanAligner3(val sentence: Array[String],
                      val graph: Graph) {
     var tabSentence: String = ""
@@ -553,35 +581,6 @@ case class SpansAlignerWrapper3(logger: JAMRLogger) {
     }
     overlap
   }
-
-  private def addAllSpans(f: SpanAligner3, graph: Graph, wordToSpan: Array[Option[Int]], addCoRefs: Boolean) {
-    def add(node: Node) {
-      var added = false
-      for (span <- f.getSpans(node)) {
-        if (!overlap(span, graph, wordToSpan) && (!added || addCoRefs) || (span.coRef && addCoRefs)) {
-          added = true
-          graph.addSpan(span)
-          for (i <- Range(span.start, span.end)) {
-            wordToSpan(i) = Some(graph.spans.size - 1)
-          }
-        }
-      }
-    }
-    graph.doRecursive(add)
-  }
-
-  private def updateSpansSafe(f: SpanUpdater3, graph: Graph): Unit = {
-    try {
-      updateSpans(f, graph)
-    } catch {
-      case e: Throwable => Unit
-    }
-  }
-
-  private def updateSpans(f: SpanUpdater3, graph: Graph) {
-    graph.doRecursive(f.update)
-  }
-
   /** **** </This stuff was originally in Graph> *******/
   //private val conceptRegex = """-[0-9]+$""".r
   //private val ConceptExtractor = "([a-zA-Z0-9.-]+ *)|\"([^\"]+)\" *".r

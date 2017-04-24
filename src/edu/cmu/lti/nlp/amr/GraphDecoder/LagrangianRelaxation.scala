@@ -43,7 +43,7 @@ class LagrangianRelaxation(options: Map[Symbol, String], featureNames: List[Stri
 
     def decode(input: Input) : DecoderResult = {
         alg2.input = input      // (this also sets features.input)
-        var result = DecoderResult(Graph.Null(), FeatureVector(features.weights.labelset), 0.0)
+        var result = DecoderResult(Graph.Null(), FeatureVectorFast(features.weights.labelset), 0.0)
 
         val stepsizeMultiplier = if (stepStrategy == "adaptive" || stepStrategy == "adaptiveSqrtT") {
             val graph = input.graph.get.duplicate       // duplicate is unnecessary, just a precaution
@@ -54,7 +54,7 @@ class LagrangianRelaxation(options: Map[Symbol, String], featureNames: List[Stri
             1.0
         }
 
-        val multipliers = FeatureVector(features.weights.labelset)
+        val multipliers = FeatureVectorFast(features.weights.labelset)
         var delta = 0.0         // so we know when we have converged
         var counter = 0
         do {

@@ -1,40 +1,41 @@
 package edu.cmu.lti.nlp.amr.ConceptInvoke
 
 import edu.cmu.lti.nlp.amr.BasicFeatureVector._
+import edu.cmu.lti.nlp.amr.Train.TrainObjAbstract
 import edu.cmu.lti.nlp.amr._
 import edu.cmu.lti.nlp.amr.graph.{Graph, Node}
 
 import scala.collection.{immutable => i, mutable => m}
 import scala.io.Source.fromFile
 
-class TrainObj(val options: m.Map[Symbol, String]) extends edu.cmu.lti.nlp.amr.Train.TrainObj[FeatureVector](options) {
+class TrainObjConcept(val options: m.Map[Symbol, String]) extends TrainObjAbstract(classOf[FeatureVectorBasic], options) {
 
   // TODO: this implementation is not thread safe
   val decoder = Decoder(options, oracle = false)
   val oracle: Decoder = Decoder(options, oracle = true)
 
   //costAugDecoder.features.weights = weights
-  def zeroVector: FeatureVector = FeatureVector()
+  def zeroVector: FeatureVectorBasic = FeatureVectorBasic()
 
   val input: Array[Input] = Input.loadInputfiles(options)
   val training: Array[String] = Corpus.getAMRBlocks(Source.stdin.getLines()).toArray
 
   def trainingSize: Int = training.length
 
-  def decode(i: Int, weights: FeatureVector): (FeatureVector, Double, String) = {
+  def decode(i: Int, weights: FeatureVectorBasic): (FeatureVectorBasic, Double, String) = {
     decoder.features.weights = weights
     val result = decoder.decode(input(i), Some(i))
     (result.features, result.score, "")
   }
 
-  def oracle(i: Int, weights: FeatureVector): (FeatureVector, Double) = {
+  def oracle(i: Int, weights: FeatureVectorBasic): (FeatureVectorBasic, Double) = {
     oracle.features.weights = weights
     val amrData = AMRTrainingData(training(i))
     val result = oracle.decode(Input(amrData, input(i), i, oracle = true, clearUnalignedNodes = true), Some(i))
     (result.features, result.score)
   }
 
-  def costAugmented(i: Int, weights: FeatureVector, scale: Double): (FeatureVector, Double) = {
+  def costAugmented(i: Int, weights: FeatureVectorBasic, scale: Double): (FeatureVectorBasic, Double) = {
     //logger(1, "costAugmented weights = "+weights.toString)
     decoder.features.weights = weights
     val amrData = AMRTrainingData(training(i))
@@ -176,10 +177,10 @@ class TrainObj(val options: m.Map[Symbol, String]) extends edu.cmu.lti.nlp.amr.T
   }
 
   def train() {
-    train(FeatureVector())
+    train(FeatureVectorBasic())
   }
 
-  def evalDev(options: m.Map[Symbol, String], pass: Int, weights: FeatureVector) {
+  def evalDev(options: m.Map[Symbol, String], pass: Int, weights: FeatureVectorBasic) {
     if (options.contains('trainingDev)) {
       logger(-1, "Decoding dev...")
       val verbosity_save = verbosityGlobal // TODO: could also just change the logging stream (add a var for the logging stream in amr.logger, and change it)

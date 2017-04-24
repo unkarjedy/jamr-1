@@ -13,7 +13,7 @@ import scala.collection.{mutable => m}
   **/
 case class PhraseConceptPair(words: List[String],
                              graphFrag: String,
-                             features: FeatureVector,
+                             features: FeatureVectorBasic,
                              trainingIndices: List[Int] = List()) {
   // TODO: what?
   override def toString: String = {
@@ -47,7 +47,7 @@ object PhraseConceptPair {
       List()
     }
 
-    new PhraseConceptPair(words, graphFrag, FeatureVector(features), trainingIndices)
+    new PhraseConceptPair(words, graphFrag, FeatureVectorBasic(features), trainingIndices)
   }
 
   /*  This would be usefull for having an explit None concept (requires changes to the decoder, may not be compatible with joint decoder)

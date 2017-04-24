@@ -9,21 +9,21 @@ import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 import scala.math.sqrt
 
-class SSGD extends Optimizer[FeatureVector] {
-    def learnParameters(gradient: (Option[Int], Int, FeatureVector) => (FeatureVector, Double),
-                        initialWeights: FeatureVector,
+class SSGDFast extends Optimizer[FeatureVectorFast] {
+    def learnParameters(gradient: (Option[Int], Int, FeatureVectorFast) => (FeatureVectorFast, Double),
+                        initialWeights: FeatureVectorFast,
                         trainingSize: Int,
                         noreg: List[String],
-                        trainingObserver: (Int, FeatureVector) => Boolean,
-                        options: Map[Symbol, String]) : FeatureVector = {
+                        trainingObserver: (Int, FeatureVectorFast) => Boolean,
+                        options: Map[Symbol, String]) : FeatureVectorFast = {
         val passes = options('trainingPasses).toInt
         val stepsize = options('trainingStepsize).toDouble
         val l2reg = options('trainingL2RegularizerStrength).toDouble
         val avg = options.contains('trainingAvgWeights)
 
-        val weights = FeatureVector(initialWeights.labelset)
+        val weights = FeatureVectorFast(initialWeights.labelset)
         weights += initialWeights
-        var avg_weights = FeatureVector(weights.labelset)
+        var avg_weights = FeatureVectorFast(weights.labelset)
         var i = 0
         var scaling_trick = 1.0
         while (i < passes && trainingObserver(i,weights)) {

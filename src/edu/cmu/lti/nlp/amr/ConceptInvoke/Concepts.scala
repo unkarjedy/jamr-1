@@ -116,7 +116,7 @@ class Concepts(options: m.Map[Symbol, String],
       val key = (concept.words, concept.graphFrag)
       if (conceptSet.contains(key)) {
         val old = conceptSet(key)
-        val feats = FeatureVector()
+        val feats = FeatureVectorBasic()
         feats += old.features
         feats += concept.features
         val trainingIndices = concept.trainingIndices ::: old.trainingIndices
@@ -135,7 +135,7 @@ class Concepts(options: m.Map[Symbol, String],
       PhraseConceptPair(
         List(input.sentence(i)),
         stem + "-01", // first sense is most common
-        FeatureVector(m.Map("OntoNotes" -> 1.0)),
+        FeatureVectorBasic(m.Map("OntoNotes" -> 1.0)),
         List()
       )
     })
@@ -162,7 +162,7 @@ class Concepts(options: m.Map[Symbol, String],
         } else {
           "(thing :name (name " + words.map(x => ":op " + x).mkString(" ") + "))"
         },
-        FeatureVector(m.Map("NEPassThrough" -> 1.0, "NEPassThrough_len" -> j)),
+        FeatureVectorBasic(m.Map("NEPassThrough" -> 1.0, "NEPassThrough_len" -> j)),
         List()) :: concepts
     }
 
@@ -181,8 +181,8 @@ class Concepts(options: m.Map[Symbol, String],
       List(PhraseConceptPair(
         List(input.sentence(i)),
         input.sentence(i),
-        FeatureVector(m.Map("PassThrough" -> 1.0,
-                            "PassThroughOnly" -> onlyVal(onlyPassThrough))),
+        FeatureVectorBasic(m.Map("PassThrough" -> 1.0,
+                                 "PassThroughOnly" -> onlyVal(onlyPassThrough))),
         List()))
     } else {
       List()
@@ -197,8 +197,8 @@ class Concepts(options: m.Map[Symbol, String],
       List(PhraseConceptPair(
         List(word),
         stems.minBy(_.length),
-        FeatureVector(m.Map("WordnetPassThrough" -> 1.0,
-                            "WordnetPassThroughOnly" -> onlyVal(onlyPassThrough))),
+        FeatureVectorBasic(m.Map("WordnetPassThrough" -> 1.0,
+                                 "WordnetPassThroughOnly" -> onlyVal(onlyPassThrough))),
         List()))
     } else {
       List()
@@ -221,8 +221,8 @@ class Concepts(options: m.Map[Symbol, String],
       concepts = List(PhraseConceptPair(
         List(word),
         stem + "-00", // 00 sense for missing predicates
-        FeatureVector(m.Map("AddedVerb" -> 1.0,
-                            "AddedVerbOnly" -> onlyVal(onlyPassThrough))),
+        FeatureVectorBasic(m.Map("AddedVerb" -> 1.0,
+                                 "AddedVerbOnly" -> onlyVal(onlyPassThrough))),
         List()))
     }
     concepts
@@ -275,7 +275,7 @@ class Concepts(options: m.Map[Symbol, String],
     //logger(1, "notTokenized.tok = "+notTokenized.tok.toList)
     PhraseConceptPair(sentence.slice(start, end).toList,
                       graphFrag,
-                      FeatureVector(m.Map("ner" -> 1.0, "ner_len" -> (end - start))))
+                      FeatureVectorBasic(m.Map("ner" -> 1.0, "ner_len" -> (end - start))))
   }
 
   def dateEntities(input: Input, start: Int): List[PhraseConceptPair] = {
@@ -370,25 +370,25 @@ class Concepts(options: m.Map[Symbol, String],
     //logger(0, "mkDayMonthYear("+matching+","+day+","+month+","+year+")")
     PhraseConceptPair(tokens.take(matching.count(_ == '\t') + 1).toList,
                       "(date-entity :day " + day.toInt.toString + " :month " + monthStr(month) + " :year " + year + ")",
-                      FeatureVector(m.Map("datex1" -> 1.0, "datex_len" -> (matching.count(_ == '\t') + 1))))
+                      FeatureVectorBasic(m.Map("datex1" -> 1.0, "datex_len" -> (matching.count(_ == '\t') + 1))))
   }
 
   def mkMonthYear(matching: String, month: String, year: String): PhraseConceptPair = {
     PhraseConceptPair(tokens.take(matching.count(_ == '\t') + 1).toList,
                       "(date-entity :month " + monthStr(month) + " :year " + year + ")",
-                      FeatureVector(m.Map("datex2" -> 1.0, "datex_len" -> (matching.count(_ == '\t') + 1))))
+                      FeatureVectorBasic(m.Map("datex2" -> 1.0, "datex_len" -> (matching.count(_ == '\t') + 1))))
   }
 
   def mkMonth(matching: String, month: String): PhraseConceptPair = {
     PhraseConceptPair(tokens.take(matching.count(_ == '\t') + 1).toList,
                       "(date-entity :month " + monthStr(month) + ")",
-                      FeatureVector(m.Map("datex3" -> 1.0, "datex_len" -> (matching.count(_ == '\t') + 1))))
+                      FeatureVectorBasic(m.Map("datex3" -> 1.0, "datex_len" -> (matching.count(_ == '\t') + 1))))
   }
 
   def mkYear(matching: String, year: String): PhraseConceptPair = {
     PhraseConceptPair(tokens.take(matching.count(_ == '\t') + 1).toList,
                       "(date-entity :year " + year + ")",
-                      FeatureVector(m.Map("datex4" -> 1.0, "datex_len" -> (matching.count(_ == '\t') + 1))))
+                      FeatureVectorBasic(m.Map("datex4" -> 1.0, "datex_len" -> (matching.count(_ == '\t') + 1))))
   }
 
   def monthStr(month: String): String = {

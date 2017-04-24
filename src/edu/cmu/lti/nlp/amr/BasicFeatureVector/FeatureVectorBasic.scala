@@ -1,6 +1,6 @@
 package edu.cmu.lti.nlp.amr.BasicFeatureVector
 import edu.cmu.lti.nlp.amr._
-import edu.cmu.lti.nlp.amr.Train.AbstractFeatureVector
+import edu.cmu.lti.nlp.amr.Train.FeatureVectorAbstract
 
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.{mutable => m, immutable => i}  // m.Set, m.Map, i.Set, i.Map
@@ -8,22 +8,22 @@ import scala.collection.{mutable => m, immutable => i}  // m.Set, m.Map, i.Set, 
 
 /**************************** Feature Vectors *******************************/
 
-case class mul(scale: Double, v: FeatureVector);
+case class mul(scale: Double, v: FeatureVectorBasic)
 // Trickyness below: see p.452 Programming Scala 2nd Edition (21.5 Implicit conversions)
-case class MulAssoc(x: Double) { def * (v: FeatureVector) = mul(x, v) }
-// in package.scala:
-// implicit def doubleToMulAssoc(x: Double) = new MulAssoc(x)
+// in package.scala: implicit def doubleToMulAssoc(x: Double) = new MulAssoc(x)
+case class MulAssoc(x: Double) { def * (v: FeatureVectorBasic) = mul(x, v) }
 
-case class FeatureVector(fmap : m.Map[String, Double] = m.Map[String, Double]()) extends AbstractFeatureVector(Array()) {
+
+case class FeatureVectorBasic(fmap : m.Map[String, Double] = m.Map[String, Double]()) extends FeatureVectorAbstract(Array()) {
 //    def copy(v: FeatureVector) = { FeatureVector(v.fmap.clone()) }
-    def dot(v: FeatureVector) : Double = {
+    def dot(v: FeatureVectorBasic) : Double = {
         if (fmap.size <= v.fmap.size) {
             (fmap :\ 0.0)((f, sum) => f._2 * v.fmap.getOrElse(f._1, 0.0) + sum)
         } else {
             (v.fmap :\ 0.0)((f, sum) => fmap.getOrElse(f._1, 0.0) * f._2 + sum)
         }
     }
-    def += (v: FeatureVector) : Unit = {
+    def += (v: FeatureVectorBasic) : Unit = {
         for ((feat, value) <- v.fmap) {
             fmap(feat) = fmap.getOrElse(feat,0.0) + value
         }
@@ -34,9 +34,9 @@ case class FeatureVector(fmap : m.Map[String, Double] = m.Map[String, Double]())
             fmap(feat) = fmap.getOrElse(feat,0.0) + scale * value
         }
     }
-    def += (v: AbstractFeatureVector) = { this.+=(v.asInstanceOf[FeatureVector]) }
-    def -= (v: AbstractFeatureVector) = { this.-=(v.asInstanceOf[FeatureVector]) }
-    def -= (v: FeatureVector) : Unit = this += -1.0 * v
+    def += (v: FeatureVectorAbstract) = { this.+=(v.asInstanceOf[FeatureVectorBasic]) }
+    def -= (v: FeatureVectorAbstract) = { this.-=(v.asInstanceOf[FeatureVectorBasic]) }
+    def -= (v: FeatureVectorBasic) : Unit = this += -1.0 * v
     def -= (m: mul) : Unit = this += mul(-m.scale, m.v)
     def * (scale: Double) = mul(scale, this)
     def nonzero : Boolean = {
@@ -46,15 +46,15 @@ case class FeatureVector(fmap : m.Map[String, Double] = m.Map[String, Double]())
         }
         return result
     }
-    def slice(v: FeatureVector) : FeatureVector = {
-        val f = FeatureVector()
+    def slice(v: FeatureVectorBasic) : FeatureVectorBasic = {
+        val f = FeatureVectorBasic()
         for ((feat, _) <- v.fmap) {
             f.fmap(feat) = fmap.getOrElse(feat,0.0)
         }
         return f
     }
-    def slice(func: String => Boolean) : FeatureVector = {
-        val f = FeatureVector()
+    def slice(func: String => Boolean) : FeatureVectorBasic = {
+        val f = FeatureVectorBasic()
         for ((feat, value) <- fmap if func(feat)) {
             f.fmap(feat) = value
         }

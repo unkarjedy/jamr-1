@@ -16,7 +16,7 @@ class Decoder1(options: m.Map[Symbol, String],
 
   def decode(input: Input,
              trainingIndex: Option[Int], // if we are training, index into the training data so we can do leave-one-out decoding
-             extraCost: (Input, PhraseConceptPair, Int, Int, List[PhraseConceptPair]) => Double): DecoderResult = {
+             calcExtraCost: (Input, PhraseConceptPair, Int, Int, List[PhraseConceptPair]) => Double): DecoderResult = {
 
     logger(1, "\n--- Decoder1 ---\n")
     logger(1, "Sentence: " + input.sentence.mkString(" "))
@@ -38,7 +38,7 @@ class Decoder1(options: m.Map[Symbol, String],
           logger(0, "WARNING: concept fragment " + concept.graphFrag + " extends beyond the end of the sentence - I will ignore it.")
         } else {
           val localScore = features.localScore(input, concept, wordIdx, wordIdx + concept.words.size)
-          val extraCost = extraCost(input, concept, wordIdx, wordIdx + concept.words.size, conceptList)
+          val extraCost = calcExtraCost(input, concept, wordIdx, wordIdx + concept.words.size, conceptList)
           val score = localScore + extraCost
           val endpoint = wordIdx + concept.words.size - 1
 
@@ -60,7 +60,7 @@ class Decoder1(options: m.Map[Symbol, String],
     // Follow backpointers
     var graph = Graph.Null()
     var score = 0.0
-    val feats = FeatureVector()
+    val feats = FeatureVectorBasic()
     var wordIdx = bestState.length - 1
     graph.getNodeById.clear
     graph.getNodeByName.clear
@@ -76,7 +76,7 @@ class Decoder1(options: m.Map[Symbol, String],
         for (concept <- conceptList.filter(c => c.words == concept.words && c.graphFrag == concept.graphFrag)) {
           val f = features.localFeatures(input, concept, backpointer, backpointer + concept.words.size)
           feats += f
-          score += features.weights.dot(f) + extraCost(input, concept, backpointer, backpointer + concept.words.size, conceptList)
+          score += features.weights.dot(f) + calcExtraCost(input, concept, backpointer, backpointer + concept.words.size, conceptList)
           //logger(2, "\nphraseConceptPair: "+concept.toString)
           //logger(1, "feats:\n"+f.toString)
           //logger(1, "score:\n"+score.toString+"\n")

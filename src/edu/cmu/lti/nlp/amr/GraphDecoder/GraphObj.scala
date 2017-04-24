@@ -38,7 +38,7 @@ case class GraphObj(graph: Graph,
     var set: Array[Int] = nodes.zipWithIndex.map(_._2).toArray
     var setArray: Array[Set[Int]] = nodes.zipWithIndex.map(x => Set(x._2)).toArray
     var score: Double = 0.0
-    var feats: FeatureVector = FeatureVector(features.weights.labelset)
+    var feats: FeatureVectorFast = FeatureVectorFast(features.weights.labelset)
     val edgeWeights : Array[Array[Array[(String, Double)]]] = computeWeightMatrix
 
     def largestWeight : Double = {

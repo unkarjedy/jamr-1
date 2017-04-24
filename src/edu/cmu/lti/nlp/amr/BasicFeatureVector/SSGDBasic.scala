@@ -25,19 +25,19 @@ import scala.math.sqrt
 
 /******************************** Training **********************************/
 
-class SSGD extends Optimizer[FeatureVector] {
-    def learnParameters(gradient: (Option[Int], Int, FeatureVector) => (FeatureVector, Double),
-                        weights: FeatureVector,
+class SSGDBasic extends Optimizer[FeatureVectorBasic] {
+    def learnParameters(gradient: (Option[Int], Int, FeatureVectorBasic) => (FeatureVectorBasic, Double),
+                        weights: FeatureVectorBasic,
                         trainingSize: Int,
-                        noreg: List[String],  // TODO: implement
-                        trainingObserver: (Int, FeatureVector) => Boolean,
-                        options: Map[Symbol, String]) : FeatureVector = {
+                        noreg: List[String], // TODO: implement
+                        trainingObserver: (Int, FeatureVectorBasic) => Boolean,
+                        options: Map[Symbol, String]) : FeatureVectorBasic = {
         val passes = options('trainingPasses).toInt
         val stepsize = options('trainingStepsize).toDouble
         val l2reg = options('trainingL2RegularizerStrength).toDouble
         val avg = options.contains('trainingAvgWeights)
 
-        var avg_weights = FeatureVector()
+        var avg_weights = FeatureVectorBasic()
         var i = 0
         while (i < passes && trainingObserver(i, weights)) {
             logger(0,"Pass "+(i+1).toString)

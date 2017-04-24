@@ -9,7 +9,7 @@ import scala.collection.mutable.ArrayBuffer
 abstract class Decoder {
     val stage1Features : ConceptInvoke.Features
     val stage2Features : GraphDecoder.Features
-    val weights : FeatureVector
+    val weights : FeatureVectorFast
 
     def decode(i: Input) : DecoderResult
 }
