@@ -11,7 +11,7 @@ object ContextBuilder {
     context.jamrRoot = jamrRoot
     context.modelFolder = modelFolder
 
-    context.cdecPath = s"$toolsPath/cdec/"
+    context.cdecPath = s"$toolsPath/cdec"
     context.illinoisNerPath = s"$toolsPath/IllinoisNerExtended/"
     context.illinoisNerJarPath = s"${context.illinoisNerPath}/target/IllinoisNerExtended-2.7.jar"
     context.nerConfigPath = s"$jamrRoot/scripts/preprocessing/IllinoisNER.config"

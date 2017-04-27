@@ -6,11 +6,11 @@ import edu.cmu.lti.nlp.amr.graph.Graph
 
 import scala.collection.{immutable => i, mutable => m}
 
-class Decoder1(options: m.Map[Symbol, String],
-               featureNames: List[String],
-               phraseConceptPairs: Array[PhraseConceptPair],
-               phraseCounts: i.Map[List[String], Int])
-  extends Decoder(featureNames, phraseCounts) {
+class ConceptDecoder(options: m.Map[Symbol, String],
+                     featureNames: List[String],
+                     phraseConceptPairs: Array[PhraseConceptPair],
+                     phraseCounts: i.Map[List[String], Int])
+  extends ConceptDecoderAbstract(featureNames, phraseCounts) {
 
   private val conceptInvoker = new Concepts(options, phraseConceptPairs)
 

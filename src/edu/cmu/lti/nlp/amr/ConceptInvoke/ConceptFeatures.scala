@@ -9,7 +9,7 @@ import scala.collection.{immutable => i, mutable => m}
 // TODO: Would this be faster if the featureFunctionsMap was replaced with boolean variables and lots of if statements?
 // TODO: the input to the feature function is just Input and Span.  Change to use Span?
 
-class Features(featureNames: List[String], phraseCounts: i.Map[List[String], Int]) {
+class ConceptFeatures(featureNames: List[String], phraseCounts: i.Map[List[String], Int]) {
   var weights = FeatureVectorBasic()
 
   // input, phraseConceptPair, start, end

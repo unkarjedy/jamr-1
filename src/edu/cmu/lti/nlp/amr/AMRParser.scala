@@ -111,12 +111,12 @@ object AMRParser {
 
     Graph.normalizeMod = options.contains('normalizeMod)
 
-    val stage1: ConceptInvoke.Decoder = {
+    val stage1: ConceptInvoke.ConceptDecoderAbstract = {
       if (!options.contains('stage1Oracle) && !options.contains('stage2Train)) {
-        ConceptInvoke.Decoder(options, oracle = false)
+        ConceptInvoke.buildDecoder(options, oracle = false)
       } else {
         assert(!options.contains('stage1Train), "Error: --stage1-oracle should not be specified with --stage1-train")
-        ConceptInvoke.Decoder(options, oracle = true)
+        ConceptInvoke.buildDecoder(options, oracle = true)
       }
     }
 

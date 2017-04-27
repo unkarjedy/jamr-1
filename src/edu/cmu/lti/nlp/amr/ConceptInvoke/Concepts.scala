@@ -33,18 +33,19 @@ class Concepts(options: m.Map[Symbol, String],
     *- Entities from large list
     * ****************************************/
   private val conceptSources = options.getOrElse('stage1SyntheticConcepts, "NER,DateExpr").split(",").toSet
-  private val implementedConceptSources = m.Set("NER", "DateExpr", "OntoNotes", "NEPassThrough", "PassThrough",
-                                                "WordNetPassThrough", "verbs", "nominalizations")
+  private val implementedConceptSources = m.Set(
+    "NER", "DateExpr", "OntoNotes",
+    "NEPassThrough", "PassThrough", "WordNetPassThrough",
+    "verbs", "nominalizations"
+  )
 
   private val unknownConcepts = conceptSources.diff(implementedConceptSources)
   assert(unknownConcepts.isEmpty, "Unknown conceptSources: " + unknownConcepts.mkString(", "))
 
-  private var tokens: Array[String] = Array()
-  // stores sentence.drop(i) (used in the dateEntity code to make it more concise)
-  private var ontoNotes: m.Set[String] = m.Set()
-  // could be multi-map instead
-  // TODO: check for lemma in a large morph-analyzed corpus
-  private var lemmas: m.Set[String] = m.Set()
+  private var tokens = Array[String]() // stores sentence.drop(i) (used in the dateEntity code to make it more concise)
+  private var lemmas = m.Set[String]() // TODO: check for lemma in a large morph-analyzed corpus
+
+  private var ontoNotes = m.Set[String]() // could be multi-map instead
 
   if (options.contains('stage1Predicates)) {
     val PredicateRegexp = """(.+)-([0-9]+)""".r
@@ -53,6 +54,10 @@ class Concepts(options: m.Map[Symbol, String],
       ontoNotes += verb
     }
   }
+
+  private val optionsLeaveOneOut = options.contains('stage1TrainingLeaveOneOut)
+  private val optionsNer = options.contains('ner)
+  private val optionsStage1Wiki = options.contains('stage1Wiki)
 
   /**
     * returns a list of all concepts that can be invoke starting at
@@ -65,8 +70,9 @@ class Concepts(options: m.Map[Symbol, String],
       return List()
     }
 
+
     // TODO: is this case insensitive??
-    var conceptList = if (options.contains('stage1TrainingLeaveOneOut) && trainingIndex.isDefined) {
+    var conceptList = if (optionsLeaveOneOut && trainingIndex.isDefined) {
       conceptTable.getOrElse(sentence(wordId), List()).filter(conceptPair => {
         conceptPair.words == sentence.slice(wordId, wordId + conceptPair.words.size).toList &&
           conceptPair.trainingIndices.exists(j => abs(j - trainingIndex.get) > 20)
@@ -77,7 +83,7 @@ class Concepts(options: m.Map[Symbol, String],
       })
     }
 
-    if (conceptSources.contains("NER") && options.contains('ner)) {
+    if (conceptSources.contains("NER") && optionsNer) {
       conceptList = input.ner.annotation
         .filter(_.start == wordId)
         .map(x => namedEntity(input, x))
@@ -129,11 +135,11 @@ class Concepts(options: m.Map[Symbol, String],
     conceptSet.values.toList
   }
 
-  def ontoNotesLookup(input: Input, i: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
-    val stems = Wordnet.stemmer(input.sentence(i))
+  def ontoNotesLookup(input: Input, wordId: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
+    val stems = Wordnet.stemmer(input.sentence(wordId))
     val concepts = stems.filter(stem => ontoNotes.contains(stem)).map(stem => {
       PhraseConceptPair(
-        List(input.sentence(i)),
+        List(input.sentence(wordId)),
         stem + "-01", // first sense is most common
         FeatureVectorBasic(m.Map("OntoNotes" -> 1.0)),
         List()
@@ -157,7 +163,7 @@ class Concepts(options: m.Map[Symbol, String],
       // TODO: improve this regex
       concepts = PhraseConceptPair(
         words,
-        if (options.contains('stage1Wiki)) {
+        if (optionsStage1Wiki) {
           "(thing :wiki - :name (name " + words.map(x => ":op " + x).mkString(" ") + "))"
         } else {
           "(thing :name (name " + words.map(x => ":op " + x).mkString(" ") + "))"
@@ -262,7 +268,7 @@ class Concepts(options: m.Map[Symbol, String],
     // start and end in ner.snt, which is the tokenized text
     val (notTokStart, notTokEnd) = notTokenized.getSpan((start, end))
     // start and end in notTokenized.snt, which is the original untokenized text
-    val graphFrag = if (options.contains('stage1Wiki)) {
+    val graphFrag = if (optionsStage1Wiki) {
       "(" + entityType + ":wiki - :name (name " + notTokenized.snt.slice(notTokStart, notTokEnd).map(x => ":op \"" + x.replaceAllLiterally("\"", "") + "\"").mkString(" ") + "))" // there should be no " in named entities (TODO: does the AMR style guide say if you can escape them?)
     } else {
       "(" + entityType + " :name (name " + notTokenized.snt.slice(notTokStart, notTokEnd).map(x => ":op \"" + x.replaceAllLiterally("\"", "") + "\"").mkString(" ") + "))" // there should be no " in named entities (TODO: does the AMR style guide say if you can escape them?)

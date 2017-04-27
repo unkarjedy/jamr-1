@@ -4,4 +4,9 @@
 
 #cd ontonotes-release-4.0/
 
-cat data/english/metadata/frames/*.xml | grep '<roleset .*id' | grep -o 'id="[^"]*"' | sed 's/id="\(.*\)"/\1/' | sed 's/[.]\([0-9]*\)$/-\1/' > OntoNotes-v4-predicates.txt
+cat data/english/metadata/frames/*.xml \
+    | grep '<roleset .*id' \
+    | grep -o 'id="[^"]*"' \
+    | sed 's/id="\(.*\)"/\1/' \
+    | sed 's/[.]\([0-9]*\)$/-\1/' \
+    > OntoNotes-v4-predicates.txt

@@ -11,8 +11,8 @@ import scala.io.Source.fromFile
 class TrainObjConcept(val options: m.Map[Symbol, String]) extends TrainObjAbstract(classOf[FeatureVectorBasic], options) {
 
   // TODO: this implementation is not thread safe
-  val decoder = Decoder(options, oracle = false)
-  val oracle: Decoder = Decoder(options, oracle = true)
+  val decoder = buildDecoder(options, oracle = false)
+  val oracle: ConceptDecoderAbstract = buildDecoder(options, oracle = true)
 
   //costAugDecoder.features.weights = weights
   def zeroVector: FeatureVectorBasic = FeatureVectorBasic()
@@ -22,9 +22,9 @@ class TrainObjConcept(val options: m.Map[Symbol, String]) extends TrainObjAbstra
 
   def trainingSize: Int = training.length
 
-  def decode(i: Int, weights: FeatureVectorBasic): (FeatureVectorBasic, Double, String) = {
+  def decode(inputId: Int, weights: FeatureVectorBasic): (FeatureVectorBasic, Double, String) = {
     decoder.features.weights = weights
-    val result = decoder.decode(input(i), Some(i))
+    val result = decoder.decode(input(inputId), Some(inputId))
     (result.features, result.score, "")
   }
 
@@ -180,12 +180,13 @@ class TrainObjConcept(val options: m.Map[Symbol, String]) extends TrainObjAbstra
     train(FeatureVectorBasic())
   }
 
-  def evalDev(options: m.Map[Symbol, String], pass: Int, weights: FeatureVectorBasic) {
+  def evalDev(options: m.Map[Symbol, String], pass: Int, weights: FeatureVectorBasic): Unit = {
     if (options.contains('trainingDev)) {
       logger(-1, "Decoding dev...")
       val verbosity_save = verbosityGlobal // TODO: could also just change the logging stream (add a var for the logging stream in amr.logger, and change it)
       verbosityGlobal = java.lang.Integer.MIN_VALUE
       // Like Double.NEGATIVE_INFINITY, but for integers
+
       //try {
       val devDecode = options('trainingOutputFile) + ".iter" + pass.toString + ".decode_dev"
       val dev = options('trainingDev) // assumes .aligned, .aligned.no_opN, .snt, .tok, .snt.deps, .snt.IllinoisNER

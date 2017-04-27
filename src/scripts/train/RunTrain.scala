@@ -5,9 +5,9 @@ import scripts.utils.context.ContextBuilder
 object RunTrain {
 
   def main(args: Array[String]): Unit = {
-    val jamrRoot = "C:/Users/unkarjedy/Desktop/Jamr_Fork/"
-    val corpusName = "amr-bank-struct-v1.6"
-    val baseCorpusFileName = "amr-bank-struct-v1.6"
+    val jamrRoot = "C:/Users/Dmitrii_Naumenko/Desktop/JAMR_2016_Github/"
+    val corpusName = "LDC2014T12-proxy"
+    val baseCorpusFileName = "data"
     val baseDataDir = s"$jamrRoot/data/$corpusName/"
     val modelFolder = s"$jamrRoot/models/$corpusName"
     val context = ContextBuilder.createContextForTraining(jamrRoot, baseDataDir, baseCorpusFileName, modelFolder)

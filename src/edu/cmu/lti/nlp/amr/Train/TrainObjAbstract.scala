@@ -57,39 +57,39 @@ abstract class TrainObjAbstract[FeatureVector <: FeatureVectorAbstract](
   def trainingSize: Int
 
   /////////////////////////////////////////////////
-  def gradient(i: Int, weights: FeatureVector): (FeatureVector, Double) = {
+  def gradient(inputId: Int, weights: FeatureVector): (FeatureVector, Double) = {
     val scale = options.getOrElse('trainingCostScale, "1.0").toDouble
     try {
       if (loss == "Perceptron") {
-        val (grad, score, _) = decode(i, weights)
-        val o = oracle(i, weights)
-        grad -= o._1
+        val (grad, score, _) = decode(inputId, weights)
+        val (gradOracle, scoreOracle)  = oracle(inputId, weights)
+        grad -= gradOracle
         //logger(0, "Gradient:\n"+grad.toString)
-        (grad, score - o._2)
+        (grad, score - scoreOracle)
       } else if (loss == "SVM") {
-        val (grad, score) = costAugmented(i, weights, scale)
-        val o = oracle(i, weights)
-        grad -= o._1
-        (grad, score - o._2)
+        val (grad, score) = costAugmented(inputId, weights, scale)
+        val (gradOracle, scoreOracle) = oracle(inputId, weights)
+        grad -= gradOracle
+        (grad, score - scoreOracle)
       } else if (loss == "Ramp1") {
-        val (grad, score) = costAugmented(i, weights, scale)
-        val o = decode(i, weights)
+        val (grad, score) = costAugmented(inputId, weights, scale)
+        val o = decode(inputId, weights)
         grad -= o._1
         (grad, score - o._2)
       } else if (loss == "Ramp2") {
-        val (grad, score, _) = decode(i, weights)
-        val o = costAugmented(i, weights, -1.0 * scale)
+        val (grad, score, _) = decode(inputId, weights)
+        val o = costAugmented(inputId, weights, -1.0 * scale)
         grad -= o._1
         (grad, score - o._2)
       } else if (loss == "Ramp3") {
-        val (grad, score) = costAugmented(i, weights, scale)
-        val o = costAugmented(i, weights, -1.0 * scale)
+        val (grad, score) = costAugmented(inputId, weights, scale)
+        val o = costAugmented(inputId, weights, -1.0 * scale)
         grad -= o._1
         (grad, score - o._2)
       } else if (loss == "Infinite_Ramp" || loss == "Latent_Hinge") {
         // I called this Latent_Hinge earlier
-        val (grad, score) = costAugmented(i, weights, scale)
-        val (costFeats, costScore) = costAugmented(i, weights, -100000000000.0)
+        val (grad, score) = costAugmented(inputId, weights, scale)
+        val (costFeats, costScore) = costAugmented(inputId, weights, -100000000000.0)
         grad -= costFeats
         (grad, score - costScore)
       } else {

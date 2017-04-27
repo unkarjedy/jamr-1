@@ -14,11 +14,14 @@ import scala.io.Source
 
 // Analogue of TRAIN.sh
 case class Train(context: Context) extends ContextLike(context) with Runnable with SimpleLoggerLike {
+  logger.addHandler(new FileHandler(s"${context.modelFolder}/Train.log"))
+  initLogger()
 
   def run(): Unit = {
     FileUtils.mkDir(context.modelFolder)
+
+    // If there are some results file in model folder, save them it the inner folder
     FileUtils.saveFiles(context.modelFolder, "old", Seq("RESULTS.txt"))
-    logger.addHandler(new FileHandler(s"${context.modelFolder}/Train.log"))
 
     time(logger) {
 //      Preprocessor(context).run()
@@ -26,13 +29,15 @@ case class Train(context: Context) extends ContextLike(context) with Runnable wi
 
     logger.info("Make concept table")
     time(logger) {
-      createTrainConceptTable()
+//      createTrainConceptTable()
 //      countWordFrequences()
     }
 
     logger.info("Train core start")
     time(logger) {
-      runTrainingStage1()
+//      runTrainingStage1()
+    }
+    time(logger) {
       runTrainingStage2()
     }
 
@@ -40,9 +45,6 @@ case class Train(context: Context) extends ContextLike(context) with Runnable wi
       SmatchEvaluator(context).runSmatchEvaluations()
     }
   }
-
-  // If there are some results file in model folder, save them it the inner folder
-
 
   // Analogue of mkConceptTable
   def createTrainConceptTable(): Unit = {

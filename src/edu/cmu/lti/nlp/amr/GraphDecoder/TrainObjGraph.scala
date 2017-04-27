@@ -31,7 +31,7 @@ class TrainObjGraph(val options: Map[Symbol, String]) extends TrainObjAbstract(c
   def trainingSize: Int = training.length
 
   private val stage1 = if (options.contains('stage2TrainPredictedConcepts)) {
-    Some(ConceptInvoke.Decoder(options, oracle = false))
+    Some(ConceptInvoke.buildDecoder(options, oracle = false))
   } else {
     None
   }

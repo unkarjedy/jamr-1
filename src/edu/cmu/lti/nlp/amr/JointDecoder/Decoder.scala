@@ -7,7 +7,7 @@ import scala.collection.mutable.Set
 import scala.collection.mutable.ArrayBuffer
 
 abstract class Decoder {
-    val stage1Features : ConceptInvoke.Features
+    val stage1Features : ConceptInvoke.ConceptFeatures
     val stage2Features : GraphDecoder.Features
     val weights : FeatureVectorFast
 

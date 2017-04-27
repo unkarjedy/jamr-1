@@ -9,7 +9,7 @@ import scala.collection.mutable.{Map, Set, ArrayBuffer}
 package object ConceptInvoke {
     type OptionMap = Map[Symbol, String]
 
-    def Decoder(options: OptionMap, oracle: Boolean) : Decoder = {
+    def buildDecoder(options: OptionMap, oracle: Boolean) : ConceptDecoderAbstract = {
         val stage1Features = options.getOrElse('stage1Features,"length,count").split(",").toList
         logger(0, "Stage1 features = " + stage1Features)
 
@@ -27,7 +27,7 @@ package object ConceptInvoke {
         if (oracle) {   // TODO: what about cost augmented as oracle?
             new Oracle(options, stage1Features, conceptTable, phraseCounts)
         } else {
-            new Decoder1(options, stage1Features, conceptTable, phraseCounts)
+            new ConceptDecoder(options, stage1Features, conceptTable, phraseCounts)
         }
     }
 }
