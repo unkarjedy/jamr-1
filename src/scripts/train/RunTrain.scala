@@ -25,27 +25,30 @@ object RunTrain {
                                                           baseInputDataDir,
                                                           corpus.baseFileName,
                                                           modelFolder = "")
-    Preprocessor(context).run()
+//    Preprocessor(context).run()
 
-    stage1Features.foreach(feature => {
-      val stage1FeaturesWithoutOne = stage1Features.filter(_ != feature)
+    1 to 3 foreach (iteration => {
+      stage1Features.foreach(feature => {
+        val stage1FeaturesWithoutOne = stage1Features.filter(_ != feature)
 
-      context.modelFolder = s"$jamrRoot/models/${corpus.name}_$feature"
+        context.modelFolder = s"$jamrRoot/models/${corpus.name}_LOO/${feature}_$iteration"
 
-      context.stage1Features = stage1FeaturesWithoutOne
-      context.stage2Features = stage2Features
+        context.stage1Features = stage1FeaturesWithoutOne
+        context.stage2Features = stage2Features
 
-      val stage1SyntheticConcepts = List(
-        "NER", "DateExpr", "OntoNotes", "NEPassThrough", "PassThrough",
-        "WordNetPassThrough", "verbs", "nominalizations"
-      )
+        val stage1SyntheticConcepts = List(
+          "NER", "DateExpr", "OntoNotes", "NEPassThrough", "PassThrough",
+          "WordNetPassThrough", "verbs", "nominalizations"
+        )
 
-      context.parserOptions = buildParserOptions(context, stage1SyntheticConcepts)
-      context.conceptIdTrainingOptions = buildConceptIdTrainingOptions(trainingLoss = "Infinite_Ramp")
-      context.relationIdTrainingOptions = buildRelationIdTrainingOptions()
+        context.parserOptions = buildParserOptions(context, stage1SyntheticConcepts)
+        context.conceptIdTrainingOptions = buildConceptIdTrainingOptions(trainingLoss = "Infinite_Ramp")
+        context.relationIdTrainingOptions = buildRelationIdTrainingOptions()
 
-      Train(context).run()
+        Train(context).run()
+      })
     })
+
   }
 
   private def buildParserOptions(context: Context, stage1SyntheticConcepts: List[String]) = {

@@ -13,12 +13,12 @@ import scala.io.Source
 
 // Analogue of TRAIN.sh
 case class Train(context: Context) extends ContextLike(context) with Runnable with SimpleLoggerLike {
+  FileUtils.mkDir(context.modelFolder)
   logger.addHandler(new FileHandler(s"${context.modelFolder}/Train.log"))
   initLogger()
 
   def run(): Unit = {
     // If there are some results file in model folder, save them it the inner folder
-    FileUtils.mkDir(context.modelFolder)
     FileUtils.saveFiles(context.modelFolder, "old", Seq("RESULTS.txt"))
 
     logger.info("Make concept table")
