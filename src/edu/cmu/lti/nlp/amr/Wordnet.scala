@@ -31,18 +31,18 @@ object Wordnet {
   private val wordCache = mutable.Map[String, List[String]]()
   private val wordPosCache = mutable.Map[(String, POS), List[String]]()
 
-  def stemmer(word: String): List[String] = {
+  def getStemms(word: String): List[String] = {
     val cached = wordCache.get(word)
 
     cached.getOrElse({
-      var stems = POS.values.toList.flatMap(pos => stemmer(word, pos))
+      var stems = POS.values.toList.flatMap(pos => getStemms(word, pos))
       stems = stems.distinct.sorted
       wordCache(word) = stems
       stems
     })
   }
 
-  def stemmer(word: String, pos: POS): List[String] = {
+  def getStemms(word: String, pos: POS): List[String] = {
     val cached = wordPosCache.get((word, pos))
 
     cached.getOrElse({

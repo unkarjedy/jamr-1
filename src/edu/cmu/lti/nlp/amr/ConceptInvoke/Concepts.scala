@@ -70,16 +70,19 @@ class Concepts(options: m.Map[Symbol, String],
       return List()
     }
 
-
     // TODO: is this case insensitive??
+    def equalToSentenceWords(conceptPair: PhraseConceptPair) = {
+      conceptPair.words == sentence.slice(wordId, wordId + conceptPair.words.size).toList
+    }
+
+    val concepList0 = conceptTable.getOrElse(sentence(wordId), List())
     var conceptList = if (optionsLeaveOneOut && trainingIndex.isDefined) {
-      conceptTable.getOrElse(sentence(wordId), List()).filter(conceptPair => {
-        conceptPair.words == sentence.slice(wordId, wordId + conceptPair.words.size).toList &&
-          conceptPair.trainingIndices.exists(j => abs(j - trainingIndex.get) > 20)
+      concepList0.filter(conceptPair => {
+        equalToSentenceWords(conceptPair) && conceptPair.trainingIndices.exists(j => abs(j - trainingIndex.get) > 20)
       })
     } else {
-      conceptTable.getOrElse(sentence(wordId), List()).filter(conceptPair => {
-        conceptPair.words == sentence.slice(wordId, wordId + conceptPair.words.size).toList
+      concepList0.filter(conceptPair => {
+        equalToSentenceWords(conceptPair)
       })
     }
 
@@ -117,7 +120,7 @@ class Concepts(options: m.Map[Symbol, String],
 
     // Normalize the concept list so there are no duplicates by adding all their features
     val conceptSet: m.Map[(List[String], String), PhraseConceptPair] = m.Map()
-    for (concept <- conceptList.filter(x => x.words == sentence.slice(wordId, wordId + x.words.size).toList)) {
+    for (concept <- conceptList.filter(x => equalToSentenceWords(x))) {
       // TODO: make this case insensitive?
       val key = (concept.words, concept.graphFrag)
       if (conceptSet.contains(key)) {
@@ -136,8 +139,9 @@ class Concepts(options: m.Map[Symbol, String],
   }
 
   def ontoNotesLookup(input: Input, wordId: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
-    val stems = Wordnet.stemmer(input.sentence(wordId))
-    val concepts = stems.filter(stem => ontoNotes.contains(stem)).map(stem => {
+    val stems = Wordnet.getStemms(input.sentence(wordId))
+
+    val concepts = stems.filter(ontoNotes.contains).map(stem => {
       PhraseConceptPair(
         List(input.sentence(wordId)),
         stem + "-01", // first sense is most common
@@ -147,19 +151,20 @@ class Concepts(options: m.Map[Symbol, String],
     })
 
     if (onlyPassThrough) {
-      concepts.foreach(x => x.features.fmap("OntoNotesOnly") = 1.0)
+      concepts.foreach(_.features.fmap("OntoNotesOnly") = 1.0)
     }
 
     concepts
   }
 
-  def NEPassThrough(input: Input, i: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
+  def NEPassThrough(input: Input, wordId: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
     // TODO: improve this to check if the words were observed other places
     var concepts = List[PhraseConceptPair]()
-    for {j <- Range(1, 7)
-         if i + j < input.sentence.length
-         words = input.sentence.slice(i, i + j).toList
-         if words.forall(x => x.matches("[A-Za-z0-9.-]*"))} {
+
+    for {offset <- Range(1, 7)
+         if wordId + offset < input.sentence.length
+         words = input.sentence.slice(wordId, wordId + offset).toList
+         if words.forall(_.matches("[A-Za-z0-9.-]*"))} {
       // TODO: improve this regex
       concepts = PhraseConceptPair(
         words,
@@ -168,7 +173,7 @@ class Concepts(options: m.Map[Symbol, String],
         } else {
           "(thing :name (name " + words.map(x => ":op " + x).mkString(" ") + "))"
         },
-        FeatureVectorBasic(m.Map("NEPassThrough" -> 1.0, "NEPassThrough_len" -> j)),
+        FeatureVectorBasic(m.Map("NEPassThrough" -> 1.0, "NEPassThrough_len" -> offset)),
         List()) :: concepts
     }
 
@@ -197,7 +202,7 @@ class Concepts(options: m.Map[Symbol, String],
 
   def wordnetPassThrough(input: Input, i: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
     val word = input.sentence(i)
-    val stems = Wordnet.stemmer(word)
+    val stems = Wordnet.getStemms(word)
     // TODO: add stems from large annotated corpus
     if (stems.nonEmpty) {
       List(PhraseConceptPair(
@@ -211,13 +216,13 @@ class Concepts(options: m.Map[Symbol, String],
     }
   }
 
-  def verbs(input: Input, i: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
+  def verbs(input: Input, wordId: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
     var concepts = List[PhraseConceptPair]()
-    val pos: Array[String] = input.pos.slice(i, i + 1) // NOTE: pos.slice is defined in Annotation.slice
+    val pos: Array[String] = input.pos.slice(wordId, wordId + 1) // NOTE: pos.slice is defined in Annotation.slice
     if (pos.length > 0 && pos(pos.length - 1).startsWith("V")) {
       // it's a verb
-      val word = input.sentence(i)
-      val stems = Wordnet.stemmer(word)
+      val word = input.sentence(wordId)
+      val stems = Wordnet.getStemms(word)
       val stem = if (stems.nonEmpty) {
         stems.minBy(_.length)
       } else {

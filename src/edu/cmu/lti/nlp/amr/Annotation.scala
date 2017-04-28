@@ -1,10 +1,10 @@
 package edu.cmu.lti.nlp.amr
 
 import java.util.regex.Pattern
-import scala.util.matching.Regex
-import scala.collection.mutable.{Map, Set, ArrayBuffer}
 
-case class Annotation[T](var snt: Array[String], var annoTok: Array[String], var annotation: Array[T]) {
+case class Annotation[T](var snt: Array[String],
+                         var annoTok: Array[String],
+                         var annotation: Array[T]) {
     // This class is used for annotations on a sentence.
     // The annotations can use a different tokenization scheme.
     // annotationSpan - used to convert a span in 'snt' to a span in 'annoTok'.
@@ -21,18 +21,18 @@ case class Annotation[T](var snt: Array[String], var annoTok: Array[String], var
     def getSpan(span: (Int, Int)) : (Int, Int) = {
         // Input: Span in annoTok (indices start from 0, and span goes from span._1 to span._2-1 inclusive ie same as slice(Int,Int))
         // Output: Span in snt (indices start from 0, and span goes from ret._1 to ret._2-1 inclusive ie same as slice(Int,Int))
-        return (left(span._1), right(span._2-1))
+        (left(span._1), right(span._2-1))
     }
 
     def annotationSpan(span: (Int, Int)) : (Int, Int) = {   // TODO: comment this out, and convert everything to use slice
         // Input: Span in snt
         // Output: Span in annoTok
-        return (leftinv(span._1), rightinv(span._2-1))
+        (leftinv(span._1), rightinv(span._2-1))
     }
 
     def slice(start: Int, end: Int) : Array[T] = {
         val (annoStart, annoEnd) = annotationSpan((start, end))
-        return annotation.slice(annoStart, annoEnd)
+        annotation.slice(annoStart, annoEnd)
     }
 
     def annotations: Array[T] = annotation   // alias for annotation    // TODO: get rid of these aliases (used in old code)
@@ -64,42 +64,44 @@ case class Annotation[T](var snt: Array[String], var annoTok: Array[String], var
         val right = myTokenized.map(x => 0)
 
         if (normalizedStr(snt,"") == normalizedStr(annoTok,"")) {
-            for (i <- Range(0, myTokenized.size)) {
+            for (i <- myTokenized.indices) {
                 val regexr = normalizedRegex(myTokenized.take(i+1)).r
                 logger(3, "regexr = "+regexr)
                 logger(3, "tokenized = "+normalizedStr(tokenized))
                 regexr.findPrefixOf(normalizedStr(tokenized)) match {
-                    case Some(prefix) => { right(i) = prefix.count(_ == ' ') + 1}
-                    case None => {
-                        System.err.println("Error matching the prefix (this will occur if there are two or more consecutive spaces in the input.")
-                        System.err.println("tokenized = "+tokenized.mkString(" "))
-                        System.err.println("myTokenized = "+myTokenized.mkString(" "))
-                        if (tokenized.mkString("") != myTokenized.mkString("")) {
-                            System.err.println("Tokenizations don't match")
-                        }
-                        System.err.println("i = "+i.toString)
-                        System.err.println("prefix = "+myTokenized.take(i+1).toList)
-                        System.err.println("regexr = "+regexr)
-                        if (regexr.findPrefixOf(myTokenized.mkString(" ")) == None) {
-                            System.err.println("Regex doesn't match myTokenized either")
-                        }
-                        assert(false)
-                    }
+                    case Some(prefix) =>
+                      right(i) = prefix.count(_ == ' ') + 1
+                    case None =>
+                      System.err.println("Error matching the prefix (this will occur if there are two or more consecutive spaces in the input.")
+                      System.err.println("tokenized = "+tokenized.mkString(" "))
+                      System.err.println("myTokenized = "+myTokenized.mkString(" "))
+                      if (tokenized.mkString("") != myTokenized.mkString("")) {
+                          System.err.println("Tokenizations don't match")
+                      }
+                      System.err.println("i = "+i.toString)
+                      System.err.println("prefix = "+myTokenized.take(i+1).toList)
+                      System.err.println("regexr = "+regexr)
+                      if (regexr.findPrefixOf(myTokenized.mkString(" ")).isEmpty) {
+                          System.err.println("Regex doesn't match myTokenized either")
+                      }
+                      assert(false)
                 }
                 if (i > 0) {
                     val regexl = (normalizedRegex(myTokenized.take(i))+" ").r
                     regexl.findPrefixOf(normalizedStr(tokenized)) match {
-                        case Some(prefix) => { left(i) = right(i-1) }
-                        case None => { left(i) = right(i-1) - 1 }
+                        case Some(prefix) =>
+                          left(i) = right(i-1)
+                        case None =>
+                          left(i) = right(i-1) - 1
                     }
                 }
             }
         } else {
-            (0 until right.size).map(i => right(i) = 1)
+            right.indices.foreach(i => right(i) = 1)
         }
         //println(right.toList)
         //println(left.toList)
-        return (left, right)
+        (left, right)
     }
 }
 
@@ -112,7 +114,7 @@ class AnnotationTest /*extends Suite*/ {
         System.out.println("test1")
         System.out.println("tokenized = "+test1.snt.toList)
         System.out.println("myTokenized = "+test1.annoTok.toList)
-        for (i <- Range(0, test1.annoTok.size)) {
+        for (i <- test1.annoTok.indices) {
             System.out.println("i=" + i + " l=" + test1.getSpan(i,i+1)._1 + " r=" + test1.getSpan(i,i+1)._2)
         }
         val test2 = Annotation[String](Array("The", "Riyadh-based", "NaifArab", "Academy"),
@@ -121,7 +123,7 @@ class AnnotationTest /*extends Suite*/ {
         System.out.println("test2")
         System.out.println("tokenized = "+test2.snt.toList)
         System.out.println("myTokenized = "+test2.annoTok.toList)
-        for (i <- Range(0, test2.annoTok.size)) {
+        for (i <- test2.annoTok.indices) {
             System.out.println("i=" + i + " l=" + test2.getSpan(i,i+1)._1 + " r=" + test2.getSpan(i,i+1)._2)
         }
         System.out.println("getSpan(1,4)="+test2.getSpan(1,4))
@@ -132,7 +134,7 @@ class AnnotationTest /*extends Suite*/ {
         System.out.println("test3")
         System.out.println("tokenized = "+test3.snt.toList)
         System.out.println("myTokenized = "+test3.annoTok.toList)
-        for (i <- Range(0, test3.annoTok.size)) {
+        for (i <- test3.annoTok.indices) {
             System.out.println("i=" + i + " l=" + test3.getSpan(i,i+1)._1 + " r=" + test3.getSpan(i,i+1)._2)
         }
 

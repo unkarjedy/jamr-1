@@ -153,11 +153,12 @@ class ConceptFeatures(featureNames: List[String], phraseCounts: i.Map[List[Strin
     featureNames.filterNot(isKnownFeature)
   }
 
-  assert(unknownFeatures.isEmpty, "Unknown stage1 features: " + unknownFeatures.mkString(","))
-
   private def isKnownFeature(featureName: String): Boolean = {
     featureFunctionsMap.contains(featureName) || ExtractConceptTable.implementedFeatures.contains(featureName) || Concepts.implementedFeatures.contains(featureName)
   }
+
+  assert(unknownFeatures.isEmpty, "Unknown stage1 features: " + unknownFeatures.mkString(","))
+
 
   // Calculate the local features
   def localFeatures(input: Input, concept: PhraseConceptPair, start: Int, end: Int): FeatureVectorBasic = {

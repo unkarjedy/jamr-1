@@ -662,7 +662,7 @@ case class SpansAlignerWrapper3(logger: JAMRLogger) {
   }
 
   def stemmer(word: String): List[String] = {
-    val stems = Wordnet.stemmer(word)
+    val stems = Wordnet.getStemms(word)
     val numbers = word.toLowerCase match {
       case "one" => List("1")
       case "two" => List("2")

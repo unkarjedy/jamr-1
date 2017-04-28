@@ -606,7 +606,7 @@ case class  SpansAlignerWrapper2(logger: JAMRLogger) {
     }
 
     def stemmer(word: String): List[String] = {
-        var stems = Wordnet.stemmer(word)
+        var stems = Wordnet.getStemms(word)
         var numbers = word.toLowerCase match {
             case "one" => List("1")
             case "two" => List("2")
