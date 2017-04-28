@@ -8,6 +8,7 @@ trait SimpleLoggerLike {
   initLogger()
 
   def initLogger(): Unit = {
+    logger.getHandlers.foreach(_.setFormatter(new SimpleFormatter()))
     logger.getParent.getHandlers.foreach(_.setFormatter(new SimpleFormatter()))
   }
 }

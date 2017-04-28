@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets
 import edu.cmu.lti.nlp.amr.align.Aligner
 import edu.cmu.lti.nlp.amr.{CorpusTool, IllinoisNERConvert, RunStanfordParser}
 import scripts.utils.StreamUtils
+import scripts.utils.TimeUtils.time
 import scripts.utils.context.{Context, ContextLike}
 import scripts.utils.logger.SimpleLoggerLike
 
@@ -18,7 +19,13 @@ case class Preprocessor(ctx: Context) extends ContextLike(ctx)
 
   override def run(): Unit = {
     logger.info("Preprocessing start")
+    time(logger) {
+      proceedPreprocess()
+    }
+    logger.info("Preprocessing end")
+  }
 
+  private def proceedPreprocess(): Unit = {
     val files = Seq(ctx.devFile, ctx.trainFile, ctx.testFile).map(new File(_))
     files.foreach(file => {
       extractSentencesAndTokens(file)
@@ -31,8 +38,6 @@ case class Preprocessor(ctx: Context) extends ContextLike(ctx)
       runStandfordDependencyParser(file)
       runIllinoisNamedEntityTagger(file)
     })
-
-    logger.info("Preprocessing end")
   }
 
   def extractSentencesAndTokens(amrFile: File): Unit = {

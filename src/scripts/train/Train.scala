@@ -4,11 +4,10 @@ import java.io.{FileInputStream, PrintStream}
 import java.util.logging.FileHandler
 
 import edu.cmu.lti.nlp.amr.ExtractConceptTable
-import scripts.preprocess.Preprocessor
 import scripts.utils.TimeUtils.time
-import scripts.utils.context.{Context, ContextBuilder, ContextLike}
+import scripts.utils.context.{Context, ContextLike}
 import scripts.utils.logger.SimpleLoggerLike
-import scripts.utils.{AMRParserRunner, FileUtils, TimeUtils}
+import scripts.utils.{AMRParserRunner, FileUtils}
 
 import scala.io.Source
 
@@ -18,24 +17,19 @@ case class Train(context: Context) extends ContextLike(context) with Runnable wi
   initLogger()
 
   def run(): Unit = {
-    FileUtils.mkDir(context.modelFolder)
-
     // If there are some results file in model folder, save them it the inner folder
+    FileUtils.mkDir(context.modelFolder)
     FileUtils.saveFiles(context.modelFolder, "old", Seq("RESULTS.txt"))
-
-    time(logger) {
-//      Preprocessor(context).run()
-    }
 
     logger.info("Make concept table")
     time(logger) {
-//      createTrainConceptTable()
-//      countWordFrequences()
+      createTrainConceptTable()
+      countWordFrequences()
     }
 
     logger.info("Train core start")
     time(logger) {
-//      runTrainingStage1()
+      runTrainingStage1()
     }
     time(logger) {
       runTrainingStage2()
