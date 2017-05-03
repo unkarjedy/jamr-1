@@ -2,6 +2,7 @@ package edu.cmu.lti.nlp.amr.FastFeatureVector
 
 import java.nio.file.{Files, Paths}
 
+import edu.cmu.lti.nlp.amr.FastFeatureVector.AdagradFast.ProgressObserver
 import edu.cmu.lti.nlp.amr.Train._
 import edu.cmu.lti.nlp.amr._
 import resource.managed
@@ -13,7 +14,8 @@ import scala.pickling.Defaults._
 import scala.pickling.json._
 import scala.util.Random
 
-class AdagradFast extends Optimizer[FeatureVectorFast] {
+class AdagradFast(progressObserver: ProgressObserver) extends Optimizer[FeatureVectorFast] {
+
   def learnParameters(gradient: (Option[Int], Int, FeatureVectorFast) => (FeatureVectorFast, Double),
                       initialWeights: FeatureVectorFast,
                       trainingSize: Int,
@@ -35,6 +37,7 @@ class AdagradFast extends Optimizer[FeatureVectorFast] {
 
     ////////////// Reload for warm start ////////////
     case class WarmStart(pass: Int, t: Int, trainSequence: Array[Int], weights: String, avg_weights: String)
+
     var warmStart: Option[WarmStart] = None
     if (warmStartFilename.isDefined && Files.exists(Paths.get(warmStartFilename.get))) {
       val lines: String = managed(fromFile(warmStartFilename.get)).acquireAndGet(_.getLines().mkString("\n"))
@@ -52,6 +55,8 @@ class AdagradFast extends Optimizer[FeatureVectorFast] {
         warmStart = None
       }
 
+      var elementsProccessed = 0
+      val elementsTotal = trainSequence.size
       for (t <- trainSequence) {
         // normally we would do weights -= stepsize * gradient(t)._1
         // but instead we do this: (see equation 8 in SocherBauerManningNg_ACL2013.pdf)
@@ -94,13 +99,19 @@ class AdagradFast extends Optimizer[FeatureVectorFast] {
             outputFile.println(str)
           }
         }
+
+        elementsProccessed += 1
+        progressObserver(pass, elementsProccessed, elementsTotal, weights)
       }
-      logger(-1, "                                   Avg objective value last pass: " + (objective / trainingSize.toDouble).toString)
+      logger(-1, s"${" " * 35}Avg objective value last pass: ${(objective / trainingSize.toDouble).toString}")
       //logger(0,"                                                       objective: "+((0 until trainingSize).map(x => gradient(None, x, weights)._2).sum/trainingSize).toString)
       avg_weights += weights
       pass += 1
     }
+
+    progressObserver(pass, -1, -1, avg_weights)
     trainingObserver(pass, avg_weights)
+
     /////////// Remove warmStart file //////////
     if (warmStartFilename.isDefined) {
       Files.delete(Paths.get(warmStartFilename.get))
@@ -114,3 +125,7 @@ class AdagradFast extends Optimizer[FeatureVectorFast] {
   }
 }
 
+object AdagradFast {
+  // (pass, processed, total, result)
+  type ProgressObserver = (Int, Int, Int, FeatureVectorFast) => Unit
+}

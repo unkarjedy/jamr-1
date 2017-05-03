@@ -1,5 +1,8 @@
 package edu.cmu.lti.nlp.amr.Train
 
+import java.io.{File, FileWriter, PrintStream}
+import java.util.concurrent.TimeUnit
+
 import edu.cmu.lti.nlp.amr.BasicFeatureVector.{AdagradBasic, FeatureVectorBasic, SSGDBasic}
 import edu.cmu.lti.nlp.amr.FastFeatureVector.{AdagradFast, FeatureVectorFast, SSGDFast}
 import edu.cmu.lti.nlp.amr._
@@ -29,10 +32,10 @@ abstract class TrainObjAbstract[FeatureVector <: FeatureVectorAbstract](
     val method = options.getOrElse('trainingOptimizer, "Adagrad")
 
     val FVBasic = classOf[FeatureVectorBasic]
-    val FVFast= classOf[FeatureVectorFast]
+    val FVFast = classOf[FeatureVectorFast]
     val result = (method, featureVectorClass) match {
       case ("Adagrad", FVBasic) => new AdagradBasic()
-      case ("Adagrad", FVFast) => new AdagradFast()
+      case ("Adagrad", FVFast) => new AdagradFast(logProgress)
       case ("SSGD", FVBasic) => new SSGDBasic()
       case ("SSGD", FVFast) => new SSGDFast()
       case x =>
@@ -42,6 +45,39 @@ abstract class TrainObjAbstract[FeatureVector <: FeatureVectorAbstract](
 
     // no actual conversion proceeded for FeatureVector cause it is a generic type, it is needed just for compiler
     result.asInstanceOf[Optimizer[FeatureVector]]
+  }
+
+  private val progressFileOpt = options.get('trainingOutputFile).map(new File(_).toPath.getParent.resolve("progress.log").toFile)
+  private val progressOutOpt = progressFileOpt.map(new PrintStream(_))
+  private var prevPass = -1
+  private var prevTimeMs = -1L
+  private var timeTotalMs = 0L
+
+  private def logProgress(pass: Int, elementsProcessed: Int, elementsTotal: Int, currentResult: FeatureVectorFast): Unit = {
+    progressOutOpt.foreach(out => {
+      if(pass != prevPass) {
+        prevTimeMs = System.currentTimeMillis()
+        out.println(pass)
+        prevPass = pass
+      }
+
+      val passFinished = elementsProcessed == elementsTotal
+      if (passFinished) {
+        val deltaTimeMs = (System.currentTimeMillis() - prevTimeMs)
+        timeTotalMs += deltaTimeMs
+        out.println(s"Time spent for pass $pass: ${timeMsToString(deltaTimeMs)} (total: ${timeMsToString(timeTotalMs)})")
+        out.println()
+      }
+
+      out.println(s"$elementsProcessed / $elementsTotal")
+    })
+  }
+
+  private def timeMsToString(deltaTimeMs: Long) = {
+    val deltaMin = TimeUnit.MILLISECONDS.toMinutes(deltaTimeMs)
+    val deltaSec = TimeUnit.MILLISECONDS.toSeconds(deltaTimeMs)
+    val secRamain = deltaSec - TimeUnit.MINUTES.toSeconds(deltaMin)
+    s"$deltaMin min, $secRamain sec"
   }
 
   if (options.getOrElse('trainingMiniBatchSize, "1").toInt > 1) {
@@ -62,7 +98,7 @@ abstract class TrainObjAbstract[FeatureVector <: FeatureVectorAbstract](
     try {
       if (loss == "Perceptron") {
         val (grad, score, _) = decode(inputId, weights)
-        val (gradOracle, scoreOracle)  = oracle(inputId, weights)
+        val (gradOracle, scoreOracle) = oracle(inputId, weights)
         grad -= gradOracle
         //logger(0, "Gradient:\n"+grad.toString)
         (grad, score - scoreOracle)
@@ -149,7 +185,7 @@ abstract class TrainObjAbstract[FeatureVector <: FeatureVectorAbstract](
         file.close()
       }
     } else {
-      print(weights.unsorted)
+      System.out.print(weights.unsorted)
     }
     System.err.println("done")
   }
