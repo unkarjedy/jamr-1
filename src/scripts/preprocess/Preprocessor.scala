@@ -5,8 +5,8 @@ import java.nio.charset.StandardCharsets
 
 import edu.cmu.lti.nlp.amr.align.Aligner
 import edu.cmu.lti.nlp.amr.{CorpusTool, IllinoisNERConvert, RunStanfordParser}
-import scripts.utils.StreamUtils
-import scripts.utils.TimeUtils.time
+import scripts.utils.{StageRunnerLike, StreamUtils}
+import scripts.utils.TimeUtils.runWithTimer
 import scripts.utils.context.{Context, ContextLike}
 import scripts.utils.logger.SimpleLoggerLike
 
@@ -15,14 +15,15 @@ import scala.io.Source
 // Analogue of PREPROCESS.sh
 // Proceed preprocessing of dev, test, train files: extracts sentences, tokens, NamedEntities, Standford Dependencies
 case class Preprocessor(ctx: Context) extends ContextLike(ctx)
-  with Runnable with SimpleLoggerLike {
+                                              with Runnable
+                                              with SimpleLoggerLike
+                                              with StageRunnerLike {
 
   override def run(): Unit = {
-    logger.info("Preprocessing start")
-    time(logger) {
+    runStage("Preprocessing", runProperties.skipPreprocessing) {
       proceedPreprocess()
+      logger.info("Preprocessing end")
     }
-    logger.info("Preprocessing end")
   }
 
   private def proceedPreprocess(): Unit = {

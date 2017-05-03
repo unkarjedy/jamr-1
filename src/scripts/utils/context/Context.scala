@@ -1,10 +1,10 @@
 package scripts.utils.context
 
-import java.io.File
-import java.nio.file.Files
+import scripts.train.RunProperties
 
 // This class is some analogue of shell configurations from shell scripts folder
 class Context {
+  var runProperties: RunProperties = _
 
   var jamrRoot: String = _
 

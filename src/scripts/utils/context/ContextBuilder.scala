@@ -2,6 +2,7 @@ package scripts.utils.context
 
 import edu.cmu.lti.nlp.amr.Wordnet
 
+//TODO: replace string concat with Path.resolve
 object ContextBuilder {
 
   def createContext(jamrRoot: String, modelFolder: String): Context = {
@@ -16,7 +17,6 @@ object ContextBuilder {
     context.illinoisNerJarPath = s"${context.illinoisNerPath}/target/IllinoisNerExtended-2.7.jar"
     context.nerConfigPath = s"$jamrRoot/scripts/preprocessing/IllinoisNER.config"
     context.smatchPath = s"$jamrRoot/scripts/smatch_v1_0/smatch_modified.py"
-
     context.wnetPath = s"$toolsPath/WordNet-3.0/"
 
     context.normalizePaths()

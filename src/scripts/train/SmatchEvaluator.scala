@@ -2,7 +2,7 @@ package scripts.train
 
 import java.util.logging.{ConsoleHandler, FileHandler}
 
-import scripts.utils.AMRParserRunner
+import scripts.utils.{AMRParserRunner, StageRunnerLike}
 import scripts.utils.context.{Context, ContextLike}
 import scripts.utils.logger.{SimpleLoggerLike, UnmodifyingFormatter}
 
@@ -10,35 +10,49 @@ import scala.io.Source
 import scala.sys.process._
 
 // Final part of TRAIN.sh for evaluating trained model using Smatch
-case class SmatchEvaluator(context: Context) extends ContextLike(context) with SimpleLoggerLike {
+case class SmatchEvaluator(context: Context) extends ContextLike(context)
+                                                     with SimpleLoggerLike
+                                                     with StageRunnerLike {
 
-  // Print log to file in addition to console
+  // Setup logger to print log to file in addition to console
   logger.setUseParentHandlers(false)
   logger.addHandler(new ConsoleHandler())
   logger.addHandler(new FileHandler(s"${context.modelFolder}/RESULTS.txt"))
   logger.getHandlers.foreach(_.setFormatter(new UnmodifyingFormatter))
 
-  private val loggerProccessLogger = ProcessLogger(out => logger.info(out), err => logger.info(err))
+  private val getProcessLogger = ProcessLogger(out => logger.info(out), err => logger.info(err))
 
   def runSmatchEvaluations(): Unit = {
     logger.info("----- Evaluation on Test: Smatch (all stages) -----")
-    decodeAllStages()
-    val command1 = smatchCommand(s"${context.modelFolder}/test.decode.allstages", context.testFile)
-    stringToProcess(command1) ! loggerProccessLogger
+    runStage("decoding", runProperties.skipEvaluateAllStageDecode) {
+      decodeAllStages()
+    }
+    runStage("evaluating", skip = false) {
+      val command1 = smatchCommand(s"${context.modelFolder}/test.decode.allstages", context.testFile)
+      stringToProcess(command1) ! getProcessLogger
+    }
 
     logger.info("")
     logger.info("----- Evaluation on Test: Smatch (gold concept ID) -----")
-    decodeStage2()
-    val command2 = smatchCommand(s"${context.modelFolder}/test.decode.stage2only", context.testFile)
-    stringToProcess(command2) ! loggerProccessLogger
-
+    runStage("decoding", runProperties.skipEvaluateStage2Decode) {
+      decodeStage2()
+    }
+    runStage("evaluating", skip = false) {
+      val command2 = smatchCommand(s"${context.modelFolder}/test.decode.stage2only", context.testFile)
+      stringToProcess(command2) ! getProcessLogger
+    }
 
     logger.info("")
     logger.info("----- Evaluation on Test: Spans -----")
-    // take last n lines
-    Source.fromFile(s"${context.modelFolder}/test.decode.allstages.err")
-      .getLines().toList
-      .reverseIterator.take(5).toList.reverse
+    // NOTE: evaluation for spans results were saved during all stages decoding
+    takeTaleLines(fileName = s"${context.modelFolder}/test.decode.allstages.err", linesToTake = 6)
+  }
+
+  /** Takes $linetoTake lines from the end of the file content*/
+  private def takeTaleLines(fileName: String, linesToTake: Int) = {
+    val lines = Source.fromFile(fileName).getLines()
+    lines.toList
+      .reverseIterator.take(linesToTake).toList.reverse
       .filter(_.trim.nonEmpty)
       .foreach(logger.info)
   }

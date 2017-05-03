@@ -612,7 +612,8 @@ def main(args):
         for line in file:
             if line == "\n":
                 total_sentences  += 1
-    print "Total sentences: ", total_sentences
+    if(verboseNaum):
+        print "Total sentences: ", total_sentences
 
     sent_num = 1
     while True:

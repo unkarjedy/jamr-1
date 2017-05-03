@@ -14,24 +14,29 @@ object FileUtils {
     file
   }
 
-  def saveFiles(baseFolder: String, saveToFolder: String, filesToSave: Seq[String]): Unit = {
+  def saveFiles(baseFolder: String, saveToFolder: String, filesNamesToSave: Seq[String]): Unit = {
     val modelPath = new File(baseFolder).toPath
-    val stashPath = FileUtils.mkDir(s"$baseFolder/$saveToFolder").toPath
-
-    filesToSave
+    val filesToSave = filesNamesToSave
       .map(modelPath.resolve)
       .map(_.toFile)
       .filter(_.exists)
       .filter(_.isFile)
-      .foreach(file => {
-        val name = FilenameUtils.getBaseName(file.getName)
-        val ext = FilenameUtils.getExtension(file.getName)
-        val copyPath = stashPath.resolve(s"${name}_${file.lastModified()}.$ext")
-        if (copyPath.toFile.exists()) {
-          copyPath.toFile.delete()
-        }
-        Files.copy(file.toPath, copyPath)
-      })
+
+    val saveToPath = if (filesToSave.nonEmpty) {
+      FileUtils.mkDir(s"$baseFolder/$saveToFolder").toPath
+    } else {
+      null
+    }
+
+    filesToSave.foreach(file => {
+      val name = FilenameUtils.getBaseName(file.getName)
+      val extension = FilenameUtils.getExtension(file.getName)
+      val copyPath = saveToPath.resolve(s"${name}_${file.lastModified()}.$extension")
+      if (copyPath.toFile.exists()) {
+        copyPath.toFile.delete()
+      }
+      Files.copy(file.toPath, copyPath)
+    })
   }
 
 }

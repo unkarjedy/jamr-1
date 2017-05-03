@@ -30,11 +30,9 @@ case class Parse(context: Context,
     logger.info("### Running JAMR ###")
     proceedParse()
 
-    new File(inputFolder)
-      .listFiles()
-      .filter(_.isFile)
+    val tmpFiles = new File(inputFolder).listFiles().filter(_.isFile)
       .filter(_.getName.endsWith(".tmp"))
-      .foreach(_.delete())
+    tmpFiles.foreach(_.delete())
   }
 
   private def tokenize(): Unit = {
@@ -78,30 +76,4 @@ case class Parse(context: Context,
 }
 
 
-object Parse {
-  def main(args: Array[String]): Unit = {
-    val jamrRoot = "C:/Users/unkarjedy/Desktop/NLP/jamr-master/"
-    val modelFolder = s"$jamrRoot/models/ACL2014_LDC2014E41"
 
-    val context = ContextBuilder.createContext(jamrRoot, modelFolder)
-
-    context.stage1Weights = s"${context.modelFolder}/stage1-weights"
-    context.stage2Weights = s"${context.modelFolder}/stage2-weights.iter5"
-
-    context.parserOptions =
-      s"""--stage1-features bias,length,fromNERTagger,conceptGivenPhrase
-         |--stage2-decoder LR
-         |--stage2-features rootConcept,rootDependencyPathv1,bias,typeBias,self,fragHead,edgeCount,distance,logDistance,posPathv3,dependencyPathv4,conceptBigram
-         |--stage2-labelset $jamrRoot/resources/labelset-r3
-         |--output-format AMR,nodes,edges,root
-         |--ignore-parser-errors
-         |--print-stack-trace-on-errors
-      """.stripMargin
-
-    val inputFolder = s"$jamrRoot/parsing_sandbox"
-    val outputFolder = s"$inputFolder/out"
-    val inputFilename= "in.txt"
-    Parse(context, inputFolder, inputFilename, outputFolder)
-      .run()
-  }
-}

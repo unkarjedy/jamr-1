@@ -1,43 +1,56 @@
 package scripts.train
 
-import java.io.{FileInputStream, PrintStream}
+import java.io.{File, FileInputStream, FileWriter, PrintStream}
 import java.util.logging.FileHandler
 
 import edu.cmu.lti.nlp.amr.ExtractConceptTable
-import scripts.utils.TimeUtils.time
+import scripts.utils.TimeUtils.runWithTimer
 import scripts.utils.context.{Context, ContextLike}
 import scripts.utils.logger.SimpleLoggerLike
-import scripts.utils.{AMRParserRunner, FileUtils}
+import scripts.utils.{AMRParserRunner, FileUtils, StageRunnerLike}
 
 import scala.io.Source
 
 // Analogue of TRAIN.sh
-case class Train(context: Context) extends ContextLike(context) with Runnable with SimpleLoggerLike {
+case class Train(context: Context) extends ContextLike(context)
+                                           with Runnable
+                                           with SimpleLoggerLike
+                                           with StageRunnerLike {
   FileUtils.mkDir(context.modelFolder)
   logger.addHandler(new FileHandler(s"${context.modelFolder}/Train.log"))
   initLogger()
 
+  private val CONTEXT_DUMP_FILE_NAME = "context_dump.txt"
+
   def run(): Unit = {
     // If there are some results file in model folder, save them it the inner folder
-    FileUtils.saveFiles(context.modelFolder, "old", Seq("RESULTS.txt"))
+    FileUtils.saveFiles(context.modelFolder, "prev_results", Seq("RESULTS.txt", CONTEXT_DUMP_FILE_NAME))
 
-    logger.info("Make concept table")
-    time(logger) {
+    dumpContext(context, CONTEXT_DUMP_FILE_NAME)
+
+    runStage("Make concept table", runProperties.skipConceptTableExtraction) {
       createTrainConceptTable()
       countWordFrequences()
     }
 
     logger.info("Train core start")
-    time(logger) {
+    runStage("Training stage 1", runProperties.skipTrainStage1) {
       runTrainingStage1()
     }
-    time(logger) {
+    runStage("Training stage 2", runProperties.skipTrainStage2) {
       runTrainingStage2()
     }
 
-    time(logger) {
+    runStage("Evaluating results", runProperties.skipEvaluating) {
       SmatchEvaluator(context).runSmatchEvaluations()
     }
+  }
+
+  private def dumpContext(context: Context, dumpFileName: String) = {
+    val dumpFile = new File(context.modelFolder).toPath.resolve(dumpFileName).toFile
+    val writer = new FileWriter(dumpFile)
+    writer.write(context.toLogString)
+    writer.close()
   }
 
   // Analogue of mkConceptTable
@@ -82,8 +95,6 @@ case class Train(context: Context) extends ContextLike(context) with Runnable wi
 
   // cmd.stage1-weights
   def runTrainingStage1(): Unit = {
-    logger.info("Training stage 1")
-
     val input = context.trainFile
     val output = s"${context.modelFolder}/stage1-weights"
 
@@ -112,8 +123,6 @@ case class Train(context: Context) extends ContextLike(context) with Runnable wi
 
   // cmd.stage2-weights
   def runTrainingStage2(): Unit = {
-    logger.info("Training stage 2")
-
     val input = context.trainFile
     val output = s"${context.modelFolder}/stage2-weights"
 

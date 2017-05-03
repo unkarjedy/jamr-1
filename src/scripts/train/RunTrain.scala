@@ -4,54 +4,77 @@ import scripts.preprocess.Preprocessor
 import scripts.utils.context.{Context, ContextBuilder}
 
 object RunTrain {
-  private val jamrRoot = "C:/Users/Dmitrii_Naumenko/Desktop/JAMR_2016_Github/"
+  val runProperties = new RunProperties()
+  runProperties.load(this.getClass.getClassLoader.getResourceAsStream("run.properties"))
+
+  val jamrRoot = runProperties.jamrRoot
+  val corpusFolder = runProperties.corpusFolder
+  val corpusFileBaseName = runProperties.corpusFileBaseName
+  val modelFolderSuffix = runProperties.modelFolderSuffix
 
   val stage1Features = List(
-    "bias", "corpusIndicator", "length", "corpusLength", "conceptGivenPhrase", "count",
-    "phraseGivenConcept", "phraseConceptPair", "phrase", "firstMatch", "numberIndicator",
-    "sentenceMatch", "andList", "pos", "posEvent", "phraseConceptPairPOS", "badConcept"
-  )
+    "bias", "length", "firstMatch", "numberIndicator", "badConcept",
+    "sentenceMatch", "andList", "pos", "posEvent",
+    "phrase", "phraseConceptPair", "phraseConceptPairPOS",
+    // Features extracted in ExtractConceptTable (before training step)
+    "corpusIndicator", "corpusLength", "count", "conceptGivenPhrase", "phraseGivenConcept"
+  ).distinct
+
   val stage2Features = List(
-    "rootConcept", "rootDependencyPathv1", "bias", "typeBias",
-    "self", "fragHead", "edgeCount", "distance", "logDistance",
-    "posPathv3", "dependencyPathv4", "conceptBigram", "dependencyPathv5"
-  )
+    "bias", "typeBias", "self", "fragHead", "edgeCount", "distance", "logDistance",
+    "rootConcept", "rootDependencyPathv1",
+    "conceptBigram",
+    "posPathv3", "dependencyPathv4", "dependencyPathv5"
+  ).distinct
+
+
+  val stage1SyntheticConcepts = List(
+    "NER", "DateExpr", "OntoNotes", "verbs", "nominalizations",
+    "NEPassThrough", "PassThrough", "WordNetPassThrough"
+  ).distinct
 
   def main(args: Array[String]): Unit = {
-    val corpus = Corpus.Little_Prince_v1_6
-    val baseInputDataDir = s"$jamrRoot/data/${corpus.name}/"
+    val baseInputDataDir = s"$jamrRoot/data/$corpusFolder/"
+    val modelFolder = s"$jamrRoot/models/$corpusFolder$modelFolderSuffix"
 
-    val context = ContextBuilder.createContextForTraining(jamrRoot,
-                                                          baseInputDataDir,
-                                                          corpus.baseFileName,
-                                                          modelFolder = "")
-//    Preprocessor(context).run()
+    val context = ContextBuilder.createContextForTraining(jamrRoot, baseInputDataDir, corpusFileBaseName, modelFolder)
+    context.runProperties = runProperties
+    context.stage1Features = stage1Features
+    context.stage2Features = stage2Features
 
-    1 to 3 foreach (iteration => {
-      stage1Features.foreach(feature => {
-        val stage1FeaturesWithoutOne = stage1Features.filter(_ != feature)
+    context.parserOptions = buildParserOptions(context, stage1SyntheticConcepts)
+    context.conceptIdTrainingOptions = buildConceptIdTrainingOptions(trainingLoss = "Infinite_Ramp")
+    context.relationIdTrainingOptions = buildRelationIdTrainingOptions()
 
-        context.modelFolder = s"$jamrRoot/models/${corpus.name}_LOO/${feature}_$iteration"
-
-        context.stage1Features = stage1FeaturesWithoutOne
-        context.stage2Features = stage2Features
-
-        val stage1SyntheticConcepts = List(
-          "NER", "DateExpr", "OntoNotes", "NEPassThrough", "PassThrough",
-          "WordNetPassThrough", "verbs", "nominalizations"
-        )
-
-        context.parserOptions = buildParserOptions(context, stage1SyntheticConcepts)
-        context.conceptIdTrainingOptions = buildConceptIdTrainingOptions(trainingLoss = "Infinite_Ramp")
-        context.relationIdTrainingOptions = buildRelationIdTrainingOptions()
-
-        Train(context).run()
-      })
-    })
-
+    Preprocessor(context).run()
+    Train(context).run()
   }
 
-  private def buildParserOptions(context: Context, stage1SyntheticConcepts: List[String]) = {
+  private def runLeaveOneFeatureOut(baseInputDataDir: String, corpus: Corpus) = {
+    stage1Features.foreach(featureToRemove => {
+      val modelFolder = s"$jamrRoot/models/${corpus.name}_LOO/$featureToRemove"
+      val context = ContextBuilder.createContextForTraining(
+        jamrRoot,
+        baseInputDataDir,
+        corpus.baseFileName,
+        modelFolder = modelFolder
+      )
+
+      val stage1FeaturesWithoutOne = stage1Features.filter(_ != featureToRemove)
+
+      context.stage1Features = stage1FeaturesWithoutOne
+      context.stage2Features = stage2Features
+      context.parserOptions = buildParserOptions(context, stage1SyntheticConcepts)
+      context.conceptIdTrainingOptions = buildConceptIdTrainingOptions(trainingLoss = "Infinite_Ramp")
+      context.relationIdTrainingOptions = buildRelationIdTrainingOptions()
+
+      Train(context).run()
+    })
+  }
+
+  private def buildParserOptions(context: Context,
+                                 stage1SyntheticConcepts: List[String],
+                                 stage1Only: Boolean = false) = {
     s"""--stage1-synthetic-concepts ${stage1SyntheticConcepts.mkString(",")}
        |--stage1-predicates ${context.jamrRoot}/resources/OntoNotes-v4-predicates.txt
        |--stage1-phrase-counts ${context.modelFolder}/wordCounts.train
@@ -63,10 +86,11 @@ object RunTrain {
        |--output-format AMR
        |--ignore-parser-errors
        |--print-stack-trace-on-errors
+       |${if (stage1Only) "--stage1-only" else ""}
        """.stripMargin
   }
 
-  def buildConceptIdTrainingOptions(trainingLoss: String): String = {
+  private def buildConceptIdTrainingOptions(trainingLoss: String = "Infinite_Ramp"): String = {
     s"""--training-optimizer Adagrad
        |--training-passes 10
        |--training-stepsize 1
@@ -80,7 +104,7 @@ object RunTrain {
     """.stripMargin
   }
 
-  def buildRelationIdTrainingOptions(): String = {
+  private def buildRelationIdTrainingOptions(): String = {
     """--training-optimizer Adagrad
       |--training-passes 10
       |--training-save-interval 1
