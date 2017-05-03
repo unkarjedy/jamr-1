@@ -1,6 +1,6 @@
 package edu.cmu.lti.nlp.amr.span
 
-import edu.cmu.lti.nlp.amr.Corpus.splitOnNewline
+import edu.cmu.lti.nlp.amr.utils.CorpusUtils.splitOnNewline
 import edu.cmu.lti.nlp.amr.{AMRTrainingData, Source, logger, verbosityGlobal}
 
 import scala.collection.mutable.Map

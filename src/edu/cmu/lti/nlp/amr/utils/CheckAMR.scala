@@ -1,12 +1,9 @@
-package edu.cmu.lti.nlp.amr
+package edu.cmu.lti.nlp.amr.utils
 
 import edu.cmu.lti.nlp.amr.graph.Graph
-import edu.cmu.lti.nlp.amr.utils.CycleTester
+import edu.cmu.lti.nlp.amr.{Source, verbosityGlobal}
 
-import scala.util.matching.Regex
 import scala.collection.mutable.Map
-import scala.collection.mutable.Set
-import scala.collection.mutable.ArrayBuffer
 
 object CheckAMR {
     val usage = """Usage: scala -classpath . edu.cmu.lti.nlp.amr.CheckAMR < amr_corpus > output"""
@@ -34,7 +31,7 @@ object CheckAMR {
 
         val Block = """((?:\n|.)*)\n(\((?:\n|.)*)""".r  // (?: ) is non-capturing group
         var i = 0
-        for (block <- Corpus.splitOnNewline(Source.stdin.getLines)) {
+        for (block <- CorpusUtils.splitOnNewline(Source.stdin.getLines)) {
             //if (block matches "(.|\n)*\n\\((.|\n)*") { // Does it containt some AMR? . does not match \n
                 //val Block(extras, amrstr) = block
                 val graph = Graph.parse(block)

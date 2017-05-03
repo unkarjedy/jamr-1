@@ -34,6 +34,7 @@ case class FeatureVectorFast(labelset : Array[String],
                              fmap : Map[String, ValuesMap] = Map()) extends FeatureVectorAbstract(labelset) {
     val labelToIndex : Map[String, Int] = Map()
     labelToIndex ++= labelset.zipWithIndex
+
     def iterateOverLabels(v: List[(String, Value)], f: (Conjoined) => Unit) {
         var unconjoinedTotal : Double = 0.0
         val conjoinedTotal : Array[Double] = labelset.map(x => 0.0)

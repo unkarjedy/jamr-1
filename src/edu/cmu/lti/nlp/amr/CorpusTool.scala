@@ -2,7 +2,7 @@ package edu.cmu.lti.nlp.amr
 
 import java.io.{InputStream, PrintStream}
 
-import edu.cmu.lti.nlp.amr.Corpus._
+import edu.cmu.lti.nlp.amr.utils.CorpusUtils._
 import edu.cmu.lti.nlp.amr.CorpusTool._
 
 import scala.collection.mutable.Map

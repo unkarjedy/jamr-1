@@ -5,6 +5,7 @@ import java.io.{InputStream, PrintStream}
 import edu.cmu.lti.nlp.amr.BasicFeatureVector._
 import edu.cmu.lti.nlp.amr.ConceptInvoke.PhraseConceptPair
 import edu.cmu.lti.nlp.amr.ExtractConceptTable.OptionMap
+import edu.cmu.lti.nlp.amr.utils.CorpusUtils
 
 import scala.collection.{immutable => i, mutable => m}
 
@@ -13,7 +14,9 @@ object ExtractConceptTable {
   val usage = """Usage: scala -classpath . edu.cmu.lti.nlp.amr.ExtractConceptTable < aligned_amr_corpus > concept_table"""
   type OptionMap = m.Map[Symbol, String]
 
-  val implementedFeatures: m.Set[String] = m.Set("corpusIndicator", "corpusLength", "count", "conceptGivenPhrase", "phraseGivenConcept")
+  val implementedFeatures: m.Set[String] = m.Set(
+    "corpusIndicator", "corpusLength", "count", "conceptGivenPhrase", "phraseGivenConcept"
+  )
 
   def parseOptions(map: OptionMap, list: List[String]): OptionMap = {
     def isSwitch(s: String) = s(0) == '-'
@@ -55,7 +58,7 @@ class ExtractConceptTable(stage1Features: List[String],
   override def run(): Unit = {
     logger(0, "stage1Features = " + stage1Features)
 
-    val inputLines = Corpus.splitOnNewline(Source.fromInputStream(in).getLines).toArray
+    val inputLines = CorpusUtils.splitOnNewline(Source.fromInputStream(in).getLines).toArray
     val conceptTable: m.Map[String, List[PhraseConceptPair]] = extract(inputLines, stage1Features, maxTrainingInstances)
 
     for {(_, list) <- conceptTable

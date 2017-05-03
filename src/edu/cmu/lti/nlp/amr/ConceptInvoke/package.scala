@@ -25,7 +25,7 @@ package object ConceptInvoke {
         val phraseCounts = Source.fromFile(options('stage1PhraseCounts)).getLines.map(x => (x.split(" ").init.toList, x.split(" ").last.toInt)).toMap
 
         if (oracle) {   // TODO: what about cost augmented as oracle?
-            new Oracle(options, stage1Features, conceptTable, phraseCounts)
+            new ConceptDecoderOracle(options, stage1Features, conceptTable, phraseCounts)
         } else {
             new ConceptDecoder(options, stage1Features, conceptTable, phraseCounts)
         }

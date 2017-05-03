@@ -15,6 +15,31 @@ class ConceptFeatures(featureNames: List[String], phraseCounts: i.Map[List[Strin
   // input, phraseConceptPair, start, end
   type FeatureFunction = (Input, PhraseConceptPair, Int, Int) => FeatureVectorBasic
 
+  // Calculate the local features
+  def localFeatures(input: Input, concept: PhraseConceptPair, start: Int, end: Int): FeatureVectorBasic = {
+    val feats = FeatureVectorBasic()
+    for (ff <- featureFunctions) {
+      feats += ff(input, concept, start, end)
+    }
+    feats += concept.features // add the features in the rule
+    feats
+  }
+
+  def localScore(input: Input, concept: PhraseConceptPair, start: Int, end: Int): Double = {
+    var score = 0.0
+    for (ff <- featureFunctions) {
+      score += weights.dot(ff(input, concept, start, end))
+    }
+    score += weights.dot(concept.features) // add the features in the rule
+    score
+  }
+
+  private def isKnownFeature(featureName: String): Boolean = {
+    featureFunctionsMap.contains(featureName) ||
+      ExtractConceptTable.implementedFeatures.contains(featureName) ||
+      Concepts.implementedFeatures.contains(featureName)
+  }
+
   /** ******************
     * Features to add:
     *   - Fragtype feature (is it an event, named entity, number, string constant, other fragment
@@ -39,6 +64,16 @@ class ConceptFeatures(featureNames: List[String], phraseCounts: i.Map[List[Strin
     "phraseConceptPairPOS" -> ffPhraseConceptPairPOS,
     "pairWith2WordContext" -> ffPairWith2WordContext
   )
+
+  private val featureFunctions: List[FeatureFunction] = {
+    featureNames
+      .filter(featureFunctionsMap.contains)
+      .map(featureFunctionsMap)
+  }
+  // TODO: error checking on lookup
+  private val unknownFeatures = featureNames.filterNot(isKnownFeature)
+  assert(unknownFeatures.isEmpty, "Unknown stage1 features: " + unknownFeatures.mkString(","))
+
 
   def ffBias(input: Input, concept: PhraseConceptPair, start: Int, end: Int): FeatureVectorBasic = {
     FeatureVectorBasic(m.Map("bias" -> 1.0))
@@ -143,40 +178,6 @@ class ConceptFeatures(featureNames: List[String], phraseCounts: i.Map[List[Strin
       feats.fmap(cp + "+" + "W+1=" + input.sentence(end)) = 1.0
     }
     feats
-  }
-
-  private val featureFunctions: List[FeatureFunction] = {
-    featureNames.filter(featureFunctionsMap.contains).map(featureFunctionsMap)
-  }
-  // TODO: error checking on lookup
-  private val unknownFeatures = {
-    featureNames.filterNot(isKnownFeature)
-  }
-
-  private def isKnownFeature(featureName: String): Boolean = {
-    featureFunctionsMap.contains(featureName) || ExtractConceptTable.implementedFeatures.contains(featureName) || Concepts.implementedFeatures.contains(featureName)
-  }
-
-  assert(unknownFeatures.isEmpty, "Unknown stage1 features: " + unknownFeatures.mkString(","))
-
-
-  // Calculate the local features
-  def localFeatures(input: Input, concept: PhraseConceptPair, start: Int, end: Int): FeatureVectorBasic = {
-    val feats = FeatureVectorBasic()
-    for (ff <- featureFunctions) {
-      feats += ff(input, concept, start, end)
-    }
-    feats += concept.features // add the features in the rule
-    feats
-  }
-
-  def localScore(input: Input, concept: PhraseConceptPair, start: Int, end: Int): Double = {
-    var score = 0.0
-    for (ff <- featureFunctions) {
-      score += weights.dot(ff(input, concept, start, end))
-    }
-    score += weights.dot(concept.features) // add the features in the rule
-    score
   }
 
 }

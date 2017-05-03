@@ -24,7 +24,7 @@ package object GraphDecoder {
         return loadLabelset(options('stage2Labelset))   // TODO: check for errors
     }
 
-    def Decoder(options: OptionMap) : GraphDecoder.Decoder = {
+    def Decoder(options: OptionMap) : GraphDecoder.GraphDecoderAbstract = {
         if (!options.contains('stage2Labelset)) {
             System.err.println("Error: No labelset file specified"); sys.exit(1)
         }
@@ -41,7 +41,7 @@ package object GraphDecoder {
             System.err.println("Error: No stage2 decoder specified"); sys.exit(1)
         }
 
-        val decoder: Decoder = options('stage2Decoder) match {
+        val decoder: GraphDecoderAbstract = options('stage2Decoder) match {
             case "Alg1" => new Alg1(options, features, labelset)
             case "Alg1a" => new Alg1(options, features, labelset, connectedConstraint = "and")
             case "Alg2" => new Alg2(options, features, labelset, connected)
@@ -64,11 +64,11 @@ package object GraphDecoder {
         return decoder
     }
 
-    def Oracle(options: OptionMap) : GraphDecoder.Decoder = {
+    def Oracle(options: OptionMap) : GraphDecoder.GraphDecoderAbstract = {
         return new Oracle(options, getFeatures(options), getLabelset(options).map(x => x._1))
     }
 
-    def CostDiminished(options: OptionMap) : GraphDecoder.Decoder = {
+    def CostDiminished(options: OptionMap) : GraphDecoder.GraphDecoderAbstract = {
         val decoder = Decoder(options)
         return new CostAugmented(decoder, -100000000000.0, 0.5, options)
     }

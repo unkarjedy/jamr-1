@@ -6,6 +6,7 @@ import edu.cmu.lti.nlp.amr.FastFeatureVector._
 import edu.cmu.lti.nlp.amr.Train.TrainObjAbstract
 import edu.cmu.lti.nlp.amr._
 import edu.cmu.lti.nlp.amr.graph.Graph
+import edu.cmu.lti.nlp.amr.utils.CorpusUtils
 
 import scala.collection.mutable.Map
 import scala.io.Source
@@ -26,7 +27,7 @@ class TrainObjGraph(val options: Map[Symbol, String]) extends TrainObjAbstract(c
   }
 
   val input: Array[Input] = Input.loadInputfiles(options)
-  val training: Array[String] = Corpus.getAMRBlocks(Source.stdin.getLines()).toArray
+  val training: Array[String] = CorpusUtils.getAMRBlocks(Source.stdin.getLines()).toArray
 
   def trainingSize: Int = training.length
 
@@ -173,11 +174,11 @@ class TrainObjGraph(val options: Map[Symbol, String]) extends TrainObjAbstract(c
     val snt = fromFile(dev + ".aligned.no_opN").getLines.toArray
     // aka 'input' in AMRParser decode
     val tokenized = fromFile(dev + ".snt.tok").getLines.toArray
-    val nerFile = Corpus.splitOnNewline(fromFile(dev + ".snt.IllinoisNER").getLines).toArray
-    val dependencies = Corpus.splitOnNewline(fromFile(dev + ".snt.deps").getLines).map(block => block.replaceAllLiterally("-LRB-", "(").replaceAllLiterally("-RRB-", ")").replaceAllLiterally("""\/""", "/")).toArray
+    val nerFile = CorpusUtils.splitOnNewline(fromFile(dev + ".snt.IllinoisNER").getLines).toArray
+    val dependencies = CorpusUtils.splitOnNewline(fromFile(dev + ".snt.deps").getLines).map(block => block.replaceAllLiterally("-LRB-", "(").replaceAllLiterally("-RRB-", ")").replaceAllLiterally("""\/""", "/")).toArray
 
     val file = new java.io.PrintWriter(new java.io.File(devDecode), "UTF-8")
-    for {(block, i) <- Corpus.splitOnNewline(fromFile(dev + ".aligned.no_opN").getLines).zipWithIndex
+    for {(block, i) <- CorpusUtils.splitOnNewline(fromFile(dev + ".aligned.no_opN").getLines).zipWithIndex
          if block.split("\n").exists(_.startsWith("("))} {
       // needs to contain some AMR
       try {

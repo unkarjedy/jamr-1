@@ -1,6 +1,7 @@
 package edu.cmu.lti.nlp.amr.span
 
-import edu.cmu.lti.nlp.amr.{Corpus, Source, logger, verbosityGlobal}
+import edu.cmu.lti.nlp.amr.utils.CorpusUtils
+import edu.cmu.lti.nlp.amr.{Source, logger, verbosityGlobal}
 
 import scala.collection.mutable.Map
 
@@ -45,7 +46,7 @@ object EvalSpans {
             wordspan+"|"+nodestr.split("[+]").sorted.mkString("+")
         }
 
-        for ((block, i) <- Corpus.splitOnNewline(Source.stdin.getLines).zipWithIndex) {
+        for ((block, i) <- CorpusUtils.splitOnNewline(Source.stdin.getLines).zipWithIndex) {
             val lines = block.split("\n")
             val alignerStrs = lines.filter(x => x.matches(".*::alignments.*") && !x.matches(".*::gold.*"))
             val annotatorStrs = lines.filter(x => x.matches(".*::alignments.*") && x.matches(".*::gold.*"))

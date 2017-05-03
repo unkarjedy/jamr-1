@@ -6,10 +6,10 @@ import edu.cmu.lti.nlp.amr.BasicFeatureVector._
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.{mutable => m, immutable => i}
 
-class Oracle(options: m.Map[Symbol, String],
-             featureNames: List[String],
-             phraseConceptPairs: Array[PhraseConceptPair],
-             phraseCounts: i.Map[List[String], Int])
+class ConceptDecoderOracle(options: m.Map[Symbol, String],
+                           featureNames: List[String],
+                           phraseConceptPairs: Array[PhraseConceptPair],
+                           phraseCounts: i.Map[List[String], Int])
     extends ConceptDecoderAbstract(featureNames, phraseCounts) {
     // Base class has defined:
     // val features: Features

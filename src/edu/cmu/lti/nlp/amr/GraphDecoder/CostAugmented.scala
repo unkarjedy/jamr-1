@@ -19,7 +19,7 @@ import scala.collection.mutable
 import scala.collection.mutable.Set
 import scala.collection.mutable.ArrayBuffer
 
-class CostAugmented(val decoder: Decoder, costScale: Double, precRecTradeoff: Double, options: mutable.Map[Symbol, String]) extends Decoder {
+class CostAugmented(val decoder: GraphDecoderAbstract, costScale: Double, precRecTradeoff: Double, options: mutable.Map[Symbol, String]) extends GraphDecoderAbstract {
     // precRecTradeoff: 1 = only prec errors, 0 = only recall errors
     var features = decoder.features
     decoder.features.addFeatureFunction("CostAugEdge")

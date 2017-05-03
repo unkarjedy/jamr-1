@@ -6,8 +6,8 @@ import scala.collection.mutable.Map
 import scala.collection.mutable.Set
 import scala.collection.mutable.ArrayBuffer
 
-abstract class Decoder {
-    var features : Features
+abstract class GraphDecoderAbstract {
+    var features : GraphFeatures
 
     def decode(i: Input) : DecoderResult
 }

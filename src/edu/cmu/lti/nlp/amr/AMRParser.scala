@@ -6,7 +6,7 @@ import java.util.Date
 
 import edu.cmu.lti.nlp.amr.graph.Graph
 import edu.cmu.lti.nlp.amr.span.Span
-import edu.cmu.lti.nlp.amr.utils.{F1, LineUtils}
+import edu.cmu.lti.nlp.amr.utils.{CorpusUtils, F1, LineUtils}
 
 import scala.collection.{mutable => m}
 import scala.io.Source.fromFile
@@ -120,7 +120,7 @@ object AMRParser {
       }
     }
 
-    val stage2: Option[GraphDecoder.Decoder] = {
+    val stage2: Option[GraphDecoder.GraphDecoderAbstract] = {
       if ((options.contains('stage1Only) || options.contains('stage1Train)) && !options.contains('stage2Train)) {
         None
       } else if (options.contains('stage2CostDiminished)) {
@@ -130,7 +130,7 @@ object AMRParser {
       }
     }
 
-    val stage2Oracle: Option[GraphDecoder.Decoder] = {
+    val stage2Oracle: Option[GraphDecoder.GraphDecoderAbstract] = {
       if (options.contains('trainingData) || options.contains('stage2Train)) {
         Some(GraphDecoder.Oracle(options))
       } else {
@@ -189,12 +189,12 @@ object AMRParser {
 
       val input = stdin.getLines.toArray
       val tokenized = fromFile(options('tokenized)).getLines /*.map(x => x)*/ .toArray
-      val nerFile = Corpus.splitOnNewline(fromFile(options('ner)).getLines).toArray
+      val nerFile = CorpusUtils.splitOnNewline(fromFile(options('ner)).getLines).toArray
       val oracleData = options.get('trainingData)
-        .map(file => Corpus.getAMRBlocks(fromFile(file).getLines()).toArray)
+        .map(file => CorpusUtils.getAMRBlocks(fromFile(file).getLines()).toArray)
         .getOrElse(Array())
       val dependencies = options.get('dependencies).map(fileName => {
-        Corpus.splitOnNewline(Source.fromFile(fileName).getLines())
+        CorpusUtils.splitOnNewline(Source.fromFile(fileName).getLines())
           .map(LineUtils.cleanDependencyStr)
           .toArray
       }).getOrElse(Array())

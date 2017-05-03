@@ -1,6 +1,6 @@
-package edu.cmu.lti.nlp.amr
+package edu.cmu.lti.nlp.amr.utils
 
-object Corpus {
+object CorpusUtils {
   // This treats more than one newline in a row as a single newline
   def splitOnNewline(iterator: Iterator[String]): Iterator[String] = {
     for {
@@ -19,9 +19,9 @@ object Corpus {
   ) yield block
 }
 
-class CorpusTest /* extends Suite*/ {
+class CorpusUtilsTest /* extends Suite*/ {
   def testSplitOnNewline() {
-    val split = Corpus.splitOnNewline(Iterator("a", "b", "c", "", "a", "c", "b"))
+    val split = CorpusUtils.splitOnNewline(Iterator("a", "b", "c", "", "a", "c", "b"))
     assert(split.toList == List("a\nb\nc", "a\nc\nb"))
   }
 }

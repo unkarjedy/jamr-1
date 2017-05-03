@@ -1,6 +1,7 @@
 package edu.cmu.lti.nlp.amr
 
 import edu.cmu.lti.nlp.amr.graph.Graph
+import edu.cmu.lti.nlp.amr.utils.CorpusUtils
 
 import scala.util.matching.Regex
 import scala.collection.mutable.{ArrayBuffer, Map, Set}
@@ -77,12 +78,12 @@ object Input {
         val notTokenized = fromFile(options('notTokenized)).getLines.toArray
         val dependencies = if (options.contains('dependencies)) {
             (for {
-                block <- Corpus.splitOnNewline(fromFile(options('dependencies)).getLines())
+                block <- CorpusUtils.splitOnNewline(fromFile(options('dependencies)).getLines())
             } yield block.replaceAllLiterally("-LRB-","(").replaceAllLiterally("-RRB-",")").replaceAllLiterally("""\/""","/")).toArray
         } else {
             tokenized.map(x => "")
         }
-        val ner = Corpus.splitOnNewline(fromFile(options('ner)).getLines).toArray
+        val ner = CorpusUtils.splitOnNewline(fromFile(options('ner)).getLines).toArray
         logger(1, "tokenized.size = "+tokenized.size.toInt)
         logger(1, "snt.size = "+notTokenized.size.toInt)
         logger(1, "dependencies.size = "+dependencies.size.toInt)

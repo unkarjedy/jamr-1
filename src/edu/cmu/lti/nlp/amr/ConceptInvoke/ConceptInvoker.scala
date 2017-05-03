@@ -19,7 +19,7 @@ class Concepts(options: m.Map[Symbol, String],
                phraseConceptPairs: Array[PhraseConceptPair]) {
 
   // maps the first word in the phrase to a list of phraseConceptPairs
-  val conceptTable: m.Map[String, List[PhraseConceptPair]] = m.Map()
+  private val conceptTable: m.Map[String, List[PhraseConceptPair]] = m.Map()
 
   for (pair <- phraseConceptPairs) {
     val word = pair.words.head
@@ -34,9 +34,8 @@ class Concepts(options: m.Map[Symbol, String],
     * ****************************************/
   private val conceptSources = options.getOrElse('stage1SyntheticConcepts, "NER,DateExpr").split(",").toSet
   private val implementedConceptSources = m.Set(
-    "NER", "DateExpr", "OntoNotes",
-    "NEPassThrough", "PassThrough", "WordNetPassThrough",
-    "verbs", "nominalizations"
+    "NER", "DateExpr", "OntoNotes", "verbs", "nominalizations",
+    "NEPassThrough", "PassThrough", "WordNetPassThrough"
   )
 
   private val unknownConcepts = conceptSources.diff(implementedConceptSources)
@@ -138,7 +137,7 @@ class Concepts(options: m.Map[Symbol, String],
     conceptSet.values.toList
   }
 
-  def ontoNotesLookup(input: Input, wordId: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
+  private def ontoNotesLookup(input: Input, wordId: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
     val stems = Wordnet.getStemms(input.sentence(wordId))
 
     val concepts = stems.filter(ontoNotes.contains).map(stem => {
@@ -157,7 +156,7 @@ class Concepts(options: m.Map[Symbol, String],
     concepts
   }
 
-  def NEPassThrough(input: Input, wordId: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
+  private def NEPassThrough(input: Input, wordId: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
     // TODO: improve this to check if the words were observed other places
     var concepts = List[PhraseConceptPair]()
 
@@ -186,7 +185,7 @@ class Concepts(options: m.Map[Symbol, String],
 
   private def onlyVal(onlyPassThrough: Boolean) = if (onlyPassThrough) 1 else 0
 
-  def passThrough(input: Input, i: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
+  private def passThrough(input: Input, i: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
     // TODO: improve this regex
     if (input.sentence(i).matches("[A-Za-z0-9]*")) {
       List(PhraseConceptPair(
@@ -200,7 +199,7 @@ class Concepts(options: m.Map[Symbol, String],
     }
   }
 
-  def wordnetPassThrough(input: Input, i: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
+  private def wordnetPassThrough(input: Input, i: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
     val word = input.sentence(i)
     val stems = Wordnet.getStemms(word)
     // TODO: add stems from large annotated corpus
@@ -216,7 +215,7 @@ class Concepts(options: m.Map[Symbol, String],
     }
   }
 
-  def verbs(input: Input, wordId: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
+  private def verbs(input: Input, wordId: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
     var concepts = List[PhraseConceptPair]()
     val pos: Array[String] = input.pos.slice(wordId, wordId + 1) // NOTE: pos.slice is defined in Annotation.slice
     if (pos.length > 0 && pos(pos.length - 1).startsWith("V")) {
@@ -239,7 +238,7 @@ class Concepts(options: m.Map[Symbol, String],
     concepts
   }
 
-  def nominalizations(input: Input, i: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
+  private def nominalizations(input: Input, i: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
     // (no change) budget -> budget-01
 
     // (drop -e in predicate that ends in -ate) proliferate-01 -> proliferation, state-01 -> statement
@@ -261,7 +260,7 @@ class Concepts(options: m.Map[Symbol, String],
 
   // verbalization (modern -> modernize (to make modern), etc, not use in AMR modernize -> modernize-01)
 
-  def namedEntity(input: Input, entity: Entity): PhraseConceptPair = {
+  private def namedEntity(input: Input, entity: Entity): PhraseConceptPair = {
     val Input(_, sentence, notTokenized, _, _, ner, _) = input
     val entityType: String = entity.label match {
       case "PER" => "person" // also president
@@ -289,7 +288,7 @@ class Concepts(options: m.Map[Symbol, String],
                       FeatureVectorBasic(m.Map("ner" -> 1.0, "ner_len" -> (end - start))))
   }
 
-  def dateEntities(input: Input, start: Int): List[PhraseConceptPair] = {
+  private def dateEntities(input: Input, start: Int): List[PhraseConceptPair] = {
     logger(2, "Finding date entities")
     var list: ArrayBuffer[PhraseConceptPair] = ArrayBuffer()
     tokens = input.sentence.drop(start)
@@ -377,32 +376,32 @@ class Concepts(options: m.Map[Symbol, String],
     list.toList
   }
 
-  def mkDayMonthYear(matching: String, day: String, month: String, year: String): PhraseConceptPair = {
+  private def mkDayMonthYear(matching: String, day: String, month: String, year: String): PhraseConceptPair = {
     //logger(0, "mkDayMonthYear("+matching+","+day+","+month+","+year+")")
     PhraseConceptPair(tokens.take(matching.count(_ == '\t') + 1).toList,
                       "(date-entity :day " + day.toInt.toString + " :month " + monthStr(month) + " :year " + year + ")",
                       FeatureVectorBasic(m.Map("datex1" -> 1.0, "datex_len" -> (matching.count(_ == '\t') + 1))))
   }
 
-  def mkMonthYear(matching: String, month: String, year: String): PhraseConceptPair = {
+  private def mkMonthYear(matching: String, month: String, year: String): PhraseConceptPair = {
     PhraseConceptPair(tokens.take(matching.count(_ == '\t') + 1).toList,
                       "(date-entity :month " + monthStr(month) + " :year " + year + ")",
                       FeatureVectorBasic(m.Map("datex2" -> 1.0, "datex_len" -> (matching.count(_ == '\t') + 1))))
   }
 
-  def mkMonth(matching: String, month: String): PhraseConceptPair = {
+  private def mkMonth(matching: String, month: String): PhraseConceptPair = {
     PhraseConceptPair(tokens.take(matching.count(_ == '\t') + 1).toList,
                       "(date-entity :month " + monthStr(month) + ")",
                       FeatureVectorBasic(m.Map("datex3" -> 1.0, "datex_len" -> (matching.count(_ == '\t') + 1))))
   }
 
-  def mkYear(matching: String, year: String): PhraseConceptPair = {
+  private def mkYear(matching: String, year: String): PhraseConceptPair = {
     PhraseConceptPair(tokens.take(matching.count(_ == '\t') + 1).toList,
                       "(date-entity :year " + year + ")",
                       FeatureVectorBasic(m.Map("datex4" -> 1.0, "datex_len" -> (matching.count(_ == '\t') + 1))))
   }
 
-  def monthStr(month: String): String = {
+  private def monthStr(month: String): String = {
     if (month.matches("[0-9]*")) {
       month.toInt.toString
     } else {

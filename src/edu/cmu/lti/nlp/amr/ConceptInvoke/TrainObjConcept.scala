@@ -4,6 +4,7 @@ import edu.cmu.lti.nlp.amr.BasicFeatureVector._
 import edu.cmu.lti.nlp.amr.Train.TrainObjAbstract
 import edu.cmu.lti.nlp.amr._
 import edu.cmu.lti.nlp.amr.graph.{Graph, Node}
+import edu.cmu.lti.nlp.amr.utils.CorpusUtils
 
 import scala.collection.{immutable => i, mutable => m}
 import scala.io.Source.fromFile
@@ -18,7 +19,7 @@ class TrainObjConcept(val options: m.Map[Symbol, String]) extends TrainObjAbstra
   def zeroVector: FeatureVectorBasic = FeatureVectorBasic()
 
   val input: Array[Input] = Input.loadInputfiles(options)
-  val training: Array[String] = Corpus.getAMRBlocks(Source.stdin.getLines()).toArray
+  val training: Array[String] = CorpusUtils.getAMRBlocks(Source.stdin.getLines()).toArray
 
   def trainingSize: Int = training.length
 
@@ -194,8 +195,8 @@ class TrainObjConcept(val options: m.Map[Symbol, String]) extends TrainObjAbstra
       val snt = fromFile(dev + ".snt").getLines.toArray
       // aka 'input' in AMRParser decode
       val tokenized = fromFile(dev + ".snt.tok").getLines.toArray
-      val ner = Corpus.splitOnNewline(fromFile(dev + ".snt.IllinoisNER").getLines).toArray
-      val dependencies = Corpus.splitOnNewline(fromFile(dev + ".snt.deps").getLines).map(block => block.replaceAllLiterally("-LRB-", "(").replaceAllLiterally("-RRB-", ")").replaceAllLiterally("""\/""", "/")).toArray
+      val ner = CorpusUtils.splitOnNewline(fromFile(dev + ".snt.IllinoisNER").getLines).toArray
+      val dependencies = CorpusUtils.splitOnNewline(fromFile(dev + ".snt.deps").getLines).map(block => block.replaceAllLiterally("-LRB-", "(").replaceAllLiterally("-RRB-", ")").replaceAllLiterally("""\/""", "/")).toArray
 
       case class F1(var correct: Double, var predicted: Double, var total: Double) {
         def precision: Double = correct / predicted
@@ -213,7 +214,7 @@ class TrainObjConcept(val options: m.Map[Symbol, String]) extends TrainObjAbstra
       decoder.features.weights = weights
 
       val file = new java.io.PrintWriter(new java.io.File(devDecode), "UTF-8")
-      for ((block, i) <- Corpus.splitOnNewline(fromFile(dev + ".aligned.no_opN").getLines).filter(x => x.split("\n").exists(_.startsWith("("))).zipWithIndex) {
+      for ((block, i) <- CorpusUtils.splitOnNewline(fromFile(dev + ".aligned.no_opN").getLines).filter(x => x.split("\n").exists(_.startsWith("("))).zipWithIndex) {
         // TODO: add this filter for GraphDecoder.TrainObj
         file.println("Sentence: " + snt(i))
         //file.println(decoderResult.graph.prettyString(detail=1, pretty=true) + '\n')

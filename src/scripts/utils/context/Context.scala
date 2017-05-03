@@ -48,4 +48,23 @@ class Context {
     path.replace("//", "/")
       .replace("\\", "/")
   }
+
+  def toLogString: String = {
+    s"""$jamrRoot
+       |$trainFile
+       |$devFile
+       |$testFile
+       |$modelFolder
+       |$stage1Weights
+       |$stage2Weights
+       |$stage1Features
+       |$stage2Features
+       |
+       |$parserOptions
+       |
+       |$conceptIdTrainingOptions
+       |
+       |$relationIdTrainingOptions
+     """.stripMargin
+  }
 }

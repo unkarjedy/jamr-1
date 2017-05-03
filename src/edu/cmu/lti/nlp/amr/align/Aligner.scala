@@ -5,8 +5,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 import edu.cmu.lti.nlp.amr.graph.Graph
-import edu.cmu.lti.nlp.amr.utils.JAMRLogger
-import edu.cmu.lti.nlp.amr.{AMRTrainingData, Corpus, CorpusTool, Source}
+import edu.cmu.lti.nlp.amr.utils.{CorpusUtils, JAMRLogger}
+import edu.cmu.lti.nlp.amr.{AMRTrainingData, CorpusTool, Source}
 
 import scala.collection.mutable.Map
 
@@ -26,7 +26,7 @@ class Aligner(in: InputStream,
   private val wordsAligner = WordsAligner(logger)
 
   override def run(): Unit = {
-    val blocks = Corpus.splitOnNewline(Source.fromInputStream(in).getLines)
+    val blocks = CorpusUtils.splitOnNewline(Source.fromInputStream(in).getLines)
 
     val sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
     for (block <- blocks) {
