@@ -4,15 +4,14 @@ import scripts.preprocess.Preprocessor
 import scripts.utils.context.{Context, ContextBuilder}
 
 object RunTrain {
-  val runProperties = new RunProperties()
-  runProperties.load(this.getClass.getClassLoader.getResourceAsStream("run.properties"))
+  private val runProperties = new RunProperties("run.properties")
 
-  val jamrRoot = runProperties.jamrRoot
-  val corpusFolder = runProperties.corpusFolder
-  val corpusFileBaseName = runProperties.corpusFileBaseName
-  val modelFolderSuffix = runProperties.modelFolderSuffix
+  private val jamrRoot = runProperties.jamrRoot
+  private val corpusFolder = runProperties.corpusFolder
+  private val corpusFileBaseName = runProperties.corpusFileBaseName
+  private val modelFolderSuffix = runProperties.modelFolderSuffix
 
-  val stage1Features = List(
+  private val stage1Features = List(
     "bias", "length", "firstMatch", "numberIndicator", "badConcept",
     "sentenceMatch", "andList", "pos", "posEvent",
     "phrase", "phraseConceptPair", "phraseConceptPairPOS",
@@ -20,7 +19,7 @@ object RunTrain {
     "corpusIndicator", "corpusLength", "count", "conceptGivenPhrase", "phraseGivenConcept"
   ).distinct
 
-  val stage2Features = List(
+  private val stage2Features = List(
     "bias", "typeBias", "self", "fragHead", "edgeCount", "distance", "logDistance",
     "rootConcept", "rootDependencyPathv1",
     "conceptBigram",
@@ -28,7 +27,7 @@ object RunTrain {
   ).distinct
 
 
-  val stage1SyntheticConcepts = List(
+  private val stage1SyntheticConcepts = List(
     "NER", "DateExpr", "OntoNotes", "verbs", "nominalizations",
     "NEPassThrough", "PassThrough", "WordNetPassThrough"
   ).distinct

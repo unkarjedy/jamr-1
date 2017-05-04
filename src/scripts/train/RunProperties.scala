@@ -4,7 +4,9 @@ import java.util.Properties
 
 import scripts.train.RunTrain.runProperties
 
-final class RunProperties extends Properties {
+final class RunProperties(filename: String) extends Properties {
+  load(this.getClass.getClassLoader.getResourceAsStream("run.properties"))
+
   def jamrRoot = getProperty("jamrRoot")
   def corpusFolder = getProperty("corpus.folder")
   def corpusFileBaseName = getProperty("corpus.file_base_name")

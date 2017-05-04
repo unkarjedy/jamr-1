@@ -15,7 +15,9 @@ libraryDependencies ++= Seq(
   "edu.stanford.nlp" % "stanford-corenlp" % "3.4.1",
   "edu.stanford.nlp" % "stanford-corenlp" % "3.4.1" classifier "models",
   "org.scala-lang.modules" %% "scala-pickling" % "0.10.0",
-  "commons-io" % "commons-io" % "2.5"
+  "commons-io" % "commons-io" % "2.5",
+  "org.apache.commons" % "commons-csv" % "1.3",
+  "org.apache.commons" % "commons-lang3" % "3.0"
 //  "org.scala-lang" % "scala-swing" % "2.10.3"
 )
 
