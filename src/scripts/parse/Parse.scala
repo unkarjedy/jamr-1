@@ -3,9 +3,9 @@ package scripts.parse
 import java.io.{File, PrintWriter}
 
 import scripts.preprocess.Preprocessor
-import scripts.utils.context.{Context, ContextBuilder, ContextLike}
+import scripts.utils.context.{Context, ContextLike}
 import scripts.utils.logger.SimpleLoggerLike
-import scripts.utils.{AMRParserRunner, FileUtils}
+import scripts.utils.{AMRParserRunner, FileUtils, StageRunnerLike}
 
 import scala.io.Source
 
@@ -13,29 +13,34 @@ import scala.io.Source
 case class Parse(context: Context,
                  inputFolder: String,
                  inputFileName: String,
-                 outputFolder: String) extends ContextLike(context) with Runnable with SimpleLoggerLike {
-  val inputFile = new File(inputFolder).toPath.resolve(inputFileName).toFile
+                 outputFolder: String) extends ContextLike(context) with Runnable with SimpleLoggerLike with StageRunnerLike {
+  private val inputFile = new File(inputFolder).toPath.resolve(inputFileName).toFile
 
   override def run(): Unit = {
     FileUtils.mkDir(outputFolder)
 
-    tokenize()
-    val preprocessor = Preprocessor(context)
+    runStage("###  Preprocess input sentences ###", context.runProperties.skipPreprocessing) {
+      proceedPreprocessing()
+    }
+    tryRunStage("### Running JAMR Parser ###", skip = false) {
+      proceedParse()
+    }
 
+    removeTemFiles(inputFolder)
+  }
+
+  private def proceedPreprocessing() = {
+    logger.info("### Tokenizing input###")
+    runTokenizer()
+
+    val preprocessor = Preprocessor(context)
     logger.info("### Running NER system ###")
     preprocessor.runIllinoisNamedEntityTagger(inputFile.getPath, System.err, System.err) // redirect both to err
     logger.info("### Running dependency parser ###")
     preprocessor.runStandfordDependencyParser(inputFile.getPath, s"$inputFile.deps")
-
-    logger.info("### Running JAMR ###")
-    proceedParse()
-
-    val tmpFiles = new File(inputFolder).listFiles().filter(_.isFile)
-      .filter(_.getName.endsWith(".tmp"))
-    tmpFiles.foreach(_.delete())
   }
 
-  private def tokenize(): Unit = {
+  private def runTokenizer(): Unit = {
     val tokTmp = s"$inputFile.tok.tmp"
     val sntWriter = new PrintWriter(tokTmp)
     Source.fromFile(inputFile).getLines()
@@ -73,6 +78,11 @@ case class Parse(context: Context,
     )
   }
 
+  private def removeTemFiles(folder: String) = {
+    val tmpFiles = new File(folder).listFiles().filter(_.isFile)
+      .filter(_.getName.endsWith(".tmp"))
+    tmpFiles.foreach(_.delete())
+  }
 }
 
 

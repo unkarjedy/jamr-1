@@ -1,4 +1,4 @@
-package scripts.utils
+package scripts.DO_NOT_LOOK_HERE
 
 import java.io.File
 import java.util.logging.FileHandler
@@ -9,9 +9,10 @@ import scala.collection.mutable
 import scala.io.Source
 
 /**
-  * Not directly used for JAMR purposes.
+  * !!!! SKIP THIS FILE, DO NOT SPEND YOUR TIME !!!!
+  * It is not directly used for JAMR purposes.
   * It is used to check if files content of two folders are equal.
-  * This is needed to check that Scala scripts outputs are same as shell scripts outputs.
+  * I used it to check that Scala scripts outputs are same as shell scripts outputs.
   */
 object FolderDiffEvaluator extends SimpleLoggerLike {
 

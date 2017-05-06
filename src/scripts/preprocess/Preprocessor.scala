@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets
 import edu.cmu.lti.nlp.amr.align.Aligner
 import edu.cmu.lti.nlp.amr.{CorpusTool, IllinoisNERConvert, RunStanfordParser}
 import scripts.utils.{StageRunnerLike, StreamUtils}
-import scripts.utils.TimeUtils.runWithTimer
+import scripts.utils.TimeUtils.runWithTimeLogging
 import scripts.utils.context.{Context, ContextLike}
 import scripts.utils.logger.SimpleLoggerLike
 

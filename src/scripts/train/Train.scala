@@ -4,7 +4,6 @@ import java.io.{File, FileInputStream, FileWriter, PrintStream}
 import java.util.logging.FileHandler
 
 import edu.cmu.lti.nlp.amr.ExtractConceptTable
-import scripts.utils.TimeUtils.runWithTimer
 import scripts.utils.context.{Context, ContextLike}
 import scripts.utils.logger.SimpleLoggerLike
 import scripts.utils.{AMRParserRunner, FileUtils, StageRunnerLike}

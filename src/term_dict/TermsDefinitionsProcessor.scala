@@ -1,6 +1,6 @@
 package term_dict
 
-import java.io.{FileReader, PrintStream}
+import java.io.FileReader
 
 import org.apache.commons.csv.{CSVFormat, CSVParser}
 import org.apache.commons.lang3.StringUtils
@@ -10,7 +10,6 @@ import scala.collection.JavaConversions._
 import scala.collection.mutable
 
 case class Term(id: Int, value: String,
-                // 1 term to many definitions
                 definitions: mutable.ArrayBuffer[TermDefinition] = mutable.ArrayBuffer(),
                 synonyms: mutable.ArrayBuffer[String] = mutable.ArrayBuffer())
 
@@ -24,7 +23,7 @@ object TermsDefinitionsProcessor {
 
   val jamrRoot = runProperties.jamrRoot
   val baseFolder = s"$jamrRoot/data/terms/"
-  val resoursesBasePath = s"$jamrRoot/resources"
+  val resoursesBasePath = s"$jamrRoot/resources_terms"
   val termsFile = "terms_comp.txt"
   val termsDefinitionsFile = "terms_comp_definition.txt"
 
@@ -33,17 +32,21 @@ object TermsDefinitionsProcessor {
     val definitions = loadDefinitions(s"$baseFolder/$termsDefinitionsFile")
 
     initTermDefinitionsReferences(terms, definitions)
-    parseDefinitionsSentences(terms, definitions)
+    splitDefinitionsToSentences(terms, definitions)
     extractSynonyms(terms)
 
-    saveTerms(terms, s"$resoursesBasePath/terms.txt")
-    saveTermsWithSynonims(terms, s"$resoursesBasePath/terms_with_synonims.txt")
-    saveTermsWithDefinitionsToFile(terms, s"$resoursesBasePath/term-definitions.txt")
-    saveDefinitionsSentencesToFile(terms, s"$resoursesBasePath/definition-sentences.txt")
+    val saver = new TermDefinitionSaver(resoursesBasePath)
+    saver.saveTerms(terms, "terms.txt")
+    saver.saveTermsLowercased(terms, "terms-lowercased.txt")
+//    saver.saveTermsWithSynonims(terms, "terms_with_synonims.txt")
+//    saver.saveTermsWithDefinitionsToFile(terms, "term-definitions.txt")
+//    saver.saveDefinitionsSentencesToFile(terms, "definition-sentences.txt")
+    saver.saveDefinitionsFirstSentencesToFile(terms, "definition-first-sentences.txt", splitDefinitions = true)
+    saver.saveDefinitionsFirstSentencesToFile(terms, "definition-first-sentences-no-blank.txt")
   }
 
   /** The method extracts synonyms from first sentence of each definition.
-    * Example: UBL - (Universal Business Language) A format for exchanging data
+    * Example: UBL - "(Universal Business Language) A format for exchanging data..."
     * The synonym inside the brackets is then removed out of the definition */
   def extractSynonyms(terms: mutable.Seq[Term]) = {
     for (term <- terms;
@@ -60,15 +63,13 @@ object TermsDefinitionsProcessor {
   }
 
   def initTermDefinitionsReferences(terms: mutable.Seq[Term], definitions: mutable.Seq[TermDefinition]) = {
-    // build indexes for fast access by field
-    val idToTemr = terms.map(t => t.id -> t).toMap
-    // load definitions into terms
+    val idToTemr = terms.map(t => t.id -> t).toMap // index for fast access by id
     definitions.foreach(d => {
       idToTemr(d.termId).definitions += d
     })
   }
 
-  def parseDefinitionsSentences(terms: mutable.Seq[Term], definitions: mutable.Seq[TermDefinition]) = {
+  def splitDefinitionsToSentences(terms: mutable.Seq[Term], definitions: mutable.Seq[TermDefinition]) = {
     val senteseSplitter = new SenteseSplitter(terms)
     definitions.foreach(d => d.sentences ++= senteseSplitter.split(d.value))
   }
@@ -93,41 +94,4 @@ object TermsDefinitionsProcessor {
       .filter(t => StringUtils.isNotBlank(t.value))
       .filter(t => StringUtils.isAsciiPrintable(t.value))
   }
-
-
-  def saveTerms(terms: mutable.Seq[Term], filePath: String): Unit = {
-    val printStream = new PrintStream(filePath)
-    terms.foreach(t => printStream.println(t.value))
-  }
-
-  def saveTermsWithSynonims(terms: mutable.Seq[Term], filePath: String): Unit = {
-    val printStream = new PrintStream(filePath)
-    terms.foreach(t => {
-      printStream.print(t.value)
-      if (t.synonyms.nonEmpty) {
-        printStream.print(t.synonyms.mkString(" ### ", " ### ", ""))
-      }
-      printStream.println()
-    })
-  }
-
-  def saveTermsWithDefinitionsToFile(terms: mutable.Seq[Term], filePath: String) = {
-    val printStream = new PrintStream(filePath)
-    terms.filter(_.definitions.nonEmpty).foreach(term => {
-      printStream.println(term.value)
-      term.definitions.foreach(d => printStream.println(d.value))
-      printStream.println()
-    })
-  }
-
-  def saveDefinitionsSentencesToFile(terms: mutable.Seq[Term], filePath: String): Unit = {
-    val printStream = new PrintStream(filePath)
-    terms.filter(_.definitions.nonEmpty).foreach(term => {
-      term.definitions.flatMap(_.sentences).foreach(s => {
-        printStream.println(s)
-      })
-      printStream.println()
-    })
-  }
-
 }

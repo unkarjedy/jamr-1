@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit
 import java.util.logging.Logger
 
 object TimeUtils {
-  def runWithTimer[T](logger: Logger)(callback: => T): T = {
+  def runWithTimeLogging[T](logger: Logger)(callback: => T): T = {
     val now = System.nanoTime
     val result = callback
     val timeSpentNs = System.nanoTime() - now

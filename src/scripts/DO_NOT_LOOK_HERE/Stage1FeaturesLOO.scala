@@ -1,11 +1,14 @@
-package scripts
+package scripts.DO_NOT_LOOK_HERE
 
 import java.io.File
 
 import scala.io.Source
 
 /**
-  * Do not see investigate this class. It is just my playground...
+  * !!!! SKIP THIS FILE, DO NOT SPEND YOUR TIME !!!!
+  * It is just my playground.
+  * Here tried to leave a feature out (for each feature) and evaluate AMR performace to
+  * discover which feature is most relevant.
    */
 object Stage1FeaturesLOO {
 

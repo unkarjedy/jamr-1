@@ -1,11 +1,12 @@
-jamrRoot=C:/Users/Dmitrii_Naumenko/Desktop/JAMR_2016_Github/
+jamrRoot=C:/Users/unkarjedy/Desktop/Jamr_Fork
 corpus.folder=Little_Prince_v1_6
 corpus.file_base_name=amr-bank-struct-v1.6
-#corpus.folder="LDC2014T12-proxy"
+#corpus.folder=LDC2014T12-proxy
 #corpus.file_base_name="data"
+model.folder=LDC2014T12-proxy
 model.folder_suffix=_TEST
 
-skip.preprocessing=true
+skip.preprocessing=false
 
 skip.concept_table_extract=false
 skip.train.stage1=false
@@ -13,3 +14,8 @@ skip.train.stage2=false
 skip.evaluate=false
 skip.evaluate.allstage.decode=false
 skip.evaluate.stage2.decode=false
+
+parser.input.file_name=sentences.txt
+parser.input.folder=resources_terms/parse
+parser.output.folder=resources_terms/out
+

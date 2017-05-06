@@ -35,7 +35,7 @@ class SenteseSplitter(terms: Seq[Term]) {
       ch = text.charAt(index)
 
       val _isBeginingOfTerm = isBeginningOfTermWithDot(index, text)
-      val _isDotAmongDigits = isDotAmongDigits(index, text)
+      val _isDotInsideSomeLexem = isDotInsideSomeLexem(index, text)
 
       val isEndOfSentence = {
         ch == '.' &&
@@ -45,7 +45,7 @@ class SenteseSplitter(terms: Seq[Term]) {
           isNextCharUpperCase(index, text)
       }
 
-      val skipAppending = ch == '.' && !_isBeginingOfTerm && !_isDotAmongDigits
+      val skipAppending = ch == '.' && !_isBeginingOfTerm && !_isDotInsideSomeLexem
 
       if (isEndOfSentence) {
         finishCurrentSentence()
@@ -73,13 +73,13 @@ class SenteseSplitter(terms: Seq[Term]) {
     })
   }
 
-  private def isDotAmongDigits(index: Int, text: String): Boolean = {
+  private def isDotInsideSomeLexem(index: Int, text: String): Boolean = {
     val left = index - 1
     val right = index + 1
 
     left >= 0 && right < text.length &&
-      text.charAt(left).isDigit &&
-      text.charAt(right).isDigit
+      !text.charAt(left).isWhitespace &&
+      !text.charAt(right).isWhitespace
   }
 
   def isNextCharUpperCase(index: Int, text: String): Boolean = {
