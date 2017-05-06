@@ -11,7 +11,7 @@ abstract class ConceptDecoderAbstract(featureNames: List[String],
   private val zeroExtraCost: ExtraCostFunc = (i, c, s, p, l) => 0
 
   def decode(input: Input,
-             trainingIndex: Option[Int],
+             trainingIndex: Option[Int] = None,
              extraCost: ExtraCostFunc = zeroExtraCost): DecoderResult
 }
 

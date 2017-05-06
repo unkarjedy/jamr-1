@@ -32,27 +32,27 @@ class TrainObjGraph(val options: Map[Symbol, String]) extends TrainObjAbstract(c
   def trainingSize: Int = training.length
 
   private val stage1 = if (options.contains('stage2TrainPredictedConcepts)) {
-    Some(ConceptInvoke.buildDecoder(options, oracle = false))
+    Some(ConceptInvoke.buildCondeptDecoder(options, oracle = false))
   } else {
     None
   }
 
   private val outputFormat = options.getOrElse('outputFormat, "triples").split(",").toList
 
-  def getInput(i: Int): Input = {
-    val amrdata = AMRTrainingData(training(i))
+  def getInput(inputId: Int): Input = {
+    val amrdata = AMRTrainingData(training(inputId))
     if (options.contains('stage2TrainPredictedConcepts)) {
       // Use stage1 output instead of the gold concepts during training
-      val in = input(i)
-      val stage1Result = stage1.get.decode(in, Some(i)) // TODO: check if stage1-training-leave-one-out
-      new Input(Some(stage1Result.graph), in.sentence, in.notTokenized, in.dependencies, in.pos, in.ner, i)
+      val in = input(inputId)
+      val stage1Result = stage1.get.decode(in, Some(inputId)) // TODO: check if stage1-training-leave-one-out
+      new Input(Some(stage1Result.graph), in.sentence, in.notTokenized, in.dependencies, in.pos, in.ner, inputId)
     } else {
-      Input(amrdata, input(i), i, oracle = false)
+      Input(amrdata, input(inputId), inputId, oracle = false)
     }
   }
 
   def decode(i: Int, weights: FeatureVectorFast): (FeatureVectorFast, Double, String) = {
-    val decoder = Decoder(options)
+    val decoder = buildGraphDecoder(options)
     decoder.features.weights = weights
     val amrdata = AMRTrainingData(training(i))
     logger(0, "Sentence:\n" + amrdata.sentence.mkString(" ") + "\n")
@@ -86,7 +86,7 @@ class TrainObjGraph(val options: Map[Symbol, String]) extends TrainObjAbstract(c
   }
 
   def oracle(i: Int, weights: FeatureVectorFast): (FeatureVectorFast, Double) = {
-    val oracle = Oracle(options)
+    val oracle = buildGraphDecoderOracle(options)
     oracle.features.weights = weights
     val amrdata = AMRTrainingData(training(i))
     val result = oracle.decode(Input(amrdata, input(i), i, oracle = true))
@@ -116,13 +116,13 @@ class TrainObjGraph(val options: Map[Symbol, String]) extends TrainObjAbstract(c
       logger(0, "CostAug Oracle")
     }
     val costAug = if (scale >= 0 || !options.contains('trainingStage2OracleDecoder)) {
-      val decoder = Decoder(options)
+      val decoder = buildGraphDecoder(options)
       decoder.features.weights = weights // this is not needed since CostAugmented.features = decoder.features (CostAugmented class sets it this way)
       new CostAugmented(decoder, scale, options.getOrElse('trainingPrecRecallTradeoff, "0.5").toDouble, options)
     } else {
       val decoder_save = options('stage2Decoder)
       options('stage2Decoder) = options('trainingStage2OracleDecoder)
-      val decoder = Decoder(options)
+      val decoder = buildGraphDecoder(options)
       decoder.features.weights = weights
       // this is not needed since CostAugmented.features = decoder.features (CostAugmented class sets it this way)
       val costAug = new CostAugmented(decoder, scale, options.getOrElse('trainingPrecRecallTradeoff, "0.5").toDouble, options)
@@ -186,9 +186,9 @@ class TrainObjGraph(val options: Map[Symbol, String]) extends TrainObjAbstract(c
         val stage2Alg_Save = options('stage2Decoder)
         val stage2 = if (stage2Alg_Save == "Alg1") {
           options('stage2Decoder) = "Alg1a"
-          GraphDecoder.Decoder(options)
+          GraphDecoder.buildGraphDecoder(options)
         } else {
-          GraphDecoder.Decoder(options)
+          GraphDecoder.buildGraphDecoder(options)
         }
         options('stage2Decoder) = stage2Alg_Save
         stage2.features.weights = weights

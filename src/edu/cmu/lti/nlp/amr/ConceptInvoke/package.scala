@@ -9,7 +9,7 @@ import scala.collection.mutable.{Map, Set, ArrayBuffer}
 package object ConceptInvoke {
     type OptionMap = Map[Symbol, String]
 
-    def buildDecoder(options: OptionMap, oracle: Boolean) : ConceptDecoderAbstract = {
+    def buildCondeptDecoder(options: OptionMap, oracle: Boolean) : ConceptDecoderAbstract = {
         val stage1Features = options.getOrElse('stage1Features,"length,count").split(",").toList
         logger(0, "Stage1 features = " + stage1Features)
 

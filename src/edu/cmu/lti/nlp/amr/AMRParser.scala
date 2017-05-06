@@ -4,6 +4,8 @@ import java.io.{PrintWriter, StringWriter}
 import java.text.SimpleDateFormat
 import java.util.Date
 
+import edu.cmu.lti.nlp.amr.ConceptInvoke.ConceptDecoderAbstract
+import edu.cmu.lti.nlp.amr.GraphDecoder.GraphDecoderAbstract
 import edu.cmu.lti.nlp.amr.graph.Graph
 import edu.cmu.lti.nlp.amr.span.Span
 import edu.cmu.lti.nlp.amr.utils.{CorpusUtils, F1, LineUtils}
@@ -111,28 +113,29 @@ object AMRParser {
 
     Graph.normalizeMod = options.contains('normalizeMod)
 
-    val stage1: ConceptInvoke.ConceptDecoderAbstract = {
+    val stage1: ConceptDecoderAbstract = {
       if (!options.contains('stage1Oracle) && !options.contains('stage2Train)) {
-        ConceptInvoke.buildDecoder(options, oracle = false)
+        ConceptInvoke.buildCondeptDecoder(options, oracle = false)
       } else {
         assert(!options.contains('stage1Train), "Error: --stage1-oracle should not be specified with --stage1-train")
-        ConceptInvoke.buildDecoder(options, oracle = true)
+        ConceptInvoke.buildCondeptDecoder(options, oracle = true)
       }
     }
 
-    val stage2: Option[GraphDecoder.GraphDecoderAbstract] = {
-      if ((options.contains('stage1Only) || options.contains('stage1Train)) && !options.contains('stage2Train)) {
+    val stage2: Option[GraphDecoderAbstract] = {
+      val isStage2Missing = (options.contains('stage1Only) || options.contains('stage1Train)) && !options.contains('stage2Train)
+      if (isStage2Missing) {
         None
       } else if (options.contains('stage2CostDiminished)) {
-        Some(GraphDecoder.CostDiminished(options))
+        Some(GraphDecoder.buidGraphDecoderCostAugmented(options))
       } else {
-        Some(GraphDecoder.Decoder(options))
+        Some(GraphDecoder.buildGraphDecoder(options))
       }
     }
 
-    val stage2Oracle: Option[GraphDecoder.GraphDecoderAbstract] = {
+    val stage2Oracle: Option[GraphDecoderAbstract] = {
       if (options.contains('trainingData) || options.contains('stage2Train)) {
-        Some(GraphDecoder.Oracle(options))
+        Some(GraphDecoder.buildGraphDecoderOracle(options))
       } else {
         None
       }
@@ -179,16 +182,17 @@ object AMRParser {
 
       val stage2WeightFile: String = options('stage2Weights)
       if (stage2.isDefined) {
-        stage2.get.features.weights.read(Source.fromFile(stage2WeightFile).getLines())
         if (stage2Oracle.isDefined) {
           stage2Oracle.get.features.weights.read(Source.fromFile(stage2WeightFile).getLines())
+        } else {
+          stage2.get.features.weights.read(Source.fromFile(stage2WeightFile).getLines())
         }
       }
       logger(0, "done")
 
 
       val input = stdin.getLines.toArray
-      val tokenized = fromFile(options('tokenized)).getLines /*.map(x => x)*/ .toArray
+      val tokenized = fromFile(options('tokenized)).getLines.toArray
       val nerFile = CorpusUtils.splitOnNewline(fromFile(options('ner)).getLines).toArray
       val oracleData = options.get('trainingData)
         .map(file => CorpusUtils.getAMRBlocks(fromFile(file).getLines()).toArray)
@@ -211,15 +215,14 @@ object AMRParser {
           .map(_ => AMRTrainingData(oracleData(blockId)))
           .map(_.toInputGraph())
 
-        val stage1Result = stage1.decode(
-          new Input(inputGraphOpt,
-                    tok.split(" "),
-                    line.split(" "),
-                    dependencies(blockId),
-                    ner,
-                    blockId),
-          None
-        )
+        val stage1Result = stage1.decode(new Input(
+          inputGraphOpt,
+          tok.split(" "),
+          line.split(" "),
+          dependencies(blockId),
+          ner,
+          blockId
+        ))
 
         logger(1, "Concepts:")
         for ((id, node) <- stage1Result.graph.getNodeById) {

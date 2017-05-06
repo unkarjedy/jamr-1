@@ -12,8 +12,8 @@ import scala.io.Source.fromFile
 class TrainObjConcept(val options: m.Map[Symbol, String]) extends TrainObjAbstract(classOf[FeatureVectorBasic], options) {
 
   // TODO: this implementation is not thread safe
-  val decoder = buildDecoder(options, oracle = false)
-  val oracle: ConceptDecoderAbstract = buildDecoder(options, oracle = true)
+  val decoder = buildCondeptDecoder(options, oracle = false)
+  val oracle: ConceptDecoderAbstract = buildCondeptDecoder(options, oracle = true)
 
   //costAugDecoder.features.weights = weights
   def zeroVector: FeatureVectorBasic = FeatureVectorBasic()
@@ -29,10 +29,10 @@ class TrainObjConcept(val options: m.Map[Symbol, String]) extends TrainObjAbstra
     (result.features, result.score, "")
   }
 
-  def oracle(i: Int, weights: FeatureVectorBasic): (FeatureVectorBasic, Double) = {
+  def oracle(inputId: Int, weights: FeatureVectorBasic): (FeatureVectorBasic, Double) = {
     oracle.features.weights = weights
-    val amrData = AMRTrainingData(training(i))
-    val result = oracle.decode(Input(amrData, input(i), i, oracle = true, clearUnalignedNodes = true), Some(i))
+    val amrData = AMRTrainingData(training(inputId))
+    val result = oracle.decode(Input(amrData, input(inputId), inputId, oracle = true, clearUnalignedNodes = true), Some(inputId))
     (result.features, result.score)
   }
 
@@ -214,19 +214,21 @@ class TrainObjConcept(val options: m.Map[Symbol, String]) extends TrainObjAbstra
       decoder.features.weights = weights
 
       val file = new java.io.PrintWriter(new java.io.File(devDecode), "UTF-8")
-      for ((block, i) <- CorpusUtils.splitOnNewline(fromFile(dev + ".aligned.no_opN").getLines).filter(x => x.split("\n").exists(_.startsWith("("))).zipWithIndex) {
+      for ((block, blockId) <- CorpusUtils.splitOnNewline(fromFile(dev + ".aligned.no_opN").getLines).filter(x => x.split("\n").exists(_.startsWith("("))).zipWithIndex) {
         // TODO: add this filter for GraphDecoder.TrainObj
-        file.println("Sentence: " + snt(i))
+        file.println("Sentence: " + snt(blockId))
         //file.println(decoderResult.graph.prettyString(detail=1, pretty=true) + '\n')
 
-        val stage1Result = decoder.decode(new Input(None,
-                                                    tokenized(i).split(" "),
-                                                    snt(i).split(" "),
-                                                    dependencies(i),
-                                                    ner(i),
-                                                    i), trainingIndex = None)
+        val stage1Result = decoder.decode(new Input(
+          None,
+          tokenized(blockId).split(" "),
+          snt(blockId).split(" "),
+          dependencies(blockId),
+          ner(blockId),
+          blockId
+        ))
         val amrData = AMRTrainingData(block)
-        val oracleGraph = new Input(amrData, dependencies(i), oracle = true, index = i).graph.get
+        val oracleGraph = new Input(amrData, dependencies(blockId), oracle = true, index = blockId).graph.get
 
         for (span <- stage1Result.graph.spans) {
           if (oracleGraph.spans.count(x => x.start == span.start && x.end == span.end && x.amrNode.toString == span.amrNode.toString) > 0) {

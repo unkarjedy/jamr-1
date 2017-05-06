@@ -13,7 +13,7 @@ class LagrangianRelaxation(options: Map[Symbol, String],
                            labelSet: Array[(String, Int)]) extends GraphDecoderAbstract {
   val alg2 = new Alg2(options, "LRLabelWithId" :: featureNames, labelSet)
   options('stage2Decoder) = options.getOrElse('stage2ApproxDecoder, "Alg2")
-  val approxDecoder = Decoder(options)
+  val approxDecoder = buildGraphDecoder(options)
   options('stage2Decoder) = "LR"
 
   // Set alg2 features same our features (so weights get updated during training,
