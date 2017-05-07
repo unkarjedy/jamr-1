@@ -37,7 +37,7 @@ class ConceptFeatures(featureNames: List[String], phraseCounts: i.Map[List[Strin
   private def isKnownFeature(featureName: String): Boolean = {
     featureFunctionsMap.contains(featureName) ||
       ExtractConceptTable.implementedFeatures.contains(featureName) ||
-      Concepts.implementedFeatures.contains(featureName)
+      ConceptInvoker.implementedFeatures.contains(featureName)
   }
 
   /** ******************

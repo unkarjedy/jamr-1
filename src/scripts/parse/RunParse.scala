@@ -20,7 +20,13 @@ object RunParse {
     "rootConcept", "rootDependencyPathv1",
     "conceptBigram",
     "posPathv3", "dependencyPathv4", "dependencyPathv5"
+  ).distinct
 
+  private val stage1SyntheticConcepts = List(
+    "NER", "DateExpr", "OntoNotes", "verbs",
+//    "NEPassThrough",
+    "PassThrough", "WordNetPassThrough",
+    "ItTermDict"
   ).distinct
 
   def main(args: Array[String]): Unit = {
@@ -33,21 +39,24 @@ object RunParse {
 //    context.stage2Weights = s"${context.modelFolder}/stage2-weights.iter5"
     context.stage1Features = stage1Features
     context.stage2Features = stage2Features
-    context.parserOptions = buildParserOptionsString(jamrRoot, context)
+    context.parserOptions = buildParserOptionsString(context, stage1SyntheticConcepts)
 
     val inputFilename= runProperties.parserInputFilName
     val inputFolder = s"$jamrRoot/${runProperties.parserInputFolder}"
     val outputFolder = s"$inputFolder/out"
-    Parse(context, inputFolder, inputFilename, outputFolder)
-      .run()
+    Parse(context, inputFolder, inputFilename, outputFolder).run()
+
+    val extractor = new ParseLogDataExtractor(outputFolder, inputFilename)
+    extractor.extractAmrOnly()
   }
 
-  private def buildParserOptionsString(jamrRoot: String, context: Context) = {
-    s"""--stage1-phrase-counts ${context.modelFolder}/wordCounts.train
+  private def buildParserOptionsString(context: Context, stage1SyntheticConcepts: List[String]) = {
+    s"""--stage1-synthetic-concepts ${stage1SyntheticConcepts.mkString(",")}
+       |--stage1-phrase-counts ${context.modelFolder}/wordCounts.train
        |--stage1-features ${context.stage1Features.mkString(",")}
        |--stage2-features ${context.stage2Features.mkString(",")}
        |--stage2-decoder LR
-       |--stage2-labelset $jamrRoot/resources/labelset-r3
+       |--stage2-labelset ${context.jamrRoot}/resources/labelset-r3
        |--output-format AMR,nodes,edges,root
        |--ignore-parser-errors
        |--print-stack-trace-on-errors

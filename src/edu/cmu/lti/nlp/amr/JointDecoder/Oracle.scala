@@ -16,7 +16,7 @@ class Oracle(options: m.Map[Symbol, String],
     val stage1Features = new ConceptInvoke.ConceptFeatures(stage1FeatureNames, phraseCounts)
     val stage2Features = new GraphDecoder.GraphFeatures(options, stage2FeatureNames, weights.labelset)
 
-    val conceptInvoker = new ConceptInvoke.Concepts(options, phraseConceptPairs)
+    val conceptInvoker = new ConceptInvoke.ConceptInvoker(options, phraseConceptPairs)
 
     def decode(input: Input) : FastFeatureVector.DecoderResult = {
         stage2Features.input = input

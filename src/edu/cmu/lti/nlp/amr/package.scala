@@ -1,8 +1,9 @@
 package edu.cmu.lti.nlp
-import scala.language.implicitConversions
-import scala.annotation.tailrec
-import java.nio.file.{Paths, Files}
 import java.nio.charset.StandardCharsets
+import java.nio.file.{Files, Paths}
+
+import scala.annotation.tailrec
+import scala.language.implicitConversions
 
 package object amr {
 /************************* Package Level Imports ********************/
@@ -30,13 +31,15 @@ package object amr {
         Files.write(Paths.get(filename), contents.getBytes(StandardCharsets.UTF_8))
     }
 
-    implicit def AnnotationToBaseAnnotation[T](a: Annotation[T]) = a.annotations
+    implicit def AnnotationToBaseAnnotation[T](a: Annotation[T]): Array[T] = a.annotations
     var verbosityGlobal = 1
-    def logger(n: Int, s: Any) { if(n<=verbosityGlobal) System.err.println(s) }
+    def logger(n: Int, s: Any) {
+        if (n <= verbosityGlobal) System.err.println(s)
+    }
 
 
     /*********** string.splitStr ***********/
-    implicit def StringToMyString(s: String) = new MyString(s)
+    implicit def StringToMyString(s: String): MyString = new MyString(s)
 
     class MyString(private val str: String) {
         def splitStr(sep: String) : Array[String] = {
@@ -60,7 +63,7 @@ package object amr {
 
 
     /*************** MySeq ****************/
-    implicit def SeqToMySeq[T](x: Seq[T]) = new MySeq[T](x)
+    implicit def SeqToMySeq[T](x: Seq[T]): MySeq[T] = new MySeq[T](x)
     class MySeq[T](private val s: Seq[T]) {
         def longestCommonPrefixLength(s2: Seq[T]) : Int = {
             // from http://stackoverflow.com/questions/8104479/how-to-find-the-longest-common-prefix-of-two-strings-in-scala
@@ -81,7 +84,7 @@ package object amr {
     }
 
     /************* MyArray **************/
-    implicit def ArrayToMyArray[T](x: Array[T]) = new MyArray[T](x)
+    implicit def ArrayToMyArray[T](x: Array[T]): MyArray[T] = new MyArray[T](x)
     class MyArray[T](private val s: Array[T]) {
         def longestCommonPrefixLength(s2: Array[T]) : Int = {
             // from http://stackoverflow.com/questions/8104479/how-to-find-the-longest-common-prefix-of-two-strings-in-scala

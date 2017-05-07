@@ -148,7 +148,7 @@ class ExtractConceptTable(stage1Features: List[String],
         phraseConceptPair.features += FeatureVectorBasic(m.Map("N" -> count))
       }
       if (featureNames.contains("logPrConcept")) {
-        for (node <- phraseConceptPair.graph.nodes) {
+        for (node <- phraseConceptPair.toGraph.nodes) {
           phraseConceptPair.features += FeatureVectorBasic(m.Map("logPrConcept" -> log(singleConceptCounts(node.concept) / totalConcepts)))
         }
       }

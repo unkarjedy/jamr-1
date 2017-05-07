@@ -18,9 +18,9 @@ case class Input(var graph: Option[Graph],  // var so we can update for the inpu
     def trainingIndex : Option[Int] = Some(index)
 
     // TODO: clean up these constructors
-
     // TODO: switch everything to this constructor (the others are unnessary)
-    // This constructor is used for stage1 training, stage2 training, and decoding (called from loadInputfiles and Input.Input from below, and AMRParser)
+    // This constructor is used for stage1 training, stage2 training, and decoding
+    // (called from loadInputfiles and Input.Input from below, and AMRParser)
     def this(graph: Option[Graph], sent: Array[String], notTok: Array[String], conllDeps: String, conllNER: String, index: Int) = this(
         graph,
         sent,
@@ -49,7 +49,8 @@ case class Input(var graph: Option[Graph],  // var so we can update for the inpu
                    conllx.split("\n").map(x => x.split("\t")(1)),       // Field 2 is token
                    conllx.split("\n").map(x => x.split("\t")(4))),      // Field 5 is POS
         Annotation(sentence, sentence, Array()),
-        index)
+        index
+    )
 
     // This constructor is used during decoding (if --training-data is specified for oracle)
     def this(amrdata: AMRTrainingData, conllx: String, oracle: Boolean, index: Int, clearUnalignedNodes: Boolean = true) = this(

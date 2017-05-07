@@ -14,7 +14,7 @@ class ConceptDecoderOracle(options: m.Map[Symbol, String],
     // Base class has defined:
     // val features: Features
 
-    val conceptInvoker = new Concepts(options, phraseConceptPairs)
+    val conceptInvoker = new ConceptInvoker(options, phraseConceptPairs)
 
     def decode(input: Input,
                trainingIndex: Option[Int],
@@ -38,7 +38,7 @@ class ConceptDecoderOracle(options: m.Map[Symbol, String],
             //logger(1, "conceptList = "+conceptList.toString)
             val matching = conceptList.filter(x => x.words == words && x.graphFrag == span.amrNode.toString)
             if (matching.size > 1) {
-                logger(0, "WARNING: There is more than one matching concept fragment.  This should not occur.  Please check that Concepts.invoke does not return duplicates")
+                logger(0, "WARNING: There is more than one matching concept fragment.  This should not occur.  Please check that ConceptInvoker.invoke does not return duplicates")
             }
             for (concept <- matching) {
                 val f = features.localFeatures(input, concept, span.start, span.end)

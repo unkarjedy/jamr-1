@@ -25,7 +25,7 @@ case class PhraseConceptPair(words: List[String],
   }
 
   // Be careful, this is a potentially expensive operation
-  def graph: Graph = {
+  def toGraph: Graph = {
     Graph.parse(graphFrag)
   }
 }
@@ -33,6 +33,7 @@ case class PhraseConceptPair(words: List[String],
 object PhraseConceptPair {
   def apply(string: String): PhraseConceptPair = {
     val fields = string.split(""" \|\|\| """)
+
     val words = fields(0).split(" ").toList
     val graphFrag = fields(1)
     val FeaturesRegexp = """(.+)=([^=]+)""".r
@@ -50,16 +51,17 @@ object PhraseConceptPair {
     new PhraseConceptPair(words, graphFrag, FeatureVectorBasic(features), trainingIndices)
   }
 
-  /*  This would be usefull for having an explit None concept (requires changes to the decoder, may not be compatible with joint decoder)
-      def None(input: Input, start: Int, end: Int, nonBias: Boolean, nonLength: Boolean) = {
-          val feats : m.Map[String, Double] = m.Map()
-          if (nonLength) {
-              feats("NONELen") = end - start
-          }
-          if (nonBias) {
-              feats("NONEBias") = 1.0
-          }
-          return PhraseConceptPair(input.sentence.slice(start, end), "<NONE_CONCEPT>", FeatureVector(feats), List())
-      } */
+//  /* This would be usefull for having an explit None concept
+//  * (requires changes to the decoder, may not be compatible with joint decoder) */
+//  def None(input: Input, start: Int, end: Int, nonBias: Boolean, nonLength: Boolean) = {
+//    val feats: m.Map[String, Double] = m.Map()
+//    if (nonLength) {
+//      feats("NONELen") = end - start
+//    }
+//    if (nonBias) {
+//      feats("NONEBias") = 1.0
+//    }
+//    return PhraseConceptPair(input.sentence.slice(start, end), "<NONE_CONCEPT>", FeatureVector(feats), List())
+//  }
 }
 

@@ -12,8 +12,9 @@ scalaVersion := "2.10.3"
 
 libraryDependencies ++= Seq(
   "com.jsuereth" %% "scala-arm" % "1.3",
-  "edu.stanford.nlp" % "stanford-corenlp" % "3.4.1",
+  "edu.stanford.nlp" % "stanford-corenlp" % "3.4.1" withSources() withJavadoc(),
   "edu.stanford.nlp" % "stanford-corenlp" % "3.4.1" classifier "models",
+  "edu.stanford.nlp" % "stanford-corenlp" % "3.4.1",
   "org.scala-lang.modules" %% "scala-pickling" % "0.10.0",
   "commons-io" % "commons-io" % "2.5",
   "org.apache.commons" % "commons-csv" % "1.3",

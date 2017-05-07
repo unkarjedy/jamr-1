@@ -45,7 +45,7 @@ case class ConllToken(index: Option[Int],
   * @author sthomson@cs.cmu.edu
   */
 class StanfordProcessor {
-  private val processor = {
+  private val processor: StanfordCoreNLP = {
     val props = new Properties()
     props.setProperty("annotators", "tokenize,ssplit,parse")
     props.setProperty("parse.model", "edu/stanford/nlp/models/lexparser/englishRNN.ser.gz")
@@ -65,11 +65,11 @@ class StanfordProcessor {
 
     for (sentence <- sentences) yield {
       val tree = sentence.get(classOf[TreeAnnotation])
-      val gs = grammaticalStructureFactory.newGrammaticalStructure(tree)
-      val deps = gs.typedDependencies().toList sortBy (_.dep.index)
+      val grammaticalStructure = grammaticalStructureFactory.newGrammaticalStructure(tree)
+      val dependencies = grammaticalStructure.typedDependencies().toList.sortBy(_.dep.index)
       val tokens = sentence.get(classOf[TokensAnnotation]).toList
 
-      for ((token, dep) <- tokens.zip(deps)) yield {
+      for ((token, dep) <- tokens.zip(dependencies)) yield {
         val start = token.get(classOf[CharacterOffsetBeginAnnotation])
         val end = token.get(classOf[CharacterOffsetEndAnnotation])
         val pos = token.get(classOf[PartOfSpeechAnnotation])

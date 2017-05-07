@@ -4,19 +4,19 @@ import edu.cmu.lti.nlp.amr.BasicFeatureVector._
 import edu.cmu.lti.nlp.amr._
 
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.{immutable => i, mutable => m}
+import scala.collection.{mutable => m}
 
-object Concepts {
+object ConceptInvoker {
   val implementedFeatures = m.Set("fromNERTagger", "dateExpression") // TODO: check
 }
 
 /**
   * This class contains the code used to invoke concepts.
-  * Concepts are invoked by calling the invoke() method, which returns a list of all
-  * the concepts that match a span starting at index i of the tokenized sentence.
+  * ConceptInvoker are invoked by calling the invoke() method, which returns a list of all
+  * the concepts that match a span starting at index wordId of the tokenized sentence.
   */
-class Concepts(options: m.Map[Symbol, String],
-               phraseConceptPairs: Array[PhraseConceptPair]) {
+class ConceptInvoker(options: m.Map[Symbol, String],
+                     phraseConceptPairs: Array[PhraseConceptPair]) {
 
   // maps the first word in the phrase to a list of phraseConceptPairs
   private val conceptTable: m.Map[String, List[PhraseConceptPair]] = m.Map()
@@ -35,21 +35,23 @@ class Concepts(options: m.Map[Symbol, String],
   private val conceptSources = options.getOrElse('stage1SyntheticConcepts, "NER,DateExpr").split(",").toSet
   private val implementedConceptSources = m.Set(
     "NER", "DateExpr", "OntoNotes", "verbs", "nominalizations",
-    "NEPassThrough", "PassThrough", "WordNetPassThrough"
+    "NEPassThrough", "PassThrough", "WordNetPassThrough",
+    "ItTermDict"
   )
 
   private val unknownConcepts = conceptSources.diff(implementedConceptSources)
   assert(unknownConcepts.isEmpty, "Unknown conceptSources: " + unknownConcepts.mkString(", "))
 
-  private var tokens = Array[String]() // stores sentence.drop(i) (used in the dateEntity code to make it more concise)
+  private var tokens = Array[String]() // stores sentence.drop(wordId) (used in the dateEntity code to make it more concise)
   private var lemmas = m.Set[String]() // TODO: check for lemma in a large morph-analyzed corpus
 
+  // set of Propbank predicates (e.g. yield-03, baptize-02) (actually seams like contains not only predicates...)
   private var ontoNotes = m.Set[String]() // could be multi-map instead
 
   if (options.contains('stage1Predicates)) {
     val PredicateRegexp = """(.+)-([0-9]+)""".r
     for (predicate <- Source.fromFile(options('stage1Predicates)).getLines) {
-      val PredicateRegexp(verb, sense) = predicate
+      val PredicateRegexp(verb, senseId) = predicate
       ontoNotes += verb
     }
   }
@@ -60,7 +62,7 @@ class Concepts(options: m.Map[Symbol, String],
 
   /**
     * returns a list of all concepts that can be invoke starting at
-    * position wordId in input.sentence (i.e. position wordId in the tokenized input)
+    * position wordId in input.sentence (wordId.e. position wordId in the tokenized input)
     * Note: none of the concepts returned have spans that go past the end of the sentence
     */
   def invoke(input: Input, wordId: Int, trainingIndex: Option[Int]): List[PhraseConceptPair] = {
@@ -69,34 +71,19 @@ class Concepts(options: m.Map[Symbol, String],
       return List()
     }
 
-    // TODO: is this case insensitive??
-    def equalToSentenceWords(conceptPair: PhraseConceptPair) = {
-      conceptPair.words == sentence.slice(wordId, wordId + conceptPair.words.size).toList
-    }
-
-    val concepList0 = conceptTable.getOrElse(sentence(wordId), List())
-    var conceptList = if (optionsLeaveOneOut && trainingIndex.isDefined) {
-      concepList0.filter(conceptPair => {
-        equalToSentenceWords(conceptPair) && conceptPair.trainingIndices.exists(j => abs(j - trainingIndex.get) > 20)
-      })
-    } else {
-      concepList0.filter(conceptPair => {
-        equalToSentenceWords(conceptPair)
-      })
-    }
+    var conceptList = getPossibleConceptsFromTable(sentence, wordId, trainingIndex)
 
     if (conceptSources.contains("NER") && optionsNer) {
       conceptList = input.ner.annotation
         .filter(_.start == wordId)
         .map(x => namedEntity(input, x))
         .toList ::: conceptList
-      //conceptList = input.ner.annotation.filter(_.start == i).map(x => PhraseConceptPair.entity(input, x)).toList ::: conceptList
     }
     if (conceptSources.contains("DateExpr")) {
       conceptList = dateEntities(input, wordId) ::: conceptList
     }
 
-    // onlyPassThrough indicates the only the pass through rules apply for this span
+    // value indicates the only the pass through rules apply for this span
     val onlyPassThrough = conceptList.isEmpty
     if (conceptSources.contains("OntoNotes")) {
       conceptList = ontoNotesLookup(input, wordId, onlyPassThrough) ::: conceptList
@@ -117,18 +104,13 @@ class Concepts(options: m.Map[Symbol, String],
       conceptList = nominalizations(input, wordId, onlyPassThrough) ::: conceptList
     }
 
-    // Normalize the concept list so there are no duplicates by adding all their features
+    // Normalize the concept list by mergin features and trainIndexes of duplicating concept pairs
     val conceptSet: m.Map[(List[String], String), PhraseConceptPair] = m.Map()
-    for (concept <- conceptList.filter(x => equalToSentenceWords(x))) {
+    for (concept <- conceptList.filter(conceptPair => equalToSentenceWords(conceptPair, sentence, wordId))) {
       // TODO: make this case insensitive?
       val key = (concept.words, concept.graphFrag)
       if (conceptSet.contains(key)) {
-        val old = conceptSet(key)
-        val feats = FeatureVectorBasic()
-        feats += old.features
-        feats += concept.features
-        val trainingIndices = concept.trainingIndices ::: old.trainingIndices
-        conceptSet(key) = PhraseConceptPair(old.words, old.graphFrag, feats, trainingIndices)
+        conceptSet(key) = mergeConcepts(concept, conceptSet(key))
       } else {
         conceptSet(key) = concept
       }
@@ -137,15 +119,45 @@ class Concepts(options: m.Map[Symbol, String],
     conceptSet.values.toList
   }
 
+  private def mergeConcepts(first: PhraseConceptPair, second: PhraseConceptPair): PhraseConceptPair = {
+    val fetures = FeatureVectorBasic()
+    fetures += first.features
+    fetures += second.features
+    val trainingIndices = first.trainingIndices ::: second.trainingIndices
+    PhraseConceptPair(first.words, first.graphFrag, fetures, trainingIndices)
+  }
+
+  // TODO: is this case insensitive??
+  def equalToSentenceWords(conceptPair: PhraseConceptPair, sentence: Array[String], wordId: Int) = {
+    conceptPair.words == sentence.slice(wordId, wordId + conceptPair.words.size).toList
+  }
+
+  private def getPossibleConceptsFromTable(sentence: Array[String], wordId: Int, trainingIndex: Option[Int]): List[PhraseConceptPair] = {
+    val concepList0: List[PhraseConceptPair] = conceptTable.getOrElse(sentence(wordId), List())
+    if (optionsLeaveOneOut && trainingIndex.isDefined) {
+      concepList0.filter(conceptPair => {
+        equalToSentenceWords(conceptPair, sentence, wordId) && conceptPair.trainingIndices.exists(id => abs(id - trainingIndex.get) > 20)
+      })
+    } else {
+      concepList0.filter(conceptPair => {
+        equalToSentenceWords(conceptPair, sentence, wordId)
+      })
+    }
+  }
+
+
+  /*==============================
+  * Various concept sources
+  * ==============================*/
   private def ontoNotesLookup(input: Input, wordId: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
     val stems = Wordnet.getStemms(input.sentence(wordId))
 
+    //TODO: NAUMENKO: nice...so we should only use the first sense? Should do something with this.
     val concepts = stems.filter(ontoNotes.contains).map(stem => {
       PhraseConceptPair(
-        List(input.sentence(wordId)),
-        stem + "-01", // first sense is most common
-        FeatureVectorBasic(m.Map("OntoNotes" -> 1.0)),
-        List()
+        words = List(input.sentence(wordId)),
+        graphFrag = stem + "-01", // first sense is most common
+        features = FeatureVectorBasic(m.Map("OntoNotes" -> 1.0))
       )
     })
 
@@ -160,20 +172,23 @@ class Concepts(options: m.Map[Symbol, String],
     // TODO: improve this to check if the words were observed other places
     var concepts = List[PhraseConceptPair]()
 
-    for {offset <- Range(1, 7)
+    val possibleNerLengthRange = Range(1, 7)
+    for {offset <- possibleNerLengthRange
          if wordId + offset < input.sentence.length
          words = input.sentence.slice(wordId, wordId + offset).toList
-         if words.forall(_.matches("[A-Za-z0-9.-]*"))} {
-      // TODO: improve this regex
+         if words.forall(isPossibleNerToken)} {
+
+      val graphFrag = if (optionsStage1Wiki) {
+        "(thing :wiki - :name (name " + words.map(x => ":op " + x).mkString(" ") + "))"
+      } else {
+        "(thing :name (name " + words.map(word => ":op " + word).mkString(" ") + "))"
+      }
+
       concepts = PhraseConceptPair(
         words,
-        if (optionsStage1Wiki) {
-          "(thing :wiki - :name (name " + words.map(x => ":op " + x).mkString(" ") + "))"
-        } else {
-          "(thing :name (name " + words.map(x => ":op " + x).mkString(" ") + "))"
-        },
-        FeatureVectorBasic(m.Map("NEPassThrough" -> 1.0, "NEPassThrough_len" -> offset)),
-        List()) :: concepts
+        graphFrag,
+        FeatureVectorBasic(m.Map("NEPassThrough" -> 1.0, "NEPassThrough_len" -> offset))
+      ) :: concepts
     }
 
     if (onlyPassThrough) {
@@ -183,33 +198,41 @@ class Concepts(options: m.Map[Symbol, String],
     concepts
   }
 
-  private def onlyVal(onlyPassThrough: Boolean) = if (onlyPassThrough) 1 else 0
+  private def isPossibleNerToken(token: String) = {
+    token.matches("[A-Za-z0-9.-]*") // TODO: improve this regex
+  }
+  private def booleanToInt(value: Boolean) = if (value) 1 else 0
 
-  private def passThrough(input: Input, i: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
+  private def passThrough(input: Input, wordId: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
     // TODO: improve this regex
-    if (input.sentence(i).matches("[A-Za-z0-9]*")) {
+    val word = input.sentence(wordId)
+    if (word.matches("[A-Za-z0-9]*")) {
       List(PhraseConceptPair(
-        List(input.sentence(i)),
-        input.sentence(i),
-        FeatureVectorBasic(m.Map("PassThrough" -> 1.0,
-                                 "PassThroughOnly" -> onlyVal(onlyPassThrough))),
-        List()))
+        words = List(word),
+        graphFrag = word,
+        features = FeatureVectorBasic(m.Map(
+          "PassThrough" -> 1.0,
+          "PassThroughOnly" -> booleanToInt(onlyPassThrough)
+        ))
+      ))
     } else {
       List()
     }
   }
 
-  private def wordnetPassThrough(input: Input, i: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
-    val word = input.sentence(i)
+  private def wordnetPassThrough(input: Input, wordId: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
+    val word = input.sentence(wordId)
     val stems = Wordnet.getStemms(word)
     // TODO: add stems from large annotated corpus
     if (stems.nonEmpty) {
       List(PhraseConceptPair(
         List(word),
         stems.minBy(_.length),
-        FeatureVectorBasic(m.Map("WordnetPassThrough" -> 1.0,
-                                 "WordnetPassThroughOnly" -> onlyVal(onlyPassThrough))),
-        List()))
+        FeatureVectorBasic(m.Map(
+          "WordnetPassThrough" -> 1.0,
+          "WordnetPassThroughOnly" -> booleanToInt(onlyPassThrough)
+        ))
+      ))
     } else {
       List()
     }
@@ -217,9 +240,10 @@ class Concepts(options: m.Map[Symbol, String],
 
   private def verbs(input: Input, wordId: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
     var concepts = List[PhraseConceptPair]()
-    val pos: Array[String] = input.pos.slice(wordId, wordId + 1) // NOTE: pos.slice is defined in Annotation.slice
-    if (pos.length > 0 && pos(pos.length - 1).startsWith("V")) {
-      // it's a verb
+    val posArray = input.pos.slice(wordId, wordId + 1) // NOTE: posArray.slice is defined in Annotation.slice
+    val isVerb = posArray.length > 0 && posArray.last.startsWith("V")
+
+    if (isVerb) {
       val word = input.sentence(wordId)
       val stems = Wordnet.getStemms(word)
       val stem = if (stems.nonEmpty) {
@@ -227,14 +251,18 @@ class Concepts(options: m.Map[Symbol, String],
       } else {
         word
       }
+
       // TODO: check in large corpus
       concepts = List(PhraseConceptPair(
         List(word),
         stem + "-00", // 00 sense for missing predicates
-        FeatureVectorBasic(m.Map("AddedVerb" -> 1.0,
-                                 "AddedVerbOnly" -> onlyVal(onlyPassThrough))),
-        List()))
+        FeatureVectorBasic(m.Map(
+          "AddedVerb" -> 1.0,
+          "AddedVerbOnly" -> booleanToInt(onlyPassThrough)
+        ))
+      ))
     }
+
     concepts
   }
 
@@ -262,7 +290,7 @@ class Concepts(options: m.Map[Symbol, String],
 
   private def namedEntity(input: Input, entity: Entity): PhraseConceptPair = {
     val Input(_, sentence, notTokenized, _, _, ner, _) = input
-    val entityType: String = entity.label match {
+    val entityType = entity.label match {
       case "PER" => "person" // also president
       case "ORG" => "organization" // also company, government-organization, criminal-organization
       case "LOC" => "country" // also city, world-region, continent, county
@@ -272,20 +300,30 @@ class Concepts(options: m.Map[Symbol, String],
     // start and end in ner.snt, which is the tokenized text
     val (notTokStart, notTokEnd) = notTokenized.getSpan((start, end))
     // start and end in notTokenized.snt, which is the original untokenized text
-    val graphFrag = if (optionsStage1Wiki) {
-      "(" + entityType + ":wiki - :name (name " + notTokenized.snt.slice(notTokStart, notTokEnd).map(x => ":op \"" + x.replaceAllLiterally("\"", "") + "\"").mkString(" ") + "))" // there should be no " in named entities (TODO: does the AMR style guide say if you can escape them?)
-    } else {
-      "(" + entityType + " :name (name " + notTokenized.snt.slice(notTokStart, notTokEnd).map(x => ":op \"" + x.replaceAllLiterally("\"", "") + "\"").mkString(" ") + "))" // there should be no " in named entities (TODO: does the AMR style guide say if you can escape them?)
-    }
+
+    val wikiOptStr = if (optionsStage1Wiki) ":wiki -" else ""
+    val slice = notTokenized.snt.slice(notTokStart, notTokEnd)
+    // there should be no " in named entities (TODO: does the AMR style guide say if you can escape them?)
+    val nameOps = slice
+      .map(_.replaceAllLiterally("\"", ""))
+      .map(x => s""":op "$x"""")
+      .mkString(" ")
+    val graphFrag = s"($entityType$wikiOptStr :name (name $nameOps))"
+
     logger(0, "NER Entity: " + graphFrag)
     //logger(1, "(start, end) = "+(start,end))
     //logger(1, "ner.snt = "+ner.snt.toList)
     //logger(1, "ner.tok = "+ner.tok.toList)
     //logger(1, "notTokenized.snt = "+notTokenized.snt.toList)
     //logger(1, "notTokenized.tok = "+notTokenized.tok.toList)
-    PhraseConceptPair(sentence.slice(start, end).toList,
-                      graphFrag,
-                      FeatureVectorBasic(m.Map("ner" -> 1.0, "ner_len" -> (end - start))))
+    PhraseConceptPair(
+      sentence.slice(start, end).toList,
+      graphFrag,
+      FeatureVectorBasic(m.Map(
+        "ner" -> 1.0,
+        "ner_len" -> (end - start)
+      ))
+    )
   }
 
   private def dateEntities(input: Input, start: Int): List[PhraseConceptPair] = {

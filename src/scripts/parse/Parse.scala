@@ -19,7 +19,7 @@ case class Parse(context: Context,
   override def run(): Unit = {
     FileUtils.mkDir(outputFolder)
 
-    runStage("###  Preprocess input sentences ###", context.runProperties.skipPreprocessing) {
+    runStage("### Preprocess input sentences ###", context.runProperties.skipPreprocessing) {
       proceedPreprocessing()
     }
     tryRunStage("### Running JAMR Parser ###", skip = false) {
@@ -65,7 +65,6 @@ case class Parse(context: Context,
          |--dependencies "$inputFile.deps"
          |--ner "$inputFile.IllinoisNER"
          |--tok "$inputFile.tok"
-         |-v 0
          |${context.parserOptions}
       """.stripMargin
 
