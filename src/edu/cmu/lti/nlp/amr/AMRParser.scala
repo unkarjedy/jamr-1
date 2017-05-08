@@ -1,6 +1,6 @@
 package edu.cmu.lti.nlp.amr
 
-import java.io.{PrintWriter, StringWriter}
+import java.io.{PrintStream, PrintWriter, StringWriter}
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -82,6 +82,8 @@ object AMRParser {
       case "--srl" :: value :: tail => parseOptions(map + ('srl -> value), tail)
       case "--snt" :: value :: tail => parseOptions(map ++ m.Map('notTokenized -> value), tail)
       case "--tok" :: value :: tail => parseOptions(map ++ m.Map('tokenized -> value), tail)
+      case "--progress-file" :: value :: tail => parseOptions(map ++ m.Map('progressFile-> value), tail)
+      case "--terms-dict" :: value :: tail => parseOptions(map ++ m.Map('termsDict-> value), tail)
       case "-v" :: value :: tail => parseOptions(map ++ m.Map('verbosity -> value), tail)
 
       //case string :: opt2 :: tail if isSwitch(opt2) => parseOptions(map ++ m.Map('infile -> string), list.tail)
@@ -334,10 +336,16 @@ object AMRParser {
         }
       }
 
+      val progressPrintStreamOpt = options.get('progressFile).map(new PrintStream(_))
       for ((block, blockId) <- inputArray.zipWithIndex) {
         try {
           time {
             decodeLine(block, blockId)
+
+            progressPrintStreamOpt.foreach(ps => {
+              val progress = (blockId * 100) / inputArray.length
+              ps.println(s"$blockId/${inputArray.length}  ($progress%))")
+            })
           }
         } catch {
           case e: java.lang.VirtualMachineError => throw e

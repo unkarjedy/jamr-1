@@ -25,8 +25,9 @@ object RunParse {
   private val stage1SyntheticConcepts = List(
     "NER", "DateExpr", "OntoNotes", "verbs",
 //    "NEPassThrough",
-    "PassThrough", "WordNetPassThrough",
-    "ItTermDict"
+    "PassThrough",
+    "WordNetPassThrough",
+    "TermsDict"
   ).distinct
 
   def main(args: Array[String]): Unit = {
@@ -60,6 +61,7 @@ object RunParse {
        |--output-format AMR,nodes,edges,root
        |--ignore-parser-errors
        |--print-stack-trace-on-errors
+       |--terms-dict "${context.jamrRoot}/resources_terms/terms_with_synonims.txt"
        |-v 1
       """.stripMargin
   }

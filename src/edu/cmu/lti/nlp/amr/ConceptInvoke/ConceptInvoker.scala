@@ -2,6 +2,7 @@ package edu.cmu.lti.nlp.amr.ConceptInvoke
 
 import edu.cmu.lti.nlp.amr.BasicFeatureVector._
 import edu.cmu.lti.nlp.amr._
+import edu.cmu.lti.nlp.amr.term.{Term, TermsDict}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.{mutable => m}
@@ -17,15 +18,16 @@ object ConceptInvoker {
   */
 class ConceptInvoker(options: m.Map[Symbol, String],
                      phraseConceptPairs: Array[PhraseConceptPair]) {
-
   // maps the first word in the phrase to a list of phraseConceptPairs
-  private val conceptTable: m.Map[String, List[PhraseConceptPair]] = m.Map()
+  private val conceptTable = m.Map[String, List[PhraseConceptPair]]()
 
   for (pair <- phraseConceptPairs) {
     val word = pair.words.head
     conceptTable(word) = pair :: conceptTable.getOrElse(word, List())
-    //logger(2, "conceptTable("+word+") = "+conceptTable(word))
   }
+
+  private val termsDict = new TermsDict(options.get('termsDict))
+
 
   /** ***** Concept sources to add *********
     *- Nominalizations
@@ -36,7 +38,7 @@ class ConceptInvoker(options: m.Map[Symbol, String],
   private val implementedConceptSources = m.Set(
     "NER", "DateExpr", "OntoNotes", "verbs", "nominalizations",
     "NEPassThrough", "PassThrough", "WordNetPassThrough",
-    "ItTermDict"
+    "TermsDict"
   )
 
   private val unknownConcepts = conceptSources.diff(implementedConceptSources)
@@ -103,6 +105,9 @@ class ConceptInvoker(options: m.Map[Symbol, String],
     if (conceptSources.contains("nominalizations")) {
       conceptList = nominalizations(input, wordId, onlyPassThrough) ::: conceptList
     }
+    if (conceptSources.contains("TermsDict")) {
+      conceptList = termsLookup(input, wordId, onlyPassThrough) ::: conceptList
+    }
 
     // Normalize the concept list by mergin features and trainIndexes of duplicating concept pairs
     val conceptSet: m.Map[(List[String], String), PhraseConceptPair] = m.Map()
@@ -149,6 +154,40 @@ class ConceptInvoker(options: m.Map[Symbol, String],
   /*==============================
   * Various concept sources
   * ==============================*/
+  def termsLookup(input: Input, wordId: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
+    val word = input.sentence(wordId)
+
+    def matchesSentenceWords(term: Term): Boolean = {
+      val sentenceSlice = input.sentenceLowercased.slice(wordId, wordId + term.words.length).toSeq
+      if(term.onlyUpperCase) {
+        term.words == sentenceSlice
+      } else {
+        term.words.map(_.toLowerCase) == sentenceSlice.map(_.toLowerCase)
+      }
+    }
+
+    val concepts = for (
+      term <- termsDict.getOrElse(word, List())
+      if term.words.length + wordId <= input.sentence.length
+      if matchesSentenceWords(term)
+    ) yield {
+      PhraseConceptPair(
+        words = term.words.toList,
+        graphFrag = term.concept,
+        features = FeatureVectorBasic(m.Map(
+          "TermDict" -> 1.0
+        ))
+      )
+    }
+
+    if (onlyPassThrough) {
+      concepts.foreach(_.features.fmap("TermDictOnly") = 1.0)
+    }
+
+    concepts
+  }
+
+
   private def ontoNotesLookup(input: Input, wordId: Int, onlyPassThrough: Boolean): List[PhraseConceptPair] = {
     val stems = Wordnet.getStemms(input.sentence(wordId))
 

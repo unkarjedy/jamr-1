@@ -1,4 +1,4 @@
-package term_dict
+package term_dict_process
 
 import java.io.FileReader
 
@@ -36,13 +36,20 @@ object TermsDefinitionsProcessor {
     extractSynonyms(terms)
 
     val saver = new TermDefinitionSaver(resoursesBasePath)
-    saver.saveTerms(terms, "terms.txt")
-    saver.saveTermsLowercased(terms, "terms-lowercased.txt")
+//    saver.saveTerms(terms, "terms.txt")
+//    saver.saveTermsLowercased(terms, "terms-lowercased.txt")
 //    saver.saveTermsWithSynonims(terms, "terms_with_synonims.txt")
 //    saver.saveTermsWithDefinitionsToFile(terms, "term-definitions.txt")
 //    saver.saveDefinitionsSentencesToFile(terms, "definition-sentences.txt")
-    saver.saveDefinitionsFirstSentencesToFile(terms, "definition-first-sentences.txt", splitDefinitions = true)
-    saver.saveDefinitionsFirstSentencesToFile(terms, "definition-first-sentences-no-blank.txt")
+//    saver.saveDefinitionsFirstSentencesToFile(terms, "definition-first-sentences.txt", splitDefinitions = true)
+//    saver.saveDefinitionsFirstSentencesToFile(terms, "definition-first-sentences-no-blank.txt")
+
+    val allSentencesLowercased = terms.flatMap(_.definitions).flatMap(_.sentences).map(_.toLowerCase)
+    val counter = new NGrammCounter(allSentencesLowercased)
+    val bigramsCountSorted = counter.countBigrams()
+      .sortBy(_._2)(Ordering[Int].reverse)
+      .take(1500)
+    saver.saveTuples(bigramsCountSorted, "bigrams_frequency_sorted.txt")
   }
 
   /** The method extracts synonyms from first sentence of each definition.

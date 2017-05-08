@@ -26,7 +26,7 @@ case class Parse(context: Context,
       proceedParse()
     }
 
-    removeTemFiles(inputFolder)
+    removeTempFiles(inputFolder)
   }
 
   private def proceedPreprocessing() = {
@@ -58,6 +58,8 @@ case class Parse(context: Context,
   }
 
   private def proceedParse(): Unit = {
+    val outputPath = new File(outputFolder).toPath
+
     val args =
       s"""--stage1-concept-table "${context.modelFolder}/conceptTable.train"
          |--stage1-weights "${context.stage1Weights}"
@@ -65,10 +67,10 @@ case class Parse(context: Context,
          |--dependencies "$inputFile.deps"
          |--ner "$inputFile.IllinoisNER"
          |--tok "$inputFile.tok"
+         |--progress-file "${outputPath.resolve("parse-progress.txt").toString}"
          |${context.parserOptions}
       """.stripMargin
 
-    val outputPath = new File(outputFolder).toPath
     AMRParserRunner.run(
       argsString = args,
       inFilePath = inputFile.getPath,
@@ -77,7 +79,7 @@ case class Parse(context: Context,
     )
   }
 
-  private def removeTemFiles(folder: String) = {
+  private def removeTempFiles(folder: String) = {
     val tmpFiles = new File(folder).listFiles().filter(_.isFile)
       .filter(_.getName.endsWith(".tmp"))
     tmpFiles.foreach(_.delete())

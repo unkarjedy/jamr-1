@@ -15,6 +15,8 @@ case class Input(var graph: Option[Graph],  // var so we can update for the inpu
                  ner: Annotation[Entity],
                  index: Int) {
 
+    val sentenceLowercased = sentence.map(_.toLowerCase)
+
     def trainingIndex : Option[Int] = Some(index)
 
     // TODO: clean up these constructors

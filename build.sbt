@@ -18,7 +18,8 @@ libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-pickling" % "0.10.0",
   "commons-io" % "commons-io" % "2.5",
   "org.apache.commons" % "commons-csv" % "1.3",
-  "org.apache.commons" % "commons-lang3" % "3.0"
+  "org.apache.commons" % "commons-lang3" % "3.0",
+  "io.gitlab.nats" %	"deptreeviz" %	"0.3.0"
 //  "org.scala-lang" % "scala-swing" % "2.10.3"
 )
 

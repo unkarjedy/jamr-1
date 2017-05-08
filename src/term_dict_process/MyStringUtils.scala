@@ -1,4 +1,4 @@
-package term_dict
+package term_dict_process
 
 object MyStringUtils {
 

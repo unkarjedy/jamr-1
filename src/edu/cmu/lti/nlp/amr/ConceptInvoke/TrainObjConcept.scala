@@ -220,7 +220,7 @@ class TrainObjConcept(val options: m.Map[Symbol, String]) extends TrainObjAbstra
         //file.println(decoderResult.graph.prettyString(detail=1, pretty=true) + '\n')
 
         val stage1Result = decoder.decode(new Input(
-          None,
+          graph = None,
           tokenized(blockId).split(" "),
           snt(blockId).split(" "),
           dependencies(blockId),
