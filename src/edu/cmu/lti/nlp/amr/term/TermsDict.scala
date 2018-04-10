@@ -9,7 +9,7 @@ import scala.io.Source
 case class Term(words: Seq[String], concept: String, onlyUpperCase: Boolean = false)
 
 class TermsDict(filePathOpt: Option[String]){
-  private var wordToTerm = mutable.Map[String, List[Term]]()
+  private val wordToTerm = mutable.Map[String, List[Term]]()
 
   def getOrElse(firstWord: String, default: => List[Term]): List[Term] = {
     wordToTerm.getOrElse(firstWord, default)
@@ -19,11 +19,11 @@ class TermsDict(filePathOpt: Option[String]){
     wordToTerm.get(firstWord)
   }
 
-  filePathOpt.foreach(termsFile => {
+  filePathOpt.foreach { termsFile =>
     Source.fromFile(termsFile)
       .getLines()
       .map(_.trim)
-      .foreach(line => {
+      .foreach { line =>
         val parts = line.split(" ### ")
         val termValue = parts.head.trim
         val termSynonyms = parts.tail
@@ -31,8 +31,8 @@ class TermsDict(filePathOpt: Option[String]){
         val concept = termWords.mkString("-") + TERM_CONCEPT_SUFFIX
         val term = Term(termWords, concept, onlyUpperCase = TermsDict.isAbviature(termValue, termSynonyms))
         wordToTerm(termWords.head) = term :: wordToTerm.getOrElse(termWords.head, List())
-      })
-  })
+      }
+  }
 }
 
 object TermsDict {

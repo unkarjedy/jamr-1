@@ -3,6 +3,7 @@ package scripts.utils
 import java.io.PrintStream
 
 import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream
+import com.typesafe.scalalogging.slf4j.StrictLogging
 import scripts.utils.TimeUtils.runWithTimeLogging
 import scripts.utils.logger.SimpleLoggerLike
 

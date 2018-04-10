@@ -3,21 +3,21 @@ package scripts.preprocess
 import java.io._
 import java.nio.charset.StandardCharsets
 
+import com.typesafe.scalalogging.slf4j.StrictLogging
 import edu.cmu.lti.nlp.amr.align.Aligner
-import edu.cmu.lti.nlp.amr.{CorpusTool, IllinoisNERConvert, RunStanfordParser}
-import scripts.utils.{StageRunnerLike, StreamUtils}
-import scripts.utils.TimeUtils.runWithTimeLogging
+import edu.cmu.lti.nlp.amr.standford_parser.RunStanfordParser
+import edu.cmu.lti.nlp.amr.{CorpusTool, IllinoisNERConvert}
 import scripts.utils.context.{Context, ContextLike}
 import scripts.utils.logger.SimpleLoggerLike
+import scripts.utils.{StageRunnerLike, StreamUtils}
 
 import scala.io.Source
 
 // Analogue of PREPROCESS.sh
 // Proceed preprocessing of dev, test, train files: extracts sentences, tokens, NamedEntities, Standford Dependencies
 case class Preprocessor(ctx: Context) extends ContextLike(ctx)
-                                              with Runnable
-                                              with SimpleLoggerLike
-                                              with StageRunnerLike {
+  with Runnable
+  with StageRunnerLike {
 
   override def run(): Unit = {
     runStage("Preprocessing", runProperties.skipPreprocessing) {
@@ -148,9 +148,10 @@ case class Preprocessor(ctx: Context) extends ContextLike(ctx)
   def runStandfordDependencyParser(inputFile: String, outputFile: String): Unit = {
     val in = new FileInputStream(inputFile)
     val out = new PrintStream(outputFile)
+    val outKBest = new PrintStream(outputFile + ".k_best.txt")
 
     try {
-      val parser = new RunStanfordParser(in, out)
+      val parser = new RunStanfordParser(in, out, Some(outKBest), verbose = runProperties.getBool("verbose.preprocessing.dep"))
       parser.run()
     } finally {
       in.close()

@@ -141,7 +141,7 @@ class ConceptInvoker(options: m.Map[Symbol, String],
     val concepList0: List[PhraseConceptPair] = conceptTable.getOrElse(sentence(wordId), List())
     if (optionsLeaveOneOut && trainingIndex.isDefined) {
       concepList0.filter(conceptPair => {
-        equalToSentenceWords(conceptPair, sentence, wordId) && conceptPair.trainingIndices.exists(id => abs(id - trainingIndex.get) > 20)
+        equalToSentenceWords(conceptPair, sentence, wordId) && conceptPair.trainingIndices.exists { id => Math.abs(id - trainingIndex.get) > 20 }
       })
     } else {
       concepList0.filter(conceptPair => {
@@ -159,7 +159,7 @@ class ConceptInvoker(options: m.Map[Symbol, String],
 
     def matchesSentenceWords(term: Term): Boolean = {
       val sentenceSlice = input.sentenceLowercased.slice(wordId, wordId + term.words.length).toSeq
-      if(term.onlyUpperCase) {
+      if (term.onlyUpperCase) {
         term.words == sentenceSlice
       } else {
         term.words.map(_.toLowerCase) == sentenceSlice.map(_.toLowerCase)
@@ -398,7 +398,7 @@ class ConceptInvoker(options: m.Map[Symbol, String],
     val DayMonthYear = ("""(([0-9]?[0-9])\t(""" + monthRegex +""")\t([0-9][0-9][0-9][0-9]))(?:\t.*)?""").r // (?: ) non-capturing group
     if (DayMonthYear.pattern.matcher(string).matches) {
       list += {
-        var DayMonthYear(matching, day, month, year) = string
+        val DayMonthYear(matching, day, month, year) = string
         mkDayMonthYear(matching, day, month, year)
       }
     }
@@ -407,7 +407,7 @@ class ConceptInvoker(options: m.Map[Symbol, String],
     val MonthYear = ("((" + monthRegex +""")\t([0-9][0-9][0-9][0-9]))(?:\t.*)?""").r
     if (MonthYear.pattern.matcher(string).matches) {
       list += {
-        var MonthYear(matching, month, year) = string
+        val MonthYear(matching, month, year) = string
         mkMonthYear(matching, month, year)
       }
     }
@@ -416,17 +416,18 @@ class ConceptInvoker(options: m.Map[Symbol, String],
     val MonthDayYear = ("((" + monthRegex +""")\t?([0-9][0-9]?)\t?,?\t([0-9][0-9][0-9][0-9]))(?:\t.*)?""").r
     if (MonthDayYear.pattern.matcher(string).matches) {
       list += {
-        var MonthDayYear(matching, month, day, year) = string
+        val MonthDayYear(matching, month, day, year) = string
         mkDayMonthYear(matching, day, month, year)
       }
     }
 
     // 2007-02-27 => (date-entity :day 27 :month 2 :year 2007)
     // 20030106 => (date-entity :day 6 :month 1 :year 2003)
-    val EightDigitDate = """(([0-9]?[0-9][0-9]?[0-9])\t?[.-]?\t?([0-9][0-9])\t?[.-]?\t?([0-9][0-9]))(?:\t.*)?""".r // (?: ) non-capturing group
+    val EightDigitDate =
+    """(([0-9]?[0-9][0-9]?[0-9])\t?[.-]?\t?([0-9][0-9])\t?[.-]?\t?([0-9][0-9]))(?:\t.*)?""".r // (?: ) non-capturing group
     if (EightDigitDate.pattern.matcher(string).matches) {
       list += {
-        var EightDigitDate(matching, year, month, day) = string
+        val EightDigitDate(matching, year, month, day) = string
         mkDayMonthYear(matching, day, month, year)
       }
     }
@@ -436,7 +437,7 @@ class ConceptInvoker(options: m.Map[Symbol, String],
       """(([0-9][0-9][0-9][0-9]))(?:\t.*)?""".r
     if (Year.pattern.matcher(string).matches) {
       list += {
-        var Year(matching, year) = string
+        val Year(matching, year) = string
         mkYear(matching, year)
       }
     }
@@ -445,7 +446,7 @@ class ConceptInvoker(options: m.Map[Symbol, String],
     val Month = ("((" + monthRegex +"""))(?:\t.*)?""").r
     if (Month.pattern.matcher(string).matches) {
       list += {
-        var Month(matching, month) = string
+        val Month(matching, month) = string
         mkMonth(matching, month)
       }
     }

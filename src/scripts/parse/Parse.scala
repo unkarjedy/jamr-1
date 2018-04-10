@@ -2,6 +2,7 @@ package scripts.parse
 
 import java.io.{File, PrintWriter}
 
+import com.typesafe.scalalogging.slf4j.StrictLogging
 import scripts.preprocess.Preprocessor
 import scripts.utils.context.{Context, ContextLike}
 import scripts.utils.logger.SimpleLoggerLike
@@ -13,7 +14,7 @@ import scala.io.Source
 case class Parse(context: Context,
                  inputFolder: String,
                  inputFileName: String,
-                 outputFolder: String) extends ContextLike(context) with Runnable with SimpleLoggerLike with StageRunnerLike {
+                 outputFolder: String) extends ContextLike(context) with Runnable with StageRunnerLike {
   private val inputFile = new File(inputFolder).toPath.resolve(inputFileName).toFile
 
   override def run(): Unit = {
@@ -22,22 +23,26 @@ case class Parse(context: Context,
     runStage("### Preprocess input sentences ###", context.runProperties.skipPreprocessing) {
       proceedPreprocessing()
     }
-    tryRunStage("### Running JAMR Parser ###", skip = false) {
+    tryRunStage("### Running JAMR Parser ###", skip = runProperties.skipParse) {
       proceedParse()
     }
 
-    removeTempFiles(inputFolder)
+//    removeTempFiles(inputFolder)
   }
 
   private def proceedPreprocessing() = {
-    logger.info("### Tokenizing input###")
-    runTokenizer()
+    runStage("### Tokenizing input ###", runProperties.skipTokenizer) {
+      runTokenizer()
+    }
 
     val preprocessor = Preprocessor(context)
-    logger.info("### Running NER system ###")
-    preprocessor.runIllinoisNamedEntityTagger(inputFile.getPath, System.err, System.err) // redirect both to err
-    logger.info("### Running dependency parser ###")
-    preprocessor.runStandfordDependencyParser(inputFile.getPath, s"$inputFile.deps")
+    runStage("### Running NER system ###", runProperties.skipNER){
+      preprocessor.runIllinoisNamedEntityTagger(inputFile.getPath, System.err, System.err) } // redirect both to err
+
+    runStage("### Running dependency parser ###", runProperties.skipDEP) {
+      preprocessor.runStandfordDependencyParser(inputFile.getPath, s"$inputFile.deps")
+    }
+
   }
 
   private def runTokenizer(): Unit = {
@@ -65,6 +70,7 @@ case class Parse(context: Context,
          |--stage1-weights "${context.stage1Weights}"
          |--stage2-weights "${context.stage2Weights}"
          |--dependencies "$inputFile.deps"
+         |--dependenciesKBest "$inputFile.deps.k_best.txt"
          |--ner "$inputFile.IllinoisNER"
          |--tok "$inputFile.tok"
          |--progress-file "${outputPath.resolve("parse-progress.txt").toString}"

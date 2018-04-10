@@ -1,9 +1,16 @@
 package scripts.utils.context
 
 import edu.cmu.lti.nlp.amr.Wordnet
+import scripts.train.RunProperties
 
 //TODO: replace string concat with Path.resolve
 object ContextBuilder {
+
+  def createContext(runProperties: RunProperties): Context= {
+    val context = createContext(runProperties.jamrRoot, runProperties.modelFolder)
+    context.runProperties = runProperties
+    context
+  }
 
   def createContext(jamrRoot: String, modelFolder: String): Context = {
     val toolsPath = s"$jamrRoot/tools/"

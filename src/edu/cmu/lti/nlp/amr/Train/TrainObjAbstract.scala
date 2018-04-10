@@ -1,6 +1,6 @@
 package edu.cmu.lti.nlp.amr.Train
 
-import java.io.{File, FileWriter, PrintStream}
+import java.io.{File, PrintStream}
 import java.util.concurrent.TimeUnit
 
 import edu.cmu.lti.nlp.amr.BasicFeatureVector.{AdagradBasic, FeatureVectorBasic, SSGDBasic}

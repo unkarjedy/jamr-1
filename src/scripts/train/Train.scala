@@ -3,6 +3,7 @@ package scripts.train
 import java.io.{File, FileInputStream, FileWriter, PrintStream}
 import java.util.logging.FileHandler
 
+import com.typesafe.scalalogging.slf4j.StrictLogging
 import edu.cmu.lti.nlp.amr.ExtractConceptTable
 import scripts.utils.context.{Context, ContextLike}
 import scripts.utils.logger.SimpleLoggerLike

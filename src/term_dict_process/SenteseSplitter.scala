@@ -2,7 +2,6 @@ package term_dict_process
 
 import scala.collection.mutable
 
-
 /**
   * Actually should be a normal parser with some grammar... but no time...
   */
@@ -39,9 +38,10 @@ class SenteseSplitter(terms: Seq[Term]) {
 
       val isEndOfSentence = {
         ch == '.' &&
-          !isOpenQuote &&
           roundBracketDeepness <= 0 &&
+          !isOpenQuote &&
           !_isBeginingOfTerm &&
+          !_isDotInsideSomeLexem &&
           isNextCharUpperCase(index, text)
       }
 
@@ -59,6 +59,8 @@ class SenteseSplitter(terms: Seq[Term]) {
         case '"' => isOpenQuote = !isOpenQuote
         case _ =>
       }
+
+      roundBracketDeepness = Math.min(0, roundBracketDeepness) // for broken brackets: "()))) (()) ()()"
     })
 
     finishCurrentSentence()

@@ -2,6 +2,7 @@ package scripts.train
 
 import java.util.logging.{ConsoleHandler, FileHandler}
 
+import com.typesafe.scalalogging.slf4j.StrictLogging
 import scripts.utils.{AMRParserRunner, StageRunnerLike}
 import scripts.utils.context.{Context, ContextLike}
 import scripts.utils.logger.{SimpleLoggerLike, UnmodifyingFormatter}

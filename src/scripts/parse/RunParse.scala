@@ -1,9 +1,15 @@
 package scripts.parse
 
+import java.io.File
+
+import org.apache.commons.io.FileUtils
+import scripts.DependencySvgPngDrawer
 import scripts.train.RunProperties
+import scripts.utils.FileExt._
+import scripts.utils.StageRunnerLike
 import scripts.utils.context.{Context, ContextBuilder}
 
-object RunParse {
+object RunParse extends StageRunnerLike {
   private val runProperties = new RunProperties("run.properties")
 
   private val jamrRoot = runProperties.jamrRoot
@@ -11,7 +17,7 @@ object RunParse {
   private val stage1Features = List(
     "bias", "length", "firstMatch", "numberIndicator", "badConcept",
     "sentenceMatch", "andList", "pos", "posEvent",
-//    "phrase", "phraseConceptPair", "phraseConceptPairPOS",
+    //    "phrase", "phraseConceptPair", "phraseConceptPairPOS",
     "corpusIndicator", "corpusLength", "count", "conceptGivenPhrase", "phraseGivenConcept"
   ).distinct
 
@@ -24,7 +30,7 @@ object RunParse {
 
   private val stage1SyntheticConcepts = List(
     "NER", "DateExpr", "OntoNotes", "verbs",
-//    "NEPassThrough",
+    //    "NEPassThrough",
     "PassThrough",
     "WordNetPassThrough",
     "TermsDict"
@@ -37,18 +43,37 @@ object RunParse {
     context.runProperties = runProperties
     context.stage1Weights = s"${context.modelFolder}/stage1-weights"
     context.stage2Weights = s"${context.modelFolder}/stage2-weights"
-//    context.stage2Weights = s"${context.modelFolder}/stage2-weights.iter5"
+    // context.stage2Weights = s"${context.modelFolder}/stage2-weights.iter5"
     context.stage1Features = stage1Features
     context.stage2Features = stage2Features
     context.parserOptions = buildParserOptionsString(context, stage1SyntheticConcepts)
 
-    val inputFilename= runProperties.parserInputFilName
+    val inputFilename = runProperties.parserInputFileName
     val inputFolder = s"$jamrRoot/${runProperties.parserInputFolder}"
     val outputFolder = s"$inputFolder/out"
-    Parse(context, inputFolder, inputFilename, outputFolder).run()
+
+    val parseStage = Parse(context, inputFolder, inputFilename, outputFolder)
+    parseStage.run()
 
     val extractor = new ParseLogDataExtractor(outputFolder, inputFilename)
     extractor.extractAmrOnly()
+
+    runStage("### Draw SVG for dependency trees ###", skip = runProperties.skipSvgRender) {
+//      val depsFileName = s"$inputFilename.deps"
+      val depsFileName = s"$inputFilename.deps.k_best.txt"
+      val baseFolder = new File(inputFolder)
+      val imagesFolder = baseFolder.resolve("out").resolve("images")
+      DependencySvgPngDrawer.draw(baseFolder.resolve(depsFileName), imagesFolder)
+
+      val svgFolder = imagesFolder.resolve("svg")
+      svgFolder.mkdir()
+      imagesFolder.listFiles().filter(_.getName.endsWith(".svg")).foreach { f =>
+        val distFile = svgFolder.resolve(f.getName)
+        distFile.delete()
+        FileUtils.moveFile(f, distFile)
+      }
+    }
+
   }
 
   private def buildParserOptionsString(context: Context, stage1SyntheticConcepts: List[String]) = {

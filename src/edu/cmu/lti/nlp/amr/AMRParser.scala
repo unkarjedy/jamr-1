@@ -8,7 +8,7 @@ import edu.cmu.lti.nlp.amr.ConceptInvoke.ConceptDecoderAbstract
 import edu.cmu.lti.nlp.amr.GraphDecoder.GraphDecoderAbstract
 import edu.cmu.lti.nlp.amr.graph.Graph
 import edu.cmu.lti.nlp.amr.span.Span
-import edu.cmu.lti.nlp.amr.utils.{CorpusUtils, F1, LineUtils}
+import edu.cmu.lti.nlp.amr.utils.{CorpusUtils, DepsTextBlock, F1, LineUtils}
 
 import scala.collection.{mutable => m}
 import scala.io.Source.fromFile
@@ -29,6 +29,7 @@ object AMRParser {
 
   def parseOptions(map: OptionMap, list: List[String]): OptionMap = {
     def isSwitch(s: String) = s(0) == '-'
+
     list match {
       case Nil => map
       case "--stage1-only" :: l => parseOptions(map + ('stage1Only -> "true"), l)
@@ -82,8 +83,8 @@ object AMRParser {
       case "--srl" :: value :: tail => parseOptions(map + ('srl -> value), tail)
       case "--snt" :: value :: tail => parseOptions(map ++ m.Map('notTokenized -> value), tail)
       case "--tok" :: value :: tail => parseOptions(map ++ m.Map('tokenized -> value), tail)
-      case "--progress-file" :: value :: tail => parseOptions(map ++ m.Map('progressFile-> value), tail)
-      case "--terms-dict" :: value :: tail => parseOptions(map ++ m.Map('termsDict-> value), tail)
+      case "--progress-file" :: value :: tail => parseOptions(map ++ m.Map('progressFile -> value), tail)
+      case "--terms-dict" :: value :: tail => parseOptions(map ++ m.Map('termsDict -> value), tail)
       case "-v" :: value :: tail => parseOptions(map ++ m.Map('verbosity -> value), tail)
 
       //case string :: opt2 :: tail if isSwitch(opt2) => parseOptions(map ++ m.Map('infile -> string), list.tail)
@@ -199,12 +200,19 @@ object AMRParser {
       val oracleDataArray = options.get('trainingData)
         .map(fileName => CorpusUtils.getAMRBlocks(fromFile(fileName).getLines()).toArray)
         .getOrElse(Array())
-      val dependenciesArray = options.get('dependencies).map(fileName => {
+      val dependenciesArray: Array[String] = options.get('dependencies).map(fileName => {
         CorpusUtils.splitOnNewline(Source.fromFile(fileName).getLines())
           .map(LineUtils.cleanDependencyStr)
           .toArray
       }).getOrElse(Array())
 
+      val dependenciesKBestArray: Array[DepsTextBlock] =
+        options.get('dependenciesKBest).map { fileName =>
+          // NAUMENKO: LineUtils.cleanDependencyStr is called inside CorpusUtils.getDepsBlocks
+          CorpusUtils.getDepsBlocks(Source.fromFile(fileName).getLines()).toArray
+        }.getOrElse(Array())
+
+      // TODO NAUMENKO: Note that if dependenciesKBestArray is used then  don't guarantee that spanF1 calculation is valid
       val spanF1 = F1(0, 0, 0)
 
       def decodeLine(block: String, blockId: Int): Unit = {
@@ -212,12 +220,13 @@ object AMRParser {
         logger(0, "Sentence: " + input + "\n")
         val tokenized = tokenizedArray(blockId)
         val ner = nerArray(blockId)
-        val deps = dependenciesArray(blockId)
-        val oracleGraphOpt = if(options.contains('stage1Oracle)) {
+        val oracleGraphOpt = if (options.contains('stage1Oracle)) {
           Some(AMRTrainingData(oracleDataArray(blockId)).toInputGraph())
         } else {
           None
         }
+
+        val deps = dependenciesArray(blockId)
 
         val stage1Result = stage1.decode(new Input(
           oracleGraphOpt,
@@ -245,13 +254,16 @@ object AMRParser {
         var decoderResultGraph = stage1Result.graph
 
         // TODO: clean up this code
+        val proceedStage2 = !options.contains('stage1Only)
 
-        if (!options.contains('stage1Only)) {
+        if (proceedStage2) {
           if (options.contains('stage2CostDiminished)) {
-            val input = new Input(AMRTrainingData(oracleDataArray(blockId)),
-                                  dependenciesArray(blockId),
-                                  oracle = true,
-                                  index = blockId)
+            val input = new Input(
+              AMRTrainingData(oracleDataArray(blockId)),
+              deps,
+              oracle = true,
+              index = blockId
+            )
             if (options.contains('stage1Oracle)) {
               val decoder = stage2.get
               decoderResultGraph = decoder.decode(input).graph
@@ -261,9 +273,12 @@ object AMRParser {
             }
           } else {
             val decoder = stage2.get
-            val input = new Input(stage1Result.graph,
-                                  tokenized.split(" "),
-                                  dependenciesArray(blockId), blockId)
+            val input = new Input(
+              stage1Result.graph,
+              tokenized.split(" "),
+              deps,
+              blockId
+            )
             decoderResultGraph = decoder.decode(input).graph
           }
         }
@@ -276,7 +291,7 @@ object AMRParser {
           }
 
           val oracle = stage2Oracle.get
-          val oracleResult = oracle.decode(new Input(amrdata2, dependenciesArray(blockId), oracle = true, index = blockId))
+          val oracleResult = oracle.decode(new Input(amrdata2, deps, oracle = true, index = blockId))
           for ((span, i) <- amrdata2.graph.spans.sortBy(x => x.words.toLowerCase).zipWithIndex) {
             logger(0, "Oracle Span " + span.start.toString + "-" + span.end.toString + ":  " + span.words + " => " + span.amrNode)
           }
@@ -284,7 +299,7 @@ object AMRParser {
           if (options.contains('stage1Eval)) {
             evaluateStage1(spanF1, stage1Result, oracleResult)
           }
-          logger(0, "Dependencies:\n" + dependenciesArray(blockId) + "\n")
+          logger(0, "Dependencies:\n" + deps + "\n")
           logger(0, "Oracle:\n" + oracleResult.graph.printTriples(detail = 1, extra = (node1, node2, relation) => {
             "" //TODO: put back in "\t"+oracle.features.ffDependencyPathv2(node1, node2, relation).toString.split("\n").filter(_.matches("^C1.*")).toList.toString+"\t"+oracle.features.localScore(node1, node2, relation).toString
             //"\n"+oracle.features.ffDependencyPathv2(node1, node2, relation).toString.split("\n").filter(_.matches("^C1.*")).toList.toString+"\nScore = "+decoder.features.localScore(node1, node2, relation).toString+"  Relevent weights:\n"+decoder.features.weights.slice(decoder.features.localFeatures(node1, node2, relation)).toString
@@ -292,7 +307,7 @@ object AMRParser {
         } //endif (options.contains('amrOracleData))
 
 
-        if (!options.contains('stage1Only)) {
+        if (proceedStage2) {
           val decoder = stage2.get
           logger(1, decoder.features.input)
           logger(0, "AMR:\n" + decoderResultGraph.printTriples(detail = 1, extra = (node1, node2, relation) => {

@@ -2,15 +2,18 @@ package scripts
 
 import java.io.{File, FileInputStream, FileOutputStream, FileWriter}
 
-import pio.gitlab.nats.deptreeviz.{DepTree, SimpleParse, SimpleWord}
+import edu.cmu.lti.nlp.amr.utils.{CorpusUtils, DepsTextBlock}
 import org.apache.batik.transcoder.image.PNGTranscoder
 import org.apache.batik.transcoder.{TranscoderInput, TranscoderOutput}
 import org.apache.commons.io.FileUtils
+import org.apache.commons.lang3.StringUtils
+import pio.gitlab.nats.deptreeviz.{DepTree, SimpleParse, SimpleWord}
 import scripts.train.RunProperties
 import scripts.utils.FileExt._
 import scripts.utils.logger.SimpleLoggerLike
 
 import scala.collection.JavaConversions._
+import scala.collection.mutable
 import scala.io.Source
 import scala.util.{Failure, Try}
 
@@ -24,7 +27,7 @@ object DependencySvgPngDrawer extends SimpleLoggerLike {
     val dependenciesFile = baseFolder.resolve("sentences2.txt.deps")
     val success = draw(dependenciesFile, imagesFolder)
 
-    if(success){
+    if (success) {
       val svgFolder = imagesFolder.resolve("svg")
       svgFolder.mkdir()
       imagesFolder.listFiles().filter(_.getName.endsWith(".svg")).foreach { f =>
@@ -38,17 +41,32 @@ object DependencySvgPngDrawer extends SimpleLoggerLike {
     *
     * @param dependenciesFile file with colnn entries
     * @param outputFolder     resulting folder which will contain dependency trees render
-    *                         @return true if drawing finished without any error
+    * @return true if drawing finished without any error
     */
   def draw(dependenciesFile: File, outputFolder: File): Boolean = {
     outputFolder.mkdirs()
 
-    val text = Source.fromFile(dependenciesFile).getLines().mkString("\n")
-    val conllGroups = text.split("\\n\\n+").map(_.split("\\n").toList)
-    conllGroups.zipWithIndex.foreach { case (conll, id) =>
-      generateSvg(outputFolder, conll, id)
-      logger.info(s"CONLL -> SVG ${id + 1} / ${conllGroups.length}")
-    }
+    // generate SVGs
+    val lines = Source.fromFile(dependenciesFile).getLines()
+    val conllTextBlocks = CorpusUtils.splitOnNewline(lines)
+    val totalBlocks = Source.fromFile(dependenciesFile).getLines().count(StringUtils.isBlank) + 1
+
+
+    val seenConllHashes = mutable.Set[Int]()
+    CorpusUtils.getDepsBlocks(conllTextBlocks)
+      .foreach { case block@DepsTextBlock(conllLines, idx, sntOpt, sntIdOpt, treeIdOpt) =>
+        val blockHash: Int = block.conllText.hashCode
+        val fileName = idx.toString +
+          sntIdOpt.map("-s" + _).getOrElse("") +
+          treeIdOpt.map("-t" + _).getOrElse("")
+        if (seenConllHashes.contains(blockHash)) {
+          logger.warning(s"Skipping file $fileName with duplicate conll block")
+        } else {
+          seenConllHashes += blockHash
+          generateSvg(outputFolder, conllLines, fileName)
+          logger.info(s"CONLL -> SVG ${idx + 1} / $totalBlocks")
+        }
+      }
 
     // convert all generated SVG to PNG image
     Try {
@@ -66,11 +84,11 @@ object DependencySvgPngDrawer extends SimpleLoggerLike {
     }
   }
 
-  private def generateSvg(outputFolder: File, conll: List[String], id: Int): Unit = {
+  private def generateSvg(outputFolder: File, conll: Seq[String], outFileName: String): Unit = {
     val parser = SimpleParse.fromConll(conll)
     val depTree = new DepTree[SimpleParse, SimpleWord](parser)
 
-    val svgFilePath = s"$outputFolder/$id.svg"
+    val svgFilePath = s"$outputFolder/$outFileName.svg"
     val writer = new FileWriter(svgFilePath)
     depTree.writeTree(writer)
     writer.close()

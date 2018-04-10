@@ -18,7 +18,7 @@ class ConceptDecoder(options: m.Map[Symbol, String],
   private val usingTermsDict = options.contains('termsDict)
   private def calcExtraTermCost(concept: PhraseConceptPair): Float = {
     if(usingTermsDict && concept.graphFrag.endsWith(TermsDict.TERM_CONCEPT_SUFFIX)) {
-      1000000f // dominate terms concepts
+      10000f // dominate terms concepts
     } else {
       0.0f
     }

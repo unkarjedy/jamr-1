@@ -9,21 +9,17 @@ import scripts.train.RunProperties
 import scala.collection.JavaConversions._
 import scala.collection.mutable
 
-case class Term(id: Int, value: String,
-                definitions: mutable.ArrayBuffer[TermDefinition] = mutable.ArrayBuffer(),
-                synonyms: mutable.ArrayBuffer[String] = mutable.ArrayBuffer())
-
-case class TermDefinition(id: Int, termId: Int, value: String,
-                          sentences: mutable.ArrayBuffer[String] = mutable.ArrayBuffer())
-
-
+/**
+  * This util class is used to process `terms` files, extracted from MySQL database given by Ivankov AA.
+  * Parse that files, extract some useful information and save it to different files
+  */
 object TermsDefinitionsProcessor {
   val CSV_FORMAT = CSVFormat.MYSQL.withQuote(''').withDelimiter(',')
   val runProperties = new RunProperties("run.properties")
 
   val jamrRoot = runProperties.jamrRoot
   val baseFolder = s"$jamrRoot/data/terms/"
-  val resoursesBasePath = s"$jamrRoot/resources_terms"
+  val resourcesBasePath = s"$jamrRoot/resources_terms"
   val termsFile = "terms_comp.txt"
   val termsDefinitionsFile = "terms_comp_definition.txt"
 
@@ -34,18 +30,32 @@ object TermsDefinitionsProcessor {
     initTermDefinitionsReferences(terms, definitions)
     splitDefinitionsToSentences(terms, definitions)
     extractSynonyms(terms)
+    clearDefinitionsSentences(definitions)
 
-    val saver = new TermDefinitionSaver(resoursesBasePath)
-//    saver.saveTerms(terms, "terms.txt")
-//    saver.saveTermsLowercased(terms, "terms-lowercased.txt")
-//    saver.saveTermsWithSynonims(terms, "terms_with_synonims.txt")
-//    saver.saveTermsWithDefinitionsToFile(terms, "term-definitions.txt")
-//    saver.saveDefinitionsSentencesToFile(terms, "definition-sentences.txt")
-//    saver.saveDefinitionsFirstSentencesToFile(terms, "definition-first-sentences.txt", splitDefinitions = true)
-//    saver.saveDefinitionsFirstSentencesToFile(terms, "definition-first-sentences-no-blank.txt")
+    val saver = new TermDefinitionSaver(resourcesBasePath)
+    saver.saveTerms(terms, "terms.txt")
+    saver.saveTermsLowercased(terms, "terms-lowercased.txt")
+    saver.saveTermsWithSynonims(terms, "terms_with_synonims.txt")
+    saver.saveTermsWithDefinitionsToFile(terms, "term-definitions.txt")
+    saver.saveDefinitionsSentencesToFile(terms, "definition-sentences.txt")
+    saver.saveDefinitionsFirstSentencesToFile(terms, "definition-first-sentences.txt", splitDefinitionsWithNewLine = true)
+    saver.saveDefinitionsFirstSentencesToFile(terms, "definition-first-sentences-no-blank.txt")
 
-    val allSentencesLowercased = terms.flatMap(_.definitions).flatMap(_.sentences).map(_.toLowerCase)
-    val counter = new NGrammCounter(allSentencesLowercased)
+
+    def isDeterminer(sentence: String): Boolean =
+      StringUtils.startsWithIgnoreCase(sentence, "a ") || StringUtils.startsWithIgnoreCase(sentence, "an ")
+
+
+    val sentencesDeterminers: Seq[String] = definitions.flatMap(_.sentences.headOption).filter(isDeterminer)
+    val N = 100 // we need to take N sentences, uniformly from all sentencesDeterminers
+    val NSentences: Seq[String] = sentencesDeterminers.grouped(sentencesDeterminers.length / N).map(_.head).toSeq
+
+    val outputSentences = sentencesDeterminers // NSentences
+    saver.saveSentences(outputSentences, s"sentences${outputSentences.length}.txt")
+
+
+    val allSentencesLowerCased = terms.flatMap(_.definitions).flatMap(_.sentences).map(_.toLowerCase)
+    val counter = new NGrammCounter(allSentencesLowerCased)
     val bigramsCountSorted = counter.countBigrams()
       .sortBy(_._2)(Ordering[Int].reverse)
       .take(1500)
@@ -55,7 +65,7 @@ object TermsDefinitionsProcessor {
   /** The method extracts synonyms from first sentence of each definition.
     * Example: UBL - "(Universal Business Language) A format for exchanging data..."
     * The synonym inside the brackets is then removed out of the definition */
-  def extractSynonyms(terms: mutable.Seq[Term]) = {
+  def extractSynonyms(terms: mutable.Seq[Term]): Unit = {
     for (term <- terms;
          definition <- term.definitions if definition.sentences.nonEmpty) {
       val firstSentence = definition.sentences.head
@@ -69,17 +79,30 @@ object TermsDefinitionsProcessor {
     }
   }
 
-  def initTermDefinitionsReferences(terms: mutable.Seq[Term], definitions: mutable.Seq[TermDefinition]) = {
-    val idToTemr = terms.map(t => t.id -> t).toMap // index for fast access by id
+  def initTermDefinitionsReferences(terms: mutable.Seq[Term], definitions: mutable.Seq[TermDefinition]): Unit = {
+    val idToTerm: Map[Int, Term] = terms.map(t => t.id -> t).toMap // index for fast access by id
     definitions.foreach(d => {
-      idToTemr(d.termId).definitions += d
+      idToTerm(d.termId).definitions += d
     })
   }
 
   def splitDefinitionsToSentences(terms: mutable.Seq[Term], definitions: mutable.Seq[TermDefinition]) = {
-    val senteseSplitter = new SenteseSplitter(terms)
-    definitions.foreach(d => d.sentences ++= senteseSplitter.split(d.value))
+    val senteceSplitter = new SenteseSplitter(terms)
+    val termIdToTerm = terms.groupBy(_.id).mapValues(_.head)
+    definitions.foreach { case d@TermDefinition(id, termId, value, sentences) =>
+      val term = termIdToTerm(termId)
+      val sentences = senteceSplitter.split(d.value)
+      if (isOk(sentences)) {
+        d.sentences ++= sentences
+      }
+    }
   }
+
+  private def isOk(senteces: Seq[String]): Boolean = {
+    // if first sentence does not contain any quote
+    !senteces.headOption.exists(_.contains('"'))
+  }
+
 
   def loadTerms(filePath: String): mutable.Seq[Term] = {
     val fileReader = new FileReader(filePath)
@@ -101,4 +124,20 @@ object TermsDefinitionsProcessor {
       .filter(t => StringUtils.isNotBlank(t.value))
       .filter(t => StringUtils.isAsciiPrintable(t.value))
   }
+
+  def clearDefinitionsSentences(definitions: mutable.Seq[TermDefinition]) = {
+    definitions.foreach(d => {
+      d.sentences = d.sentences.map(clearNerInc).map(removeBracketsContent)
+    })
+  }
+
+  def clearNerInc(str: String): String =
+    str.replaceAll("(?i)\\,\\s*inc", " Inc")
+
+  def removeBracketsContent(str: String): String =
+    str.replaceAll("\\s*\\(.*?\\)\\s*", " ")
+
 }
+
+
+

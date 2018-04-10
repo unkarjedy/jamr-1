@@ -1,17 +1,21 @@
 package term_dict_process
 
 import java.io.PrintStream
-
 import scala.collection.mutable
-
 
 class TermDefinitionSaver(baseFolder: String) {
 
+  def saveSentences(sentences: Seq[String], fileName: String) = {
+    val printStream = getNewPrintStream(fileName)
+    sentences.foreach(printStream.println)
+  }
+
+
   def saveTuples(tuples: Seq[_ <: Product], fileName: String): Unit = {
     val printStream = getNewPrintStream(fileName)
-    tuples.foreach(t => {
+    tuples.foreach { t =>
       printStream.println(t.productIterator.mkString(" "))
-    })
+    }
   }
 
   def saveTerms(terms: mutable.Seq[Term], fileName: String): Unit = {
@@ -26,45 +30,45 @@ class TermDefinitionSaver(baseFolder: String) {
 
   def saveTermsWithSynonims(terms: mutable.Seq[Term], fileName: String): Unit = {
     val printStream = getNewPrintStream(fileName)
-    terms.foreach(t => {
+    terms.foreach { t =>
       printStream.print(t.value)
       if (t.synonyms.nonEmpty) {
         printStream.print(t.synonyms.mkString(" ### ", " ### ", ""))
       }
       printStream.println()
-    })
+    }
   }
 
   def saveTermsWithDefinitionsToFile(terms: mutable.Seq[Term], fileName: String) = {
     val printStream = getNewPrintStream(fileName)
-    terms.filter(_.definitions.nonEmpty).foreach(term => {
+    terms.filter(_.definitions.nonEmpty).foreach { term =>
       printStream.println(term.value)
       term.definitions.foreach(d => printStream.println(d.value))
       printStream.println()
-    })
+    }
   }
 
   def saveDefinitionsSentencesToFile(terms: mutable.Seq[Term], fileName: String): Unit = {
     val printStream = getNewPrintStream(fileName)
-    terms.filter(_.definitions.nonEmpty).foreach(term => {
+    terms.filter(_.definitions.nonEmpty).foreach { term =>
       term.definitions.flatMap(_.sentences).foreach(s => {
         printStream.println(s)
       })
       printStream.println()
-    })
+    }
   }
 
   def saveDefinitionsFirstSentencesToFile(terms: mutable.Seq[Term], fileName: String,
-                                          splitDefinitions: Boolean = false): Unit = {
+                                          splitDefinitionsWithNewLine: Boolean = false): Unit = {
     val printStream = getNewPrintStream(fileName)
-    terms.filter(_.definitions.nonEmpty).foreach(term => {
+    terms.filter(_.definitions.nonEmpty).foreach { term =>
       term.definitions.flatMap(_.sentences.headOption).foreach(s => {
         printStream.println(s)
       })
-      if(splitDefinitions){
+      if(splitDefinitionsWithNewLine){
         printStream.println()
       }
-    })
+    }
   }
 
   private def calcFullPath(path: String) : String= {
