@@ -1,0 +1,20 @@
+Why not :purpose???
+An umbrella term for capturing data about a person or object electronically
+(u / umbrella-term-777
+      :op1 (p / person
+            :op1-of (o2 / or
+                  :op1-of (a / about
+                        :mod-of (d / data-777)
+                        :quant-of (e / electronic))
+                  :op2 (o / object-777))))
+
+Power source должен быть отдельным концептом в идеале, но откуда взяться источнику этого концепта?
+An additional power source that can be used in the event of power failure
+(p2 / possible
+      :domain (u / use-01
+            :ARG1 (s / source
+                  :mod (p3 / power
+                        :mod (a / additional)))
+            :ARG2 (e / event-777
+                  :ARG0-of (f / fail-01
+                        :ARG1 (p / power)))))

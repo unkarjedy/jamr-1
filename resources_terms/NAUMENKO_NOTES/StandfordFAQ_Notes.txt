@@ -1,0 +1,24 @@
+See
+    https://nlp.stanford.edu/software/parser-faq.shtml#constraints
+    12. What other on the chosen parse constraints are possible?
+        There are other constraints which can be added, but they have to be added programmatically.
+            Look at the LexicalizedParserQuery object, which you can get from LexicalizedParser.parseQuery().
+            There is a call, setConstraints, which you can make before using the LexicalizedParserQuery to run the parser.
+        If you add a ParserConstraint object spanning a set of words,
+            the parser will only produce parse trees which include that span of words as a constituent.
+            In general, you will want to use ".*" as the state accepted by this constraint.
+        It is also possible to specify constraints such as "NN|JJ" to enforce that the parser uses either an NN or JJ,
+            for example, but unfortunately there is a subtle and complicated bug in the code that enforces that.
+            If you do try to use this, most of the parsers use vertical markovization, which means you will need
+            to make the constraints "JJ|JJ[^a-zA-Z].*" instead of "JJ".
+            In general, though, you should not use this part of the feature and simply use ".*".
+        See the existing Javadoc for more information on this.
+
+    13. Is it possible to pre-annotate the corpus with phrasal boundaries and labels which the parser has to use?
+        Not yet, but in the future, very possibly.
+
+    14. Can I obtain multiple parse trees for a single input sentence?
+        Yes, for the PCFG parser (only). With a PCFG parser, you can give the option -printPCFGkBest n and it will print
+        the n highest-scoring parses for a sentence. They can be printed either as phrase structure trees or
+        as typed dependencies in the usual way via the -outputFormat option, and each receives a score (log probability).
+        The k best parses are extracted efficiently using the algorithm of Huang and Chiang (2005).

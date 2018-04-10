@@ -1,0 +1,21 @@
+CONSIDER:
+    op.testOptions.maxSpanForTags
+        in ExhaustivePCFGParser
+
+
+NAUMENKO: it should detect video camera, not analog
+    An analog video camera such as a VHS camcorder
+    1
+    {analog video}[3,15)
+
+NAUMENKO: it does not analize prurals =(
+"web page" is in term dictionary but not detected:
+    A Web site that delivers custom Web pageS to the user
+    1
+    {web site}[2,10)
+
+
+NAUMENKO: not closing quate =( for '1/8"'. Все последующие предложения "поехали"
+    A 1/8" inch, analog audio tape format that has been widely used for music distribution and home recording.
+    Although the same size housing is used, the tape thickness and length determine the recording time.
+I will ignore words in quotes that contain special characters and the length of them is greater than some N ~ 20
