@@ -23,9 +23,11 @@ trait StageRunnerLike extends SimpleLoggerLike {
     } catch {
       case e: Exception =>
         logger.info(s"ERROR: ($logString) finished with exception")
+        // naumenko: actually in normal SLF4J Loger this is implemented under the hood
         val out = new ByteOutputStream()
         e.printStackTrace(new PrintStream(out))
         logger.info(s"ERROR: ${new String(out.getBytes)}")
+        throw e
     }
   }
 }

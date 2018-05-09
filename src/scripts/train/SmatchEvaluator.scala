@@ -49,7 +49,7 @@ case class SmatchEvaluator(context: Context) extends ContextLike(context)
     takeTaleLines(fileName = s"${context.modelFolder}/test.decode.allstages.err", linesToTake = 6)
   }
 
-  /** Takes $linetoTake lines from the end of the file content*/
+  /** Takes `lineToTake` lines from the end of the file content*/
   private def takeTaleLines(fileName: String, linesToTake: Int) = {
     val lines = Source.fromFile(fileName).getLines()
     lines.toList

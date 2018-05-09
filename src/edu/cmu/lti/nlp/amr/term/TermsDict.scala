@@ -19,19 +19,23 @@ class TermsDict(filePathOpt: Option[String]){
     wordToTerm.get(firstWord)
   }
 
-  filePathOpt.foreach { termsFile =>
-    Source.fromFile(termsFile)
-      .getLines()
-      .map(_.trim)
-      .foreach { line =>
-        val parts = line.split(" ### ")
-        val termValue = parts.head.trim
-        val termSynonyms = parts.tail
-        val termWords = line.split("\\s+")
-        val concept = termWords.mkString("-") + TERM_CONCEPT_SUFFIX
-        val term = Term(termWords, concept, onlyUpperCase = TermsDict.isAbviature(termValue, termSynonyms))
-        wordToTerm(termWords.head) = term :: wordToTerm.getOrElse(termWords.head, List())
-      }
+  init()
+
+  def init(): Unit = {
+    filePathOpt.foreach { termsFile =>
+      Source.fromFile(termsFile)
+        .getLines()
+        .map(_.trim)
+        .foreach { line =>
+          val parts = line.split(" ### ")
+          val termValue = parts.head.trim
+          val termSynonyms = parts.tail
+          val termWords = line.split("\\s+")
+          val concept = termWords.mkString("-") + TERM_CONCEPT_SUFFIX
+          val term = Term(termWords, concept, onlyUpperCase = TermsDict.isAbviature(termValue, termSynonyms))
+          wordToTerm(termWords.head) = term :: wordToTerm.getOrElse(termWords.head, List())
+        }
+    }
   }
 }
 

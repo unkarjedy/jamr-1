@@ -1,0 +1,343 @@
+# format: term_snt
+
+data
+raw facts and figures , such as orders and payments , which are processed into information , such as balance due and quantity on hand
+
+data
+Any form of information whether on paper or in electronic form
+
+system
+A group of related components that interact to perform a task
+
+computer
+A general-purpose machine that processes data according to a set of instructions stored internally
+
+windows
+The most widely used operating system for desktop and laptop computers
+
+network
+Any arrangement of elements that are interconnected
+
+network
+A system that transmits data between users , which includes the user devices and the network equipment
+
+file
+A collection of bytes stored as an individual entity on the computer's hard drive or SSD
+
+program
+A collection of instructions that tell the computer what to do
+
+digital
+Data in binary form
+
+application
+Software that is used for business or entertainment
+
+user
+An individual who uses a computer or some other equipment
+
+video
+Any digital moving picture object , which includes a computer file in video formats such as MP4 , MOV , M4V , AVI , DivX or FLV
+
+video
+The moving picture technology developed for the television industry , initially for real-time capture and transmission and subsequently for recording and playback
+
+memory
+The computer's workspace , which is physically a collection of dynamic RAM chips
+
+server
+A computer system in a network that is shared by multiple users
+
+contrast
+The white level of a display screen
+
+service
+Functionality derived from a particular software program
+
+screen
+The display area of a computer monitor or TV set
+
+standard
+A specification for hardware or software that is either widely used and accepted or is sanctioned by a standards organization
+
+access
+The entrance to the Internet or other online service or network
+
+access
+In computer security , the opportunity for use of a resource
+
+version
+A specific edition or release of a software package
+
+disk
+A direct access storage device
+
+text
+Words , sentences and paragraphs
+
+interface
+The connection and interaction between hardware , software and the user
+
+line
+In text-based systems , a row of characters
+
+line
+In graphics-based systems , a row of pixels
+
+line
+A communications channel
+
+storage
+The permanent holding place for digital data , until purposely erased
+
+format
+The structure of an item
+
+machine
+Any electronic or electromechanical unit of equipment
+
+language
+A set of symbols and rules used to convey information
+
+pc
+Any laptop or desktop computer such as a Windows , Mac or Linux machine
+
+control
+A program module or routine that enhances the functionality of a program
+
+programming
+Creating a computer program
+
+code
+A set of machine symbols that represents data or instructions
+
+code
+Any representation of one set of data for another
+
+audio
+The range of frequencies within human hearing , which is approximately 20Hz at the low end to a high of 20000Hz
+
+processing
+Manipulating data within the computer
+
+mac
+A number computed from the contents of a text message that is used to prove the integrity of a message
+
+protocol
+The format and procedure that governs the transmitting and receiving of data
+
+desktop
+The layout of a graphical user interface , which simulates a physical desktop by allowing objects to be placed anywhere on its surface
+
+page
+A segment of a running program that is transferred back and forth between memory and disk
+
+chip
+A set of microminiaturized , electronic circuits fabricated on a single piece of semiconducting material
+
+display
+A screen or monitor
+
+database
+A set of related files that is created and managed by a database management system
+
+graphics
+The computer's display system
+
+microsoft
+The most successful software company in the industry
+
+wireless
+Transmission through the air
+
+e-mail
+The transmission of text messages from sender to recipient
+
+drive
+An electromechanical device that contains and reads and writes magnetic disks , optical discs or magnetic tapes
+
+drive
+A solid state flash drive that contains no moving parts
+
+ibm
+One of the world's oldest and largest computer companies with revenues of USD $93 billion in 2014
+
+content
+On the Internet , content is any information that is available for retrieval by the user Including Web pages , images , music , audio , white papers , driver and software downloads as well as training , educational and reference materials
+
+open
+To engage a file for reading and writing
+
+ip
+The communications technology used worldwide in local networks , wide area networks and the Internet
+
+ip
+The numeric address assigned to every laptop and desktop computer , server , router , smartphone and tablet in an IP network
+
+key
+A keyboard button
+
+key
+A numeric code that is used to encrypt text for security purposes
+
+key
+An essential field in a database record
+
+key
+A wireless charging system
+
+transmission
+The transfer of data over a communications channel
+
+cpu
+The computing part of the computer
+
+method
+In object technology , a method is the processing that an object performs
+
+address
+The location of a Web site or other Internet facility
+
+www
+The common hostname for a Web server
+
+media
+Any form of information Including music and movies
+
+word
+The computer's internal storage unit
+
+organization
+An umbrella term for any company or association
+
+browser
+A program that lets you look through a collection of data
+
+document
+Any paper form whether printed , typed or handwritten that is used to transact business or make some official statement
+
+cable
+A flexible metal or glass wire or group of wires
+
+dos
+A family of IBM mainframe operating systems
+
+apple
+The world's second largest manufacturer of computers and consumer electronics with revenues of USD $184 billion in 2014
+
+unix
+A multiuser , multitasking operating system that is widely used as the master control program in workstations and servers
+
+client
+A desktop computer , laptop , smartphone or tablet , as well as any other electronic device that sends or receives data from a server
+
+client
+The customer of a vendor or consultant
+
+security
+Protection against illegal or wrongful intrusion
+
+com
+A Microsoft architecture for building software modules that are executed in Windows
+
+search
+To look for specific data in a file or an occurrence of text in a file
+
+message
+An e-mail that contains text and possibly other file attachments
+
+wi-fi
+The standard wireless local area network technology for connecting computers and myriad electronic devices to each other and to the Internet
+
+printer
+A device that converts computer output into printed images
+
+function
+In programming , a self-contained software routine that performs a task
+
+os
+The master control program in a computer or mobile device
+
+circuit
+A set of electronic components that perform a particular function in an electronic system
+
+signal
+Any electrical or light pulse or frequency whether in a wire or fiber or wireless
+
+process
+To manipulate data in the computer
+
+process
+Software running in the computer
+
+pcs
+A videoconferencing technology that uses Intel's Indeo compression method
+
+switch
+A mechanical or electronic device that directs the flow of electrical or optical signals from one side to the other
+
+model
+A mathematical representation of a device or process used for analysis and planning
+
+channel
+A high-speed mainframe subsystem that provides a pathway between the CPU and the control units of peripheral devices
+
+channel
+A frequency assigned to a TV or radio station , which allows it to transmit over the air simultaneously with other broadcasters
+
+google
+The largest Web search engine and one of the most influential companies in the high-tech world
+
+include
+A statement in a program that directs the compiler or interpreter to process another file of code at that point
+
+resolution
+The degree of sharpness of a displayed or printed image
+
+command
+An instruction for the computer
+
+port
+A number that identifies applications and services in a TCP/IP network
+
+android
+An operating system for smartphones , tablets and laptops from the Google-sponsored Open Handset Alliance
+
+output
+To transfer or transmit from the computer to a peripheral device or communications line
+
+linux
+A very popular open source operating system that runs on all major hardware platforms including x86 , Itanium , PowerPC , ARM and IBM mainframes
+
+platform
+A hardware and/or software architecture that serves as a foundation or base
+
+click
+To select an object by pressing the mouse button when the cursor is pointing to the required menu option , icon or hypertext link
+
+top
+A communications protocol for office systems developed in the early 1980s by the Computer Services division of Boeing in Seattle
+
+radio
+An electronic circuit that transmits and receives wireless signals
+
+camera
+A stand-alone device that records still or moving images as analog scenes on film or as pixels in digital storage
+
+camera
+A back-facing element in a smartphone or tablet that records still and moving images for later viewing
+
+camera
+A front-facing element in a smartphone , tablet or laptop computer that captures and transmits images in real time for video calls
+
+monitor
+A display screen used to provide visual output from a computer , cable box , video camera , VCR or other video generating device
+
+monitor
+Software that monitors the progress of activities within a computer system
+
+monitor
+A device that gathers performance statistics of a running system via direct attachment to the CPU's circuit boards
+
+monitor
+Software that provides utility and control functions such as setting communications parameters

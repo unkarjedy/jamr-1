@@ -20,7 +20,8 @@ object AMRParserRunner {
 
     try {
       System.setIn(in)
-      System.setOut(out)
+      // System.setOut(out)
+      AMRParser.amrOutput = out
       System.setErr(err)
 
       val args = ArgsParser.getArgsFromString(argsString)

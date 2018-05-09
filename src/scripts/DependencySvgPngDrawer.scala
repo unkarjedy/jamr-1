@@ -48,17 +48,16 @@ object DependencySvgPngDrawer extends SimpleLoggerLike {
 
     // generate SVGs
     val lines = Source.fromFile(dependenciesFile).getLines()
-    val conllTextBlocks = CorpusUtils.splitOnNewline(lines)
     val totalBlocks = Source.fromFile(dependenciesFile).getLines().count(StringUtils.isBlank) + 1
-
-
     val seenConllHashes = mutable.Set[Int]()
-    CorpusUtils.getDepsBlocks(conllTextBlocks)
+    CorpusUtils.getDepsBlocks(lines)
       .foreach { case block@DepsTextBlock(conllLines, idx, sntOpt, sntIdOpt, treeIdOpt) =>
         val blockHash: Int = block.conllText.hashCode
-        val fileName = idx.toString +
-          sntIdOpt.map("-s" + _).getOrElse("") +
-          treeIdOpt.map("-t" + _).getOrElse("")
+        val fileName = Seq(
+//          Some(idx.toString),
+          sntIdOpt.map("s" + _),
+          treeIdOpt.map("t" + _)
+        ).flatten.mkString("-")
         if (seenConllHashes.contains(blockHash)) {
           logger.warning(s"Skipping file $fileName with duplicate conll block")
         } else {

@@ -5,7 +5,6 @@ import java.nio.file.Files
 
 import org.apache.commons.io.FilenameUtils
 
-
 object FileUtils {
 
   def mkDir(dirPath: String): File = {

@@ -3,7 +3,6 @@ package edu.cmu.lti.nlp.amr.standford_parser
 import java.io.{InputStream, PrintStream}
 import java.util.{Properties, List => JList}
 
-import com.typesafe.scalalogging.slf4j.StrictLogging
 import edu.cmu.lti.nlp.amr.Source
 import edu.cmu.lti.nlp.amr.standford_parser.ReflectionUtils._
 import edu.stanford.nlp.ling.CoreAnnotations._
@@ -13,6 +12,7 @@ import edu.stanford.nlp.pipeline.{Annotator, ParserAnnotator, StanfordCoreNLP, T
 import edu.stanford.nlp.trees.TreeCoreAnnotations.TreeAnnotation
 import edu.stanford.nlp.trees._
 import edu.stanford.nlp.util.{CoreMap, Filters}
+import scripts.parse.InputSentencesReader
 import scripts.utils.logger.SimpleLoggerLike
 
 import scala.collection.JavaConversions._
@@ -51,14 +51,13 @@ case class ConllToken(index: Option[Int],
   *
   * @author sthomson@cs.cmu.edu
   */
-class StanfordProcessor(verbose: Boolean = false) extends StrictLogging {
+class StanfordProcessor(verbose: Boolean = false) extends SimpleLoggerLike {
 
   private val coreNlpPipeline: StanfordCoreNLP = {
     val props = new Properties()
     props.setProperty("annotators", "tokenize,ssplit,parse") // Consider `ner,dcoref` properties?
     props.setProperty("parse.model", "edu/stanford/nlp/models/lexparser/englishRNN.ser.gz")
-    //     props.setProperty("parse.model", "edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz")
-
+    // props.setProperty("parse.model", "edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz")
     new StanfordCoreNLP(props)
   }
 
@@ -74,7 +73,7 @@ class StanfordProcessor(verbose: Boolean = false) extends StrictLogging {
     val tokenizerAnnotator = annotators.collect { case x: TokenizerAnnotator => x }.head
     val splitAnnotator = annotators.collect { case x: WordsToSentencesAnnotator => x }.head
     val parserAnnotator = annotators.collect { case x: ParserAnnotator => x }.head
-    val parsetKBestAnnotator = new ParserAnnotatorKBest(bestTreesNumber = 5, parserAnnotator)
+    val parserKBestAnnotator = new ParserAnnotatorKBest(bestTreesNumber = 20, parserAnnotator)
 
     val parser: LexicalizedParser = parserAnnotator.getField[LexicalizedParser]("parser")
     parser.getOp.testOptions.maxSpanForTags = 1
@@ -82,7 +81,7 @@ class StanfordProcessor(verbose: Boolean = false) extends StrictLogging {
     tokenizerAnnotator.annotate(annotation)
     splitAnnotator.annotate(annotation)
     parserAnnotator.annotate(annotation)
-    parsetKBestAnnotator.annotate(annotation)
+    parserKBestAnnotator.annotate(annotation)
     //    val sentence: CoreMap = annotation.get(classOf[CoreAnnotations.SentencesAnnotation]).head // assume that we have one sentence in input
     //    val words: Seq[CoreLabel] = sentence.get(classOf[CoreAnnotations.TokensAnnotation])
     //    val constraints: Seq[ParserConstraint] = sentence.get(classOf[ParserAnnotations.ConstraintAnnotation])
@@ -114,12 +113,21 @@ class StanfordProcessor(verbose: Boolean = false) extends StrictLogging {
     val sentences: Seq[CoreMap] = annotation.get(classOf[SentencesAnnotation])
 
     for ((sentence, idx) <- sentences.zipWithIndex) yield {
-      //      if (verbose) {
-      //        logger.info(s"parsing sentence $idx")
-      //      }
       val trees: Seq[Tree] = sentence.get(classOf[KBestTreesAnnotation]).trees
-      val kBestParses: Seq[ConllTokensList] = trees.map(t => buildConllTokens(input, sentence, t)).map(ConllTokensList)
-      SentenceKBestParseResults(sentence, idx, kBestParses)
+
+      val KBestDistinctTreesNumber = 5
+      val kBestUniqueParses: Seq[ConllTokensList] =
+        trees
+          .map(t => buildConllTokens(input, sentence, t))
+          .map(ConllTokensList)
+          .distinct
+          .take(KBestDistinctTreesNumber)
+
+      (KBestDistinctTreesNumber - kBestUniqueParses.size) match {
+        case 0 =>
+        case n => logger.warning(s"duplicates among k-best trees found: $n of $KBestDistinctTreesNumber")
+      }
+      SentenceKBestParseResults(sentence, idx, kBestUniqueParses)
     }
   }
 
@@ -132,7 +140,7 @@ class StanfordProcessor(verbose: Boolean = false) extends StrictLogging {
       val start = token.get(classOf[CharacterOffsetBeginAnnotation])
       val end = token.get(classOf[CharacterOffsetEndAnnotation])
       val pos = token.get(classOf[PartOfSpeechAnnotation])
-
+      
       ConllToken(
         index = Some(dep.dep.index),
         form = Some(input.substring(start, end)),
@@ -155,15 +163,17 @@ class StanfordProcessor(verbose: Boolean = false) extends StrictLogging {
   }
 
   def parseToKBestConllString(input: String, inputIdx: Int): Seq[String] = {
-    parseKBest(input)
-      .take(1) // we expect that input contains only one sentence
-      .map { case SentenceKBestParseResults(sentence, sentenceIdx, bestConllTokens) =>
+//    if (verbose) {
+//      logger.info(s"parsing sentence $inputIdx")
+//    }
+    // we expect that input contains only one sentence
+    parseKBest(input).take(1).map { case SentenceKBestParseResults(sentence, sentenceIdx, bestConllTokens) =>
       val parseResultTextBlocks: Seq[String] = bestConllTokens.map(_.tokens.mkString("\n"))
       parseResultTextBlocks.zipWithIndex
         .map { case (textBlock, treeIdx) =>
           s"""# ::snt $sentence
-             |# ::snt-id $inputIdx
-             |# ::tree-id $treeIdx
+             |# ::sntId $inputIdx
+             |# ::treeId $treeIdx
              |$textBlock""".stripMargin
         }
         .mkString("\n\n")
@@ -183,14 +193,14 @@ class RunStanfordParser(in: InputStream, out: PrintStream,
   override def run(): Unit = {
     val processor = new StanfordProcessor(verbose)
 
-    val lines = Source.fromInputStream(in)
-      .getLines()
-      .take(10)
+    val lines = InputSentencesReader.getStream(Source.fromInputStream(in))
+      .map(_.sentence)
+      // .take(10)
       .takeWhile(_ != SPECIAL_STOP_SENTENCE)
 
     for ((sentence, sntIdx) <- lines.zipWithIndex) {
       if (verbose) {
-        logger.info(s" parsing sentence $sntIdx")
+        logger.info(s"parsing sentence $sntIdx")
       }
       val result = processor
         .parseToConllString(sentence)

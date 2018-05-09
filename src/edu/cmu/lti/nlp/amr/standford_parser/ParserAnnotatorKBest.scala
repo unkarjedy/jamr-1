@@ -111,7 +111,7 @@ class ParserAnnotatorKBest(val bestTreesNumber: Int, // k best trees to extract 
       trees.foreach(_.pennPrint(System.err))
     }
 
-    if (saveBinaryTrees) { // TODO NAUMENKO: this was false in original... so do not bother saving now
+    if (saveBinaryTrees) { // TODO NAUMENKO: saveBinaryTrees was `false` in original... so do not bother saving now
       //      val binarizer = new TreeBinarizer(parser.getTLPParams.headFinder, parser.treebankLanguagePack, false, false, 0, false, false, 0.0, false, true, true)
       //      val binarized = binarizer.transformTree(tree)
       //      Trees.convertToCoreLabels(binarized)

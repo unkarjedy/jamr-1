@@ -23,6 +23,7 @@ case class Parse(context: Context,
     runStage("### Preprocess input sentences ###", context.runProperties.skipPreprocessing) {
       proceedPreprocessing()
     }
+
     tryRunStage("### Running JAMR Parser ###", skip = runProperties.skipParse) {
       proceedParse()
     }
@@ -31,25 +32,26 @@ case class Parse(context: Context,
   }
 
   private def proceedPreprocessing() = {
+    val preprocessor = Preprocessor(context)
+
     runStage("### Tokenizing input ###", runProperties.skipTokenizer) {
       runTokenizer()
     }
 
-    val preprocessor = Preprocessor(context)
     runStage("### Running NER system ###", runProperties.skipNER){
-      preprocessor.runIllinoisNamedEntityTagger(inputFile.getPath, System.err, System.err) } // redirect both to err
-
-    runStage("### Running dependency parser ###", runProperties.skipDEP) {
-      preprocessor.runStandfordDependencyParser(inputFile.getPath, s"$inputFile.deps")
+      preprocessor.runIllinoisNamedEntityTagger(inputFile, System.err, System.err) // redirect both to err
     }
 
+    runStage("### Running dependency parser ###", runProperties.skipDEP) {
+      preprocessor.runStandfordDependencyParser(inputFile, s"$inputFile.deps")
+    }
   }
 
   private def runTokenizer(): Unit = {
     val tokTmp = s"$inputFile.tok.tmp"
     val sntWriter = new PrintWriter(tokTmp)
-    Source.fromFile(inputFile).getLines()
-      .map(_.replaceAll("\\s+", " "))
+    InputSentencesReader.getStream(Source.fromFile(inputFile))
+      .map(_.sentence.replaceAll("\\s+", " "))
       .foreach(sntWriter.println)
     sntWriter.close()
 
@@ -57,9 +59,14 @@ case class Parse(context: Context,
     pb.directory(new File(inputFolder))
     pb.redirectInput(new File(tokTmp))
     pb.redirectOutput(new File(s"$inputFile.tok"))
+    pb.redirectError(new File(s"$inputFile.tok.err"))
 
     val proc = pb.start()
-    proc.waitFor()
+    val returnCode = proc.waitFor()
+    logger.info(s"tokenize-anything.sh  returned code: $returnCode")
+    if(returnCode != 0) {
+      throw new RuntimeException(s"tokenize-anything.sh exited with error code: ${returnCode}")
+    }
   }
 
   private def proceedParse(): Unit = {
@@ -70,7 +77,7 @@ case class Parse(context: Context,
          |--stage1-weights "${context.stage1Weights}"
          |--stage2-weights "${context.stage2Weights}"
          |--dependencies "$inputFile.deps"
-         |--dependenciesKBest "$inputFile.deps.k_best.txt"
+         |--dependencies-kbest "$inputFile.deps.k_best.txt"
          |--ner "$inputFile.IllinoisNER"
          |--tok "$inputFile.tok"
          |--progress-file "${outputPath.resolve("parse-progress.txt").toString}"

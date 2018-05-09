@@ -17,7 +17,7 @@ object RunParse extends StageRunnerLike {
   private val stage1Features = List(
     "bias", "length", "firstMatch", "numberIndicator", "badConcept",
     "sentenceMatch", "andList", "pos", "posEvent",
-    //    "phrase", "phraseConceptPair", "phraseConceptPairPOS",
+    "phrase", "phraseConceptPair", "phraseConceptPairPOS",
     "corpusIndicator", "corpusLength", "count", "conceptGivenPhrase", "phraseGivenConcept"
   ).distinct
 
@@ -30,23 +30,26 @@ object RunParse extends StageRunnerLike {
 
   private val stage1SyntheticConcepts = List(
     "NER", "DateExpr", "OntoNotes", "verbs",
-    //    "NEPassThrough",
+    // "NEPassThrough",
     "PassThrough",
-    "WordNetPassThrough",
-    "TermsDict"
+    "WordNetPassThrough"
+    // "TermsDict"
   ).distinct
 
   def main(args: Array[String]): Unit = {
     val modelFolder = s"$jamrRoot/models/${runProperties.modelFolder}"
 
-    val context = ContextBuilder.createContext(jamrRoot, modelFolder)
-    context.runProperties = runProperties
-    context.stage1Weights = s"${context.modelFolder}/stage1-weights"
-    context.stage2Weights = s"${context.modelFolder}/stage2-weights"
-    // context.stage2Weights = s"${context.modelFolder}/stage2-weights.iter5"
-    context.stage1Features = stage1Features
-    context.stage2Features = stage2Features
-    context.parserOptions = buildParserOptionsString(context, stage1SyntheticConcepts)
+    val context = {
+      val c = ContextBuilder.createContext(jamrRoot, modelFolder)
+      c.runProperties = runProperties
+      c.stage1Weights = s"${c.modelFolder}/stage1-weights"
+      c.stage2Weights = s"${c.modelFolder}/stage2-weights"
+      // c.stage2Weights = s"${context.modelFolder}/stage2-weights.iter5"
+      c.stage1Features = stage1Features
+      c.stage2Features = stage2Features
+      c.parserOptions = buildParserOptionsString(c, stage1SyntheticConcepts)
+      c
+    }
 
     val inputFilename = runProperties.parserInputFileName
     val inputFolder = s"$jamrRoot/${runProperties.parserInputFolder}"
@@ -55,10 +58,12 @@ object RunParse extends StageRunnerLike {
     val parseStage = Parse(context, inputFolder, inputFilename, outputFolder)
     parseStage.run()
 
-    val extractor = new ParseLogDataExtractor(outputFolder, inputFilename)
-    extractor.extractAmrOnly()
+    runStage("### Extract AMRs only ###", skip = false) {
+      val extractor = new ParseLogDataExtractor(outputFolder, inputFilename)
+      extractor.extractAmrOnly()
+    }
 
-    runStage("### Draw SVG for dependency trees ###", skip = runProperties.skipSvgRender) {
+    runStage("### Draw SVG for dependency trees ###", runProperties.skipSvgRender) {
 //      val depsFileName = s"$inputFilename.deps"
       val depsFileName = s"$inputFilename.deps.k_best.txt"
       val baseFolder = new File(inputFolder)
@@ -74,6 +79,7 @@ object RunParse extends StageRunnerLike {
       }
     }
 
+    sys.exit(0) // some non-daemon threads are stuck... (probably from DependencySvgPngDrawer/Deptreeviz)
   }
 
   private def buildParserOptionsString(context: Context, stage1SyntheticConcepts: List[String]) = {

@@ -1,0 +1,52 @@
+1) Core :ARGx roles. AMR 1.2 uses numbered :ARGx from OntoNotes:
+:ARG0, :ARG1, :ARG2, :ARG3, :ARG4, :ARG5
+
+2) Non-core roles:
+:accompanier, :age
+:beneficiary
+:concession, :condition, :consist-of
+:degree, :destination, :direction, :domain, :duration
+:example, :extent
+:frequency
+:instrument
+:location, :li
+:manner, :medium, :mod, :mode
+:name
+:ord
+:part, :path, :polarity, :polite, :poss, :purpose
+:quant
+:range
+:scale, :source, :subevent
+:time, :topic
+:unit
+:value
+:wiki
+
+3) Roles used in date-entity:
+:calendar, :century, :day, :dayperiod, :decade, :era, :month, :quarter, :season, :timezone, :weekday, :year, :year2
+
+4) Roles of the form :opx are used in conjunctions, and in certain types of locations and times:
+:op1, :op2, :op3, :op4, …
+
+5) Roles of the form :prep-X are used in cases where there is no good relation from the list above.
+AMR likes to avoid these. Here is a partial list.
+It is only partial, as other :prep-X relations are legal AMR.
+:prep-against, :prep-along-with, :prep-amid, :prep-among, :prep-as, :prep-at
+:prep-by
+:prep-for, :prep-from
+:prep-in, :prep-in-addition-to, :prep-into
+:prep-on, :prep-on-behalf-of, :prep-out-of
+:prep-to, :prep-toward
+:prep-under
+:prep-with, :prep-without
+etc...
+
+6) Some conjunctions are also not well-covered under the list of non-core roles.
+AMR also likes to avoid these, but sometimes we have no good alternative:
+:conj-as-if
+etc.
+
+7) All relations above have inverses of the form :X-of.
+:ARG0-of, :ARG1-of
+:location-of
+etc.

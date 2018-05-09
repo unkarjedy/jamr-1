@@ -3,12 +3,11 @@ package scripts.preprocess
 import java.io._
 import java.nio.charset.StandardCharsets
 
-import com.typesafe.scalalogging.slf4j.StrictLogging
 import edu.cmu.lti.nlp.amr.align.Aligner
 import edu.cmu.lti.nlp.amr.standford_parser.RunStanfordParser
 import edu.cmu.lti.nlp.amr.{CorpusTool, IllinoisNERConvert}
+import scripts.parse.InputSentencesReader
 import scripts.utils.context.{Context, ContextLike}
-import scripts.utils.logger.SimpleLoggerLike
 import scripts.utils.{StageRunnerLike, StreamUtils}
 
 import scala.io.Source
@@ -95,10 +94,10 @@ case class Preprocessor(ctx: Context) extends ContextLike(ctx)
 
     try {
       val aligner = new Aligner(in, out, err,
-                                useAligner3 = true,
-                                verbosity = 1,
-                                logUnalignedConcepts = true,
-                                printNodesAndEdges = true)
+        useAligner3 = true,
+        verbosity = 1,
+        logUnalignedConcepts = true,
+        printNodesAndEdges = true)
       aligner.run()
     } finally {
       in.close()
@@ -145,7 +144,7 @@ case class Preprocessor(ctx: Context) extends ContextLike(ctx)
     }
   }
 
-  def runStandfordDependencyParser(inputFile: String, outputFile: String): Unit = {
+  def runStandfordDependencyParser(inputFile: File, outputFile: String): Unit = {
     val in = new FileInputStream(inputFile)
     val out = new PrintStream(outputFile)
     val outKBest = new PrintStream(outputFile + ".k_best.txt")
@@ -163,29 +162,31 @@ case class Preprocessor(ctx: Context) extends ContextLike(ctx)
     logger.info(s"Run Standford Parser for ${amrFile.getName}")
     val sntFile = s"${amrFile.getPath}.snt"
     val depsFile = s"${amrFile.getPath}.snt.deps"
-    runStandfordDependencyParser(sntFile, depsFile)
+    runStandfordDependencyParser(new File(sntFile), depsFile)
   }
 
   // cmd.snt.IllinoisNER
   def runIllinoisNamedEntityTagger(amrFile: File): Unit = {
     logger.info(s"Run Named Entity Tagger for ${amrFile.getName}")
-    runIllinoisNamedEntityTagger(s"$amrFile.snt")
+    runIllinoisNamedEntityTagger(new File(s"$amrFile.snt"))
   }
 
-  def runIllinoisNamedEntityTagger(inputFile: String,
+  def runIllinoisNamedEntityTagger(inputFile: File,
                                    outRedirect: PrintStream = System.out,
                                    errRedirect: PrintStream = System.err): Unit = {
     val nerPath = ctx.illinoisNerPath
     val cPathSeparator = Option(System.getProperty("path.separator")).getOrElse(";")
     val nerClasspath = Seq(nerPath, s"${nerPath}target/classes", s"${nerPath}target/dependency/*").mkString(cPathSeparator)
 
-    val inputFileTmp = s"$inputFile.tmp"
-    val outputFileTmp = s"$inputFile.IllinoisNER.tmp"
-    val outputFile = s"$inputFile.IllinoisNER"
+    val inputFilePath = inputFile.getPath
+    val inputFileTmp = s"$inputFilePath.tmp"
+    val outputFileTmp = s"$inputFilePath.IllinoisNER.tmp"
+    val outputFile = s"$inputFilePath.IllinoisNER"
 
     // cat "$inputfile" | sed $'s/$/\\\n####\\\n/' > "$inputfile".tmp
     val tmpWriter = new PrintWriter(inputFileTmp)
-    Source.fromFile(inputFile).getLines()
+    InputSentencesReader.getStream(Source.fromFile(inputFile))
+      .map(_.sentence)
       .map(line => s"$line\n####\n")
       .foreach(tmpWriter.println)
     tmpWriter.close()

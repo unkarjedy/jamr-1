@@ -1,6 +1,6 @@
 package edu.cmu.lti.nlp.amr
 
-import java.io.{PrintStream, PrintWriter, StringWriter}
+import java.io.{OutputStream, PrintStream, PrintWriter, StringWriter}
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -9,6 +9,8 @@ import edu.cmu.lti.nlp.amr.GraphDecoder.GraphDecoderAbstract
 import edu.cmu.lti.nlp.amr.graph.Graph
 import edu.cmu.lti.nlp.amr.span.Span
 import edu.cmu.lti.nlp.amr.utils.{CorpusUtils, DepsTextBlock, F1, LineUtils}
+import scripts.parse.InputSentencesReader
+import scripts.parse.InputSentencesReader.SentenceWithTerm
 
 import scala.collection.{mutable => m}
 import scala.io.Source.fromFile
@@ -16,6 +18,19 @@ import scala.io.Source.fromFile
 /** **************************** Driver Program *****************************/
 object AMRParser {
   val VERSION = "JAMR dev v0.3"
+
+  var amrOutput: PrintStream = System.out
+
+  lazy val logStream: PrintStream = {
+    if (amrOutput != System.out) {
+      System.out
+    } else {
+      val noopOuputStream: OutputStream = new OutputStream {
+        override def write(b: Int): Unit = ()
+      }
+      new PrintStream(noopOuputStream)
+    }
+  }
 
   val usage: String =
     """Usage:
@@ -79,6 +94,7 @@ object AMRParser {
       case "--ignore-parser-errors" :: l => parseOptions(map + ('ignoreParserErrors -> "true"), l)
       case "--print-stack-trace-on-errors" :: l => parseOptions(map + ('printStackTraceOnErrors -> "true"), l)
       case "--dependencies" :: value :: tail => parseOptions(map + ('dependencies -> value), tail)
+      case "--dependencies-kbest" :: value :: tail => parseOptions(map + ('dependenciesKBest -> value), tail)
       case "--ner" :: value :: tail => parseOptions(map + ('ner -> value), tail)
       case "--srl" :: value :: tail => parseOptions(map + ('srl -> value), tail)
       case "--snt" :: value :: tail => parseOptions(map ++ m.Map('notTokenized -> value), tail)
@@ -89,8 +105,11 @@ object AMRParser {
 
       //case string :: opt2 :: tail if isSwitch(opt2) => parseOptions(map ++ m.Map('infile -> string), list.tail)
       //case string :: Nil =>  parseOptions(map ++ m.Map('infile -> string), list.tail)
-      case option :: tail => System.out.println("Error: Unknown option " + option)
-        sys.exit(1)
+      case option :: tail =>
+        val message = "Error: Unknown option " + option
+        amrOutput.println(message)
+        throw new Throwable(message)
+      //sys.exit(1)
     }
   }
 
@@ -104,7 +123,8 @@ object AMRParser {
 
   def main(args: Array[String]) {
     if (args.length == 0) {
-      System.out.println(usage)
+      logStream.println(usage)
+      amrOutput.println(usage)
       sys.exit(1)
     }
     val options = parseOptions(m.Map(), args.toList)
@@ -179,7 +199,6 @@ object AMRParser {
         sys.exit(1)
       }
 
-
       logger(0, "Reading weights")
       stage1.features.weights.read(Source.fromFile(options('stage1Weights)).getLines())
 
@@ -194,30 +213,60 @@ object AMRParser {
       logger(0, "done")
 
 
-      val inputArray = stdin.getLines.toArray
+      val inputArray = InputSentencesReader.getStream(stdin).toArray
       val tokenizedArray = fromFile(options('tokenized)).getLines.toArray
       val nerArray = CorpusUtils.splitOnNewline(fromFile(options('ner)).getLines).toArray
       val oracleDataArray = options.get('trainingData)
         .map(fileName => CorpusUtils.getAMRBlocks(fromFile(fileName).getLines()).toArray)
         .getOrElse(Array())
-      val dependenciesArray: Array[String] = options.get('dependencies).map(fileName => {
-        CorpusUtils.splitOnNewline(Source.fromFile(fileName).getLines())
-          .map(LineUtils.cleanDependencyStr)
-          .toArray
-      }).getOrElse(Array())
 
-      val dependenciesKBestArray: Array[DepsTextBlock] =
-        options.get('dependenciesKBest).map { fileName =>
+      val dependenciesKBest: Map[Int, Array[DepsTextBlock]] = {
+        def fromKBestDepFile(fileName: String) = {
           // NAUMENKO: LineUtils.cleanDependencyStr is called inside CorpusUtils.getDepsBlocks
-          CorpusUtils.getDepsBlocks(Source.fromFile(fileName).getLines()).toArray
-        }.getOrElse(Array())
+          val depsBlock = CorpusUtils.getDepsBlocks(Source.fromFile(fileName).getLines()).toArray
+
+          depsBlock
+            .filter(_.sntId.nonEmpty)
+            .groupBy(block => block.sntId.getOrElse(throw new NullPointerException(s"No sntId tag found:\n$block")))
+            .mapValues { blocks =>
+              // sort such way that GOLD trees are placed in the begininng
+              val GoldTreeId = "gold"
+              blocks.sortWith { case (a, b) =>
+                val aTreeId = a.treeId.getOrElse("").toLowerCase()
+                val bTreeId = b.treeId.getOrElse("").toLowerCase()
+                (aTreeId, bTreeId) match {
+                  case (GoldTreeId, _) => true
+                  case (_, GoldTreeId) => false
+                  case (_) => aTreeId.compareTo(bTreeId) < 0
+                }
+              }
+            }
+        }
+
+        def fromSimpleDepFile(fileName: String) = {
+          val depsBlocks = CorpusUtils.splitOnNewline(Source.fromFile(fileName).getLines())
+            .map(LineUtils.cleanDependencyStr)
+            .toArray
+          depsBlocks.zipWithIndex.map { case (depStr, idx) =>
+            idx -> Array(DepsTextBlock(depStr.split("\n"), blockIdx = idx, snt = None, sntId = Some(idx), treeId = Some("0")))
+          }.toMap
+        }
+
+        options.get('dependenciesKBest).map(fromKBestDepFile)
+          .orElse(options.get('dependencies).map(fromSimpleDepFile))
+          .getOrElse(Map())
+          .withDefaultValue(Array())
+      }
+
 
       // TODO NAUMENKO: Note that if dependenciesKBestArray is used then  don't guarantee that spanF1 calculation is valid
       val spanF1 = F1(0, 0, 0)
 
       def decodeLine(block: String, blockId: Int): Unit = {
-        val input = inputArray(blockId)
-        logger(0, "Sentence: " + input + "\n")
+        logStream.print(s"Decoding block $blockId. ")
+
+        val SentenceWithTerm(inputSentence: String, term: Option[String]) = inputArray(blockId)
+        logger(0, "Sentence: " + inputSentence + "\n")
         val tokenized = tokenizedArray(blockId)
         val ner = nerArray(blockId)
         val oracleGraphOpt = if (options.contains('stage1Oracle)) {
@@ -226,136 +275,158 @@ object AMRParser {
           None
         }
 
-        val deps = dependenciesArray(blockId)
+        def decodeForDepsBlock(depsBlock: DepsTextBlock): Unit = {
+          val block@DepsTextBlock(_, blockIdx, snt, sntId, treeId) = depsBlock
+          val deps = block.conllText
 
-        val stage1Result = stage1.decode(new Input(
-          oracleGraphOpt,
-          tokenized.split(" "),
-          input.split(" "),
-          deps,
-          ner,
-          blockId
-        ))
+          val stage1Result = stage1.decode(new Input(
+            oracleGraphOpt,
+            tokenized.split(" "),
+            inputSentence.split(" "),
+            deps,
+            ner,
+            blockId
+          ))
 
-        logger(1, "ConceptInvoker:")
-        for ((id, node) <- stage1Result.graph.getNodeById) {
-          logger(1, "id = " + id + " concept = " + node.concept)
-        }
-        logger(0, "Spans:")
-        for ((span, i) <- stage1Result.graph.spans.sortBy(_.words.toLowerCase).zipWithIndex) {
-          logger(0, "Span " + span.start.toString + "-" + span.end.toString + ":  " + span.words + " => " + span.amrNode)
-        }
-        logger(0, "")
-
-        stage1Result.graph.normalizeInverseRelations()
-        stage1Result.graph.addVariableToSpans()
-
-        // TODO: in future just do decoderResult.graph instead (when BasicFeatureVector is removed from stage1)
-        var decoderResultGraph = stage1Result.graph
-
-        // TODO: clean up this code
-        val proceedStage2 = !options.contains('stage1Only)
-
-        if (proceedStage2) {
-          if (options.contains('stage2CostDiminished)) {
-            val input = new Input(
-              AMRTrainingData(oracleDataArray(blockId)),
-              deps,
-              oracle = true,
-              index = blockId
-            )
-            if (options.contains('stage1Oracle)) {
-              val decoder = stage2.get
-              decoderResultGraph = decoder.decode(input).graph
-            } else {
-              val decoder = stage2.get.asInstanceOf[GraphDecoder.CostAugmented]
-              decoderResultGraph = decoder.decode(input, Some(stage1Result.graph)).graph
-            }
-          } else {
-            val decoder = stage2.get
-            val input = new Input(
-              stage1Result.graph,
-              tokenized.split(" "),
-              deps,
-              blockId
-            )
-            decoderResultGraph = decoder.decode(input).graph
+          logger(1, "ConceptInvoker:")
+          for ((id, node) <- stage1Result.graph.getNodeById) {
+            logger(1, "id = " + id + " concept = " + node.concept)
           }
-        }
-
-        if (options.contains('trainingData)) {
-          val amrdata2 = AMRTrainingData(oracleDataArray(blockId)) // 2nd copy for oracle
-          logger(1, "Node.spans:")
-          for (node <- amrdata2.graph.nodes) {
-            logger(1, node.concept + " " + node.spans.toList)
-          }
-
-          val oracle = stage2Oracle.get
-          val oracleResult = oracle.decode(new Input(amrdata2, deps, oracle = true, index = blockId))
-          for ((span, i) <- amrdata2.graph.spans.sortBy(x => x.words.toLowerCase).zipWithIndex) {
-            logger(0, "Oracle Span " + span.start.toString + "-" + span.end.toString + ":  " + span.words + " => " + span.amrNode)
+          logger(0, "Spans:")
+          for ((span, i) <- stage1Result.graph.spans.sortBy(_.words.toLowerCase).zipWithIndex) {
+            logger(0, "Span " + span.start.toString + "-" + span.end.toString + ":  " + span.words + " => " + span.amrNode)
           }
           logger(0, "")
-          if (options.contains('stage1Eval)) {
-            evaluateStage1(spanF1, stage1Result, oracleResult)
-          }
-          logger(0, "Dependencies:\n" + deps + "\n")
-          logger(0, "Oracle:\n" + oracleResult.graph.printTriples(detail = 1, extra = (node1, node2, relation) => {
-            "" //TODO: put back in "\t"+oracle.features.ffDependencyPathv2(node1, node2, relation).toString.split("\n").filter(_.matches("^C1.*")).toList.toString+"\t"+oracle.features.localScore(node1, node2, relation).toString
-            //"\n"+oracle.features.ffDependencyPathv2(node1, node2, relation).toString.split("\n").filter(_.matches("^C1.*")).toList.toString+"\nScore = "+decoder.features.localScore(node1, node2, relation).toString+"  Relevent weights:\n"+decoder.features.weights.slice(decoder.features.localFeatures(node1, node2, relation)).toString
-          }) + "\n")
-        } //endif (options.contains('amrOracleData))
 
+          stage1Result.graph.normalizeInverseRelations()
+          stage1Result.graph.addVariableToSpans()
 
-        if (proceedStage2) {
-          val decoder = stage2.get
-          logger(1, decoder.features.input)
-          logger(0, "AMR:\n" + decoderResultGraph.printTriples(detail = 1, extra = (node1, node2, relation) => {
-            "" //TODO: put back in "\t"+decoder.features.ffDependencyPathv2(node1, node2, relation).toString.split("\n").filter(_.matches("^C1.*")).toList.toString+"\t"+decoder.features.localScore(node1, node2, relation).toString
-            //"\n"+decoder.features.ffDependencyPathv2(node1, node2, relation).toString.split("\n").filter(_.matches("^C1.*")).toList.toString+"\nScore = "+decoder.features.localScore(node1, node2, relation).toString+"  Relevent weights:\n"+decoder.features.weights.slice(decoder.features.localFeatures(node1, node2, relation)).toString
-          }) + "\n")
+          // TODO: in future just do decoderResult.graph instead (when BasicFeatureVector is removed from stage1)
+          var decoderResultGraph = stage1Result.graph
 
-          System.out.println("# ::snt " + input)
-          System.out.println("# ::tok " + tokenized)
-          val sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
-          decoderResultGraph.assignOpN()
-          if (!options.contains('stage2NotConnected)) {
-            decoderResultGraph.makeTopologicalOrdering()
-            decoderResultGraph.sortRelations()
-            decoderResultGraph.makeIds()
-            System.out.println("# ::alignments " + decoderResultGraph.spans.map(_.format()).mkString(" ") + " ::annotator " + VERSION + " ::date " + sdf.format(new Date))
-          }
-          if (outputFormat.contains("nodes")) {
-            System.out.println(decoderResultGraph.printNodes.map(x => "# ::node\t" + x).mkString("\n"))
-          }
-          if (outputFormat.contains("root")) {
-            System.out.println(decoderResultGraph.printRoot)
-          }
-          if (outputFormat.contains("edges") && decoderResultGraph.root.children.nonEmpty) {
-            System.out.println(decoderResultGraph.printEdges.map(x => "# ::edge\t" + x).mkString("\n"))
-          }
-          if (outputFormat.contains("AMR")) {
-            if (options.contains('trainingData)) {
-              val amrdata2 = AMRTrainingData(oracleDataArray(blockId))
-              System.out.println(amrdata2.graph.prettyString(detail = 1, pretty = true, indent = "#"))
+          // TODO: clean up this code
+          val proceedStage2: Boolean = !options.contains('stage1Only)
+
+          if (proceedStage2) {
+            if (options.contains('stage2CostDiminished)) {
+              val input = new Input(
+                AMRTrainingData(oracleDataArray(blockId)),
+                deps,
+                oracle = true,
+                index = blockId
+              )
+              if (options.contains('stage1Oracle)) {
+                val decoder = stage2.get
+                decoderResultGraph = decoder.decode(input).graph
+              } else {
+                val decoder = stage2.get.asInstanceOf[GraphDecoder.CostAugmented]
+                decoderResultGraph = decoder.decode(input, Some(stage1Result.graph)).graph
+              }
+            } else {
+              val decoder = stage2.get
+              val input = new Input(
+                stage1Result.graph,
+                tokenized.split(" "),
+                deps,
+                blockId
+              )
+              decoderResultGraph = decoder.decode(input).graph
             }
-            System.out.println(decoderResultGraph.prettyString(detail = 1, pretty = true))
+          } else {
+            logStream.print("stage2 skipped")
           }
-          if (outputFormat.contains("triples")) {
-            System.out.println(decoderResultGraph.printTriples(detail = 1))
+
+          if (options.contains('trainingData)) {
+            val amrdata2 = AMRTrainingData(oracleDataArray(blockId)) // 2nd copy for oracle
+            logger(1, "Node.spans:")
+            for (node <- amrdata2.graph.nodes) {
+              logger(1, node.concept + " " + node.spans.toList)
+            }
+
+            val oracle = stage2Oracle.get
+            val oracleResult = oracle.decode(new Input(amrdata2, deps, oracle = true, index = blockId))
+            for ((span, i) <- amrdata2.graph.spans.sortBy(x => x.words.toLowerCase).zipWithIndex) {
+              logger(0, "Oracle Span " + span.start.toString + "-" + span.end.toString + ":  " + span.words + " => " + span.amrNode)
+            }
+            logger(0, "")
+            if (options.contains('stage1Eval)) {
+              evaluateStage1(spanF1, stage1Result, oracleResult)
+            }
+            logger(0, "Dependencies:\n" + deps + "\n")
+            logger(0, "Oracle:\n" + oracleResult.graph.printTriples(detail = 1, extra = (node1, node2, relation) => {
+              "" //TODO: put back in "\t"+oracle.features.ffDependencyPathv2(node1, node2, relation).toString.split("\n").filter(_.matches("^C1.*")).toList.toString+"\t"+oracle.features.localScore(node1, node2, relation).toString
+              //"\n"+oracle.features.ffDependencyPathv2(node1, node2, relation).toString.split("\n").filter(_.matches("^C1.*")).toList.toString+"\nScore = "+decoder.features.localScore(node1, node2, relation).toString+"  Relevent weights:\n"+decoder.features.weights.slice(decoder.features.localFeatures(node1, node2, relation)).toString
+            }) + "\n")
+          } //endif (options.contains('amrOracleData))
+
+
+          if (proceedStage2) {
+            val decoder = stage2.get
+            logger(1, decoder.features.input)
+            logger(0, "AMR:\n" + decoderResultGraph.printTriples(detail = 1, extra = (node1, node2, relation) => {
+              "" //TODO: put back in "\t"+decoder.features.ffDependencyPathv2(node1, node2, relation).toString.split("\n").filter(_.matches("^C1.*")).toList.toString+"\t"+decoder.features.localScore(node1, node2, relation).toString
+              //"\n"+decoder.features.ffDependencyPathv2(node1, node2, relation).toString.split("\n").filter(_.matches("^C1.*")).toList.toString+"\nScore = "+decoder.features.localScore(node1, node2, relation).toString+"  Relevent weights:\n"+decoder.features.weights.slice(decoder.features.localFeatures(node1, node2, relation)).toString
+            }) + "\n")
+
+            amrOutput.println("# ::snt " + inputSentence)
+            term.foreach(x => amrOutput.println("# ::term " + x))
+            sntId.foreach(x => amrOutput.println("# ::sntId " + x))
+            treeId.foreach(x => amrOutput.println("# ::treeId " + x))
+            amrOutput.println("# ::tok " + tokenized)
+
+            val sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
+            decoderResultGraph.assignOpN()
+            if (!options.contains('stage2NotConnected)) {
+              decoderResultGraph.makeTopologicalOrdering()
+              decoderResultGraph.sortRelations()
+              decoderResultGraph.makeIds()
+              amrOutput.println("# ::alignments " + decoderResultGraph.spans.map(_.format()).mkString(" ") + " ::annotator " + VERSION + " ::date " + sdf.format(new Date))
+            }
+            if (outputFormat.contains("nodes")) {
+              amrOutput.println(decoderResultGraph.printNodes.map(x => "# ::node\t" + x).mkString("\n"))
+            }
+            if (outputFormat.contains("root")) {
+              amrOutput.println(decoderResultGraph.printRoot)
+            }
+            if (outputFormat.contains("edges") && decoderResultGraph.root.children.nonEmpty) {
+              amrOutput.println(decoderResultGraph.printEdges.map(x => "# ::edge\t" + x).mkString("\n"))
+            }
+            if (outputFormat.contains("AMR")) {
+              if (options.contains('trainingData)) {
+                val amrdata2 = AMRTrainingData(oracleDataArray(blockId))
+                amrOutput.println(amrdata2.graph.prettyString(detail = 1, pretty = true, indent = "#"))
+              }
+              amrOutput.println(decoderResultGraph.prettyString(detail = 1, pretty = true))
+            }
+            if (outputFormat.contains("triples")) {
+              amrOutput.println(decoderResultGraph.printTriples(detail = 1))
+            }
+            if (outputFormat.contains("disconnectedAMR")) {
+              amrOutput.println(decoderResultGraph.printDisconnected())
+            }
+            amrOutput.println()
           }
-          if (outputFormat.contains("disconnectedAMR")) {
-            System.out.println(decoderResultGraph.printDisconnected())
-          }
-          System.out.println()
         }
+
+        val kBest = dependenciesKBest(blockId)
+        if (kBest.isEmpty) {
+          logStream.print(s"[Naumenko] Warning! No dependency trees found for sentence $blockId")
+        } else {
+          logStream.print(s"sntId: ${kBest.head.sntId.getOrElse("")}. trees: ${kBest.size}. ")
+        }
+        kBest.foreach { block =>
+          block.treeId.foreach(t => logStream.print(s"treeId: $t. "))
+          decodeForDepsBlock(block)
+        }
+
+        logStream.print("\n")
       }
 
       val progressPrintStreamOpt = options.get('progressFile).map(new PrintStream(_))
       for ((block, blockId) <- inputArray.zipWithIndex) {
         try {
           time {
-            decodeLine(block, blockId)
+            decodeLine(block.sentence, blockId)
 
             progressPrintStreamOpt.foreach(ps => {
               val progress = (blockId * 100) / inputArray.length
@@ -365,22 +436,22 @@ object AMRParser {
         } catch {
           case e: java.lang.VirtualMachineError => throw e
           case e: Throwable => if (options.contains('ignoreParserErrors)) {
-            System.out.println("# ::snt " + inputArray(blockId))
-            System.out.println("# ::tok " + tokenizedArray(blockId))
+            amrOutput.println("# ::snt " + inputArray(blockId).sentence)
+            amrOutput.println("# ::tok " + tokenizedArray(blockId))
             val sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
-            System.out.println("# ::alignments 0-1|0 ::annotator " + VERSION + " ::date " + sdf.format(new Date))
-            System.out.println("# THERE WAS AN EXCEPTION IN THE PARSER.  Returning an empty graph.")
+            amrOutput.println("# ::alignments 0-1|0 ::annotator " + VERSION + " ::date " + sdf.format(new Date))
+            amrOutput.println("# THERE WAS AN EXCEPTION IN THE PARSER.  Returning an empty graph.")
             if (options.contains('printStackTraceOnErrors)) {
               val sw = new StringWriter()
               e.printStackTrace(new PrintWriter(sw))
-              System.out.println(sw.toString.split("\n").map(x => "# " + x).mkString("\n"))
+              amrOutput.println(sw.toString.split("\n").map(x => "# " + x).mkString("\n"))
             }
             logger(-1, " ********** THERE WAS AN EXCEPTION IN THE PARSER. *********")
             if (verbosityGlobal >= -1) {
               e.printStackTrace()
             }
             logger(-1, "Continuing. To exit on errors, please run without --ignore-parser-errors")
-            System.out.println(Graph.AMREmpty().prettyString(detail = 1, pretty = true) + '\n')
+            amrOutput.println(Graph.AMREmpty().prettyString(detail = 1, pretty = true) + '\n')
           } else {
             throw e
           }
@@ -393,9 +464,12 @@ object AMRParser {
     }
 
   }
+
   private def evaluateStage1(outputSpanF1: F1,
                              stage1Result: BasicFeatureVector.DecoderResult,
-                             oracleResult: FastFeatureVector.DecoderResult) = {
+                             oracleResult: FastFeatureVector.DecoderResult)
+
+  = {
     val problems = m.ArrayBuffer[String]()
     for (span <- stage1Result.graph.spans) {
       if (oracleResult.graph.spans.exists(Span.equalsTo(span))) {
@@ -416,7 +490,7 @@ object AMRParser {
     }
 
     problems.foreach(problem => {
-      System.out.println(s"# $problem")
+      amrOutput.println(s"# $problem")
       logger(0, problem)
     })
 

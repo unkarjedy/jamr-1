@@ -1,9 +1,16 @@
 package term_dict_process
 
-import java.io.PrintStream
+import java.io.{File, PrintStream}
+
 import scala.collection.mutable
 
-class TermDefinitionSaver(baseFolder: String) {
+class TermDefinitionSaver(val baseFolder: String) {
+
+  init()
+
+  private def init(): Unit = {
+    new File(baseFolder).mkdirs()
+  }
 
   def saveSentences(sentences: Seq[String], fileName: String) = {
     val printStream = getNewPrintStream(fileName)
@@ -18,17 +25,17 @@ class TermDefinitionSaver(baseFolder: String) {
     }
   }
 
-  def saveTerms(terms: mutable.Seq[Term], fileName: String): Unit = {
+  def saveTerms(terms: Seq[Term], fileName: String): Unit = {
     val printStream = getNewPrintStream(fileName)
     terms.foreach(t => printStream.println(t.value))
   }
 
-  def saveTermsLowercased(terms: mutable.Seq[Term], fileName: String): Unit = {
+  def saveTermsLowercased(terms: Seq[Term], fileName: String): Unit = {
     val printStream = getNewPrintStream(fileName)
     terms.foreach(t => printStream.println(t.value.toLowerCase()))
   }
 
-  def saveTermsWithSynonims(terms: mutable.Seq[Term], fileName: String): Unit = {
+  def saveTermsWithSynonims(terms: Seq[Term], fileName: String): Unit = {
     val printStream = getNewPrintStream(fileName)
     terms.foreach { t =>
       printStream.print(t.value)
@@ -39,7 +46,7 @@ class TermDefinitionSaver(baseFolder: String) {
     }
   }
 
-  def saveTermsWithDefinitionsToFile(terms: mutable.Seq[Term], fileName: String) = {
+  def saveTermsWithDefinitionsToFile(terms: Seq[Term], fileName: String) = {
     val printStream = getNewPrintStream(fileName)
     terms.filter(_.definitions.nonEmpty).foreach { term =>
       printStream.println(term.value)
@@ -48,7 +55,17 @@ class TermDefinitionSaver(baseFolder: String) {
     }
   }
 
-  def saveDefinitionsSentencesToFile(terms: mutable.Seq[Term], fileName: String): Unit = {
+  def saveTermsWithDefinitionSentencesToFile(termSentences: Seq[TermWithSentences], fileName: String) = {
+    val printStream = getNewPrintStream(fileName)
+
+    termSentences.filter(_.sentences.nonEmpty).foreach { case TermWithSentences(term, sentences) =>
+      printStream.println(term)
+      sentences.foreach(s => printStream.println(s.value))
+      printStream.println()
+    }
+  }
+
+  def saveDefinitionsSentencesToFile(terms: Seq[Term], fileName: String): Unit = {
     val printStream = getNewPrintStream(fileName)
     terms.filter(_.definitions.nonEmpty).foreach { term =>
       term.definitions.flatMap(_.sentences).foreach(s => {
@@ -58,20 +75,28 @@ class TermDefinitionSaver(baseFolder: String) {
     }
   }
 
-  def saveDefinitionsFirstSentencesToFile(terms: mutable.Seq[Term], fileName: String,
+  def saveDefinitionsFirstSentencesToFile(terms: Seq[Term], fileName: String,
                                           splitDefinitionsWithNewLine: Boolean = false): Unit = {
     val printStream = getNewPrintStream(fileName)
     terms.filter(_.definitions.nonEmpty).foreach { term =>
       term.definitions.flatMap(_.sentences.headOption).foreach(s => {
         printStream.println(s)
       })
-      if(splitDefinitionsWithNewLine){
+      if (splitDefinitionsWithNewLine) {
         printStream.println()
       }
     }
   }
 
-  private def calcFullPath(path: String) : String= {
+  def saveCustom[T](elements: Seq[T], fileName: String)(transform: T => String): Unit = {
+    Utils.using(getNewPrintStream(fileName)) { printStream =>
+      elements.foreach { element =>
+        printStream.println(transform(element))
+      }
+    }
+  }
+
+  private def calcFullPath(path: String): String = {
     s"$baseFolder/$path"
   }
 

@@ -21,29 +21,32 @@ object CorpusUtils {
   ) yield block
 
   def getDepsBlocks(iterator: Iterator[String]): Iterator[DepsTextBlock] = {
-    iterator.zipWithIndex
+    CorpusUtils.splitOnNewline(iterator).zipWithIndex
       .map { case (block, idx) =>
         val blockLines = block.split("\\n").toSeq
         val (metaLines, conllLines) = blockLines.partition(_.startsWith("#"))
 
         val sntOpt: Option[String] = {
           val reg = "# ::snt\\s+(.+)".r
-          metaLines.collectFirst { case reg(sntId) => sntId }
+          metaLines.collectFirst { case reg(snt) => snt.trim }
         }
         val sntIdOpt: Option[Int] = {
-          val reg = "# ::snt\\-id\\s+(.+)".r
-          metaLines.collectFirst { case reg(sntId) => sntId.toInt }
+          val reg = "# ::sntId\\s+(.+)".r
+          metaLines.collectFirst { case reg(sntId) => sntId.trim.toInt }
         }
-        val treeIdOpt: Option[Int] = {
-          val reg = "# ::tree\\-id (\\d+)".r
-          metaLines.collectFirst { case reg(treeId) => treeId.toInt }
+        val treeIdOpt: Option[String] = {
+          val reg = "# ::treeId\\s+(.+)".r
+          metaLines.collectFirst { case reg(treeId) => treeId.trim }
         }
         DepsTextBlock(conllLines.map(LineUtils.cleanDependencyStr), idx, sntOpt, sntIdOpt, treeIdOpt)
       }
   }
 }
 
-case class DepsTextBlock(conllLines: Seq[String], blockIdx: Int, snt: Option[String], sntId: Option[Int], treeId: Option[Int]) {
+case class DepsTextBlock(conllLines: Seq[String], blockIdx: Int,
+                         snt: Option[String],
+                         sntId: Option[Int],
+                         treeId: Option[String]) {
   def conllText = conllLines.mkString("\n")
 }
 
