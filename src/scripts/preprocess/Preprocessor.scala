@@ -7,8 +7,9 @@ import edu.cmu.lti.nlp.amr.align.Aligner
 import edu.cmu.lti.nlp.amr.standford_parser.RunStanfordParser
 import edu.cmu.lti.nlp.amr.{CorpusTool, IllinoisNERConvert}
 import scripts.parse.InputSentencesReader
-import scripts.utils.context.{Context, ContextLike}
+import scripts.utils.context.{Context, ContextBuilder, ContextLike}
 import scripts.utils.{StageRunnerLike, StreamUtils}
+import term_dict_process.Utils
 
 import scala.io.Source
 
@@ -76,7 +77,8 @@ case class Preprocessor(ctx: Context) extends ContextLike(ctx)
     }
   }
 
-  // The ./cmd.aligned command analogue works a bit differently from the original
+  // ./cmd.aligned command analogue.
+  // this works a bit differently.
   // it does not print out and err stream in one messy .aligned.log file and then separates amr data and other trash
   // it prints amr data and other separately in out and err
   def runAligner(amrFile: File): Unit = {
@@ -93,11 +95,13 @@ case class Preprocessor(ctx: Context) extends ContextLike(ctx)
     val err = new PrintStream(alignedLogFile)
 
     try {
-      val aligner = new Aligner(in, out, err,
+      val aligner = new Aligner(
+        in, out, err,
         useAligner3 = true,
         verbosity = 1,
         logUnalignedConcepts = true,
-        printNodesAndEdges = true)
+        printNodesAndEdges = true
+      )
       aligner.run()
     } finally {
       in.close()
@@ -107,11 +111,12 @@ case class Preprocessor(ctx: Context) extends ContextLike(ctx)
 
     // ./cmd.aligned.no_opN
     logger.info(s"Removing :op ids (:opN -> :op) for $amrFileName")
-    val alignedNoOpNWriter = new PrintWriter(s"${amrFile.getPath}.aligned.no_opN")
-    Source.fromFile(alignedFile).getLines()
-      .map(_.replaceAll(":op[^ ]*", ":op"))
-      .foreach(alignedNoOpNWriter.println)
-    alignedNoOpNWriter.close()
+    val alignedNoOpNFile = new File(s"${amrFile.getPath}.aligned.no_opN")
+    Utils.using(new PrintWriter(alignedNoOpNFile)) { alignedNoOpNWriter =>
+      Source.fromFile(alignedFile).getLines()
+        .map(_.replaceAll(":op[^ ]*", ":op"))
+        .foreach(alignedNoOpNWriter.println)
+    }
   }
 
   // Analogue of cmd.aligned.concepts_no_opN
@@ -183,7 +188,7 @@ case class Preprocessor(ctx: Context) extends ContextLike(ctx)
     val outputFileTmp = s"$inputFilePath.IllinoisNER.tmp"
     val outputFile = s"$inputFilePath.IllinoisNER"
 
-    // cat "$inputfile" | sed $'s/$/\\\n####\\\n/' > "$inputfile".tmp
+    // cat "$inputfile" | sed $'s/$//\n####/\n/' > "$inputfile".tmp
     val tmpWriter = new PrintWriter(inputFileTmp)
     InputSentencesReader.getStream(Source.fromFile(inputFile))
       .map(_.sentence)
@@ -198,7 +203,7 @@ case class Preprocessor(ctx: Context) extends ContextLike(ctx)
          | -annotate "$inputFileTmp"
          | "$outputFileTmp"
          | "${ctx.nerConfigPath}"
-      """.stripMargin.replaceAll("\\n", " ")
+      """.stripMargin.replaceAll("/n", " ")
     val proc = Runtime.getRuntime.exec(command, null, new File(ctx.illinoisNerPath))
     StreamUtils.redirectStream(proc.getInputStream, outRedirect)
     StreamUtils.redirectStream(proc.getErrorStream, errRedirect)
@@ -220,4 +225,17 @@ case class Preprocessor(ctx: Context) extends ContextLike(ctx)
     writer.close()
   }
 
+}
+
+object Preprocessor {
+  // just local playground, nothing more...
+  def main(args: Array[String]): Unit = {
+    val jamrRoot = "C:/Users/unkarjedy/Desktop/Diploma/Jamr_Fork"
+
+    val preprocessor = new Preprocessor(ContextBuilder.createContext(jamrRoot))
+    val goldAmrs = new File(jamrRoot + "/resources_terms/FinalOutputs/gold_amr/most_used_term_defs_manual_FIXED1.txt.amr_gold")
+
+    preprocessor.extractSentencesAndTokens(goldAmrs)
+    preprocessor.runAligner(goldAmrs)
+  }
 }

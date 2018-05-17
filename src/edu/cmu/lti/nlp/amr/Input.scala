@@ -59,7 +59,7 @@ case class Input(var graph: Option[Graph],  // var so we can update for the inpu
         Some(if (oracle) {
             amrdata.toOracleGraph(clearUnalignedNodes)
         } else {
-            amrdata.toInputGraph
+            amrdata.toInputGraph()
         }),
         amrdata.sentence,
         Annotation(amrdata.sentence, amrdata.sentence, Array()),

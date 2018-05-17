@@ -73,7 +73,7 @@ class StanfordProcessor(verbose: Boolean = false) extends SimpleLoggerLike {
     val tokenizerAnnotator = annotators.collect { case x: TokenizerAnnotator => x }.head
     val splitAnnotator = annotators.collect { case x: WordsToSentencesAnnotator => x }.head
     val parserAnnotator = annotators.collect { case x: ParserAnnotator => x }.head
-    val parserKBestAnnotator = new ParserAnnotatorKBest(bestTreesNumber = 20, parserAnnotator)
+    val parserKBestAnnotator = new ParserAnnotatorKBest(bestTreesNumber = 100, parserAnnotator)
 
     val parser: LexicalizedParser = parserAnnotator.getField[LexicalizedParser]("parser")
     parser.getOp.testOptions.maxSpanForTags = 1

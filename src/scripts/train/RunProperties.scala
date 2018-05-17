@@ -9,7 +9,6 @@ import scala.annotation.tailrec
 
 final class RunProperties(filePath: String = "run.properties") extends Properties {
 
-
   private val resourcesFile = {
     val classesRoot = new File(this.getClass.getClassLoader.getResource(".").toURI)
     val candidate1 = classesRoot.resolve(filePath)

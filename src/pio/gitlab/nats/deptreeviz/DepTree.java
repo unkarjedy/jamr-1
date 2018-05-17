@@ -201,6 +201,9 @@ public class DepTree<T extends ParseInterface<E>,E extends WordInterface> implem
 
 	public DepTreeNode getNode(int i) {
 		// System.out.println(i);
+		if (i > _wordNodes.size()){
+			int debug = 2 + 2;
+		}
 		return _wordNodes.get(i);
 	}
 

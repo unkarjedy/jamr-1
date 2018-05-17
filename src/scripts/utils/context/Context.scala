@@ -45,8 +45,10 @@ class Context {
   }
 
   private def normalizePath(path: String): String = {
-    path.replace("//", "/")
+    Option(path).map(_
+      .replace("//", "/")
       .replace("\\", "/")
+    ).orNull
   }
 
   def toLogString: String = {

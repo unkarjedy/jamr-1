@@ -28,7 +28,7 @@ case class Parse(context: Context,
       proceedParse()
     }
 
-//    removeTempFiles(inputFolder)
+    removeTempFiles(inputFolder)
   }
 
   private def proceedPreprocessing() = {

@@ -1,14 +1,28 @@
 package edu.cmu.lti.nlp.amr.utils
 
+import java.io.File
+
 import org.apache.commons.lang3.StringUtils
 
+import scala.io.Source
+
 object CorpusUtils {
+
+  def splitFileOnNewline(file: String): Iterator[String] =
+    splitOnNewline(Source.fromFile(file))
+
+  def splitFileOnNewline(file: File): Iterator[String] =
+    splitOnNewline(Source.fromFile(file))
+
+  def splitOnNewline(source: Source): Iterator[String] =
+    splitOnNewline(source.getLines())
+
   // This treats more than one newline in a row as a single newline
   def splitOnNewline(iterator: Iterator[String]): Iterator[String] = {
-    for {
+    (for {
       x <- iterator if x != ""
       p = (x :: iterator.takeWhile(StringUtils.isNotBlank).toList).mkString("\n")
-    } yield p
+    } yield p).filter(StringUtils.isNotBlank)
   }
 
   /**

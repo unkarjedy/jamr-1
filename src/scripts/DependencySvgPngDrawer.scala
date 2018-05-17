@@ -6,35 +6,19 @@ import edu.cmu.lti.nlp.amr.utils.{CorpusUtils, DepsTextBlock}
 import org.apache.batik.transcoder.image.PNGTranscoder
 import org.apache.batik.transcoder.{TranscoderInput, TranscoderOutput}
 import org.apache.commons.io.FileUtils
-import org.apache.commons.lang3.StringUtils
 import pio.gitlab.nats.deptreeviz.{DepTree, SimpleParse, SimpleWord}
+import scripts.DependencySvgPngDrawer.DrawerSettings
 import scripts.train.RunProperties
 import scripts.utils.FileExt._
 import scripts.utils.logger.SimpleLoggerLike
+import term_dict_process.Utils
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable
 import scala.io.Source
 import scala.util.{Failure, Try}
 
-object DependencySvgPngDrawer extends SimpleLoggerLike {
-  private val runProperties = new RunProperties()
-  private val jamrRoot = runProperties.jamrRoot
-
-  def main(args: Array[String]): Unit = {
-    val baseFolder = new File(s"$jamrRoot/resources_terms/parse_RNN/")
-    val imagesFolder = baseFolder.resolve("out").resolve("images")
-    val dependenciesFile = baseFolder.resolve("sentences2.txt.deps")
-    val success = draw(dependenciesFile, imagesFolder)
-
-    if (success) {
-      val svgFolder = imagesFolder.resolve("svg")
-      svgFolder.mkdir()
-      imagesFolder.listFiles().filter(_.getName.endsWith(".svg")).foreach { f =>
-        FileUtils.moveFile(f, svgFolder.resolve(f.getName))
-      }
-    }
-  }
+class DependencySvgPngDrawer(settings: DrawerSettings = DrawerSettings()) extends SimpleLoggerLike {
 
   /**
     * Converts CONLL extracted rom dependenciesFileName to outputFolderName
@@ -48,22 +32,26 @@ object DependencySvgPngDrawer extends SimpleLoggerLike {
 
     // generate SVGs
     val lines = Source.fromFile(dependenciesFile).getLines()
-    val totalBlocks = Source.fromFile(dependenciesFile).getLines().count(StringUtils.isBlank) + 1
+    val totalBlocks = CorpusUtils.splitOnNewline(Source.fromFile(dependenciesFile)).size
     val seenConllHashes = mutable.Set[Int]()
-    CorpusUtils.getDepsBlocks(lines)
-      .foreach { case block@DepsTextBlock(conllLines, idx, sntOpt, sntIdOpt, treeIdOpt) =>
+
+    val dependencyBlocks: Iterator[DepsTextBlock] = CorpusUtils.getDepsBlocks(lines)
+
+    dependencyBlocks
+      .foreach { case block@DepsTextBlock(conllLines, idx, _, sntIdOpt, treeIdOpt) =>
         val blockHash: Int = block.conllText.hashCode
         val fileName = Seq(
-//          Some(idx.toString),
+          Some(idx.toString),
           sntIdOpt.map("s" + _),
           treeIdOpt.map("t" + _)
         ).flatten.mkString("-")
+
         if (seenConllHashes.contains(blockHash)) {
           logger.warning(s"Skipping file $fileName with duplicate conll block")
         } else {
           seenConllHashes += blockHash
           generateSvg(outputFolder, conllLines, fileName)
-          logger.info(s"CONLL -> SVG ${idx + 1} / $totalBlocks")
+          logger.info(s"CONLL -> SVG ${idx + 1} / $totalBlocks, fileName: $fileName")
         }
       }
 
@@ -84,13 +72,19 @@ object DependencySvgPngDrawer extends SimpleLoggerLike {
   }
 
   private def generateSvg(outputFolder: File, conll: Seq[String], outFileName: String): Unit = {
-    val parser = SimpleParse.fromConll(conll)
-    val depTree = new DepTree[SimpleParse, SimpleWord](parser)
-
-    val svgFilePath = s"$outputFolder/$outFileName.svg"
-    val writer = new FileWriter(svgFilePath)
-    depTree.writeTree(writer)
-    writer.close()
+    try {
+      val parser = SimpleParse.fromConll(conll)
+      val depTree = new DepTree[SimpleParse, SimpleWord](parser)
+      val svgFilePath = s"$outputFolder/$outFileName.svg"
+      Utils.using(new FileWriter(svgFilePath)) { writer =>
+        depTree.writeTree(writer)
+        writer.close()
+      }
+    } catch {
+      case ex: Exception =>
+        logger.info(s"[ERROR] Could not render file `$outFileName`")
+        ex.printStackTrace()
+    }
   }
 
   private def svg2png(file: File) = {
@@ -106,4 +100,29 @@ object DependencySvgPngDrawer extends SimpleLoggerLike {
     pngOutputStream.flush()
     pngOutputStream.close()
   }
+}
+
+object DependencySvgPngDrawer extends SimpleLoggerLike {
+
+  case class DrawerSettings()
+
+  def main(args: Array[String]): Unit = {
+    val runProperties = new RunProperties("run.properties")
+    val baseFolder = new File(s"${runProperties.jamrRoot}/${runProperties.parserInputFolder}/")
+    val depsFile = baseFolder.resolve("sentences2.txt.deps")
+    val outDir = baseFolder.resolve("out").resolve("images")
+
+    val renderer = new DependencySvgPngDrawer()
+
+    val success = renderer.draw(depsFile, outDir)
+
+    if (success) {
+      val svgFolder = outDir.resolve("svg")
+      svgFolder.mkdir()
+      outDir.listFiles().filter(_.getName.endsWith(".svg")).foreach { f =>
+        FileUtils.moveFile(f, svgFolder.resolve(f.getName))
+      }
+    }
+  }
+
 }

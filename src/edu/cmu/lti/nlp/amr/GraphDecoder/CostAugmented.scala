@@ -1,25 +1,15 @@
 package edu.cmu.lti.nlp.amr.GraphDecoder
-import edu.cmu.lti.nlp.amr._
 import edu.cmu.lti.nlp.amr.FastFeatureVector._
-import java.lang.Math.abs
-import java.lang.Math.log
-import java.lang.Math.exp
-import java.lang.Math.random
-import java.lang.Math.floor
-import java.lang.Math.min
-import java.lang.Math.max
-
+import edu.cmu.lti.nlp.amr._
 import edu.cmu.lti.nlp.amr.graph.Graph
-
-import scala.io.Source
-import scala.util.matching.Regex
-//import scala.collection.mutable.Map
 import scala.collection.concurrent.{TrieMap => Map}
 import scala.collection.mutable
-import scala.collection.mutable.Set
-import scala.collection.mutable.ArrayBuffer
 
-class CostAugmented(val decoder: GraphDecoderAbstract, costScale: Double, precRecTradeoff: Double, options: mutable.Map[Symbol, String]) extends GraphDecoderAbstract {
+class CostAugmented(val decoder: GraphDecoderAbstract,
+                    costScale: Double,
+                    precRecTradeoff: Double,
+                    options: mutable.Map[Symbol, String])
+  extends GraphDecoderAbstract {
     // precRecTradeoff: 1 = only prec errors, 0 = only recall errors
     var features = decoder.features
     decoder.features.addFeatureFunction("CostAugEdge")
@@ -37,9 +27,10 @@ class CostAugmented(val decoder: GraphDecoderAbstract, costScale: Double, precRe
         val oracle = oracleDecoder.decode(input)
         val addCost = new FeatureVectorFast(oracle.features.labelset)
         var edgeFeatures : List[(String, ValuesList)] = List()
-        for { node1 <- input.graph.get.nodes
-              node2 <- input.graph.get.nodes
-            } {
+        for {
+          node1 <- input.graph.get.nodes
+          node2 <- input.graph.get.nodes
+        } {
                 edgeFeatures = ("CA:U_C1="+node1.concept+"+C2="+node2.concept, ValuesList(1.0, List())) :: edgeFeatures
         }
         //logger(0, "CostAug edge features:\n" + oracle.features.filter(x => x.startsWith("CA:C1")).toString)

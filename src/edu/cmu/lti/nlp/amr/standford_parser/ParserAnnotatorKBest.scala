@@ -20,7 +20,6 @@ class ParserAnnotatorKBest(val bestTreesNumber: Int, // k best trees to extract 
                            val saveBinaryTrees: Boolean)
   extends ParserAnnotator(parser, verbose, maxSentenceLength, treeMap) {
 
-
   def this(bestTreesNumber: Int, pa: ParserAnnotator) =
     this(
       bestTreesNumber,
@@ -32,7 +31,6 @@ class ParserAnnotatorKBest(val bestTreesNumber: Int, // k best trees to extract 
       BUILD_GRAPHS = pa.getField[Boolean]("BUILD_GRAPHS"),
       saveBinaryTrees = pa.getField[Boolean]("saveBinaryTrees")
     )
-
 
   override protected def doOneSentence(annotation: Annotation, sentence: CoreMap): Unit = {
     val words: Seq[CoreLabel] = sentence.get(classOf[CoreAnnotations.TokensAnnotation]).toSeq

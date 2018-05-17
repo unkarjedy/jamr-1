@@ -63,25 +63,37 @@ object RunParse extends StageRunnerLike {
       extractor.extractAmrOnly()
     }
 
-    runStage("### Draw SVG for dependency trees ###", runProperties.skipSvgRender) {
-//      val depsFileName = s"$inputFilename.deps"
-      val depsFileName = s"$inputFilename.deps.k_best.txt"
+    runStage("### Render dependency trees ###", runProperties.skipSvgRender) {
       val baseFolder = new File(inputFolder)
-      val imagesFolder = baseFolder.resolve("out").resolve("images")
-      DependencySvgPngDrawer.draw(baseFolder.resolve(depsFileName), imagesFolder)
-
-      val svgFolder = imagesFolder.resolve("svg")
-      svgFolder.mkdir()
-      imagesFolder.listFiles().filter(_.getName.endsWith(".svg")).foreach { f =>
-        val distFile = svgFolder.resolve(f.getName)
-        distFile.delete()
-        FileUtils.moveFile(f, distFile)
-      }
+      val dependenciesFile: File = baseFolder.resolve(s"$inputFilename.deps.k_best.txt")
+      val outputDir: File = baseFolder.resolve("out").resolve("images")
+      renderDependencyTrees(dependenciesFile, outputDir)
     }
 
     sys.exit(0) // some non-daemon threads are stuck... (probably from DependencySvgPngDrawer/Deptreeviz)
   }
 
+  private def renderDependencyTrees(depFile: File, outDir: File) = {
+    try {
+      new DependencySvgPngDrawer().draw(depFile, outDir)
+    } catch {
+      case ex: Throwable =>
+        ex.printStackTrace()
+    }
+
+    try {
+      val svgFolder = outDir.resolve("svg")
+      svgFolder.mkdir()
+      outDir.listFiles().filter(_.getName.endsWith(".svg")).foreach { f =>
+        val distFile = svgFolder.resolve(f.getName)
+        distFile.delete()
+        FileUtils.moveFile(f, distFile)
+      }
+    } catch {
+      case ex: Throwable =>
+        ex.printStackTrace()
+    }
+  }
   private def buildParserOptionsString(context: Context, stage1SyntheticConcepts: List[String]) = {
     s"""--stage1-synthetic-concepts ${stage1SyntheticConcepts.mkString(",")}
        |--stage1-phrase-counts ${context.modelFolder}/wordCounts.train

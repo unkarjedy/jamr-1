@@ -643,8 +643,19 @@ def main(args):
         amr2 = amr.AMR.parse_AMR_line(cur_amr2)
         test_label = "a"
         gold_label = "b"
-        amr1.rename_node(test_label)
-        amr2.rename_node(gold_label)
+
+        try:
+            amr1.rename_node(test_label)
+        except Exception as e:
+            print >> sys.stdout, "Error in processing AMR 1:\n", cur_amr1
+            raise
+
+        try:
+            amr2.rename_node(gold_label)
+        except Exception as e:
+            print >> sys.stdout, "Error in processing AMR 2:\n", cur_amr2
+            raise
+
         (test_inst, test_rel1, test_rel2) = amr1.get_triples2()
         (gold_inst, gold_rel1, gold_rel2) = amr2.get_triples2()
         if verbose:

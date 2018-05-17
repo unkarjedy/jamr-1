@@ -13,11 +13,16 @@ object ContextBuilder {
   }
 
   def createContext(jamrRoot: String, modelFolder: String): Context = {
+    val context = createContext(jamrRoot)
+    context.modelFolder = modelFolder
+    context
+  }
+
+  def createContext(jamrRoot: String): Context = {
     val toolsPath = s"$jamrRoot/tools/"
 
     val context = new Context()
     context.jamrRoot = jamrRoot
-    context.modelFolder = modelFolder
 
     context.cdecPath = s"$toolsPath/cdec"
     context.illinoisNerPath = s"$toolsPath/IllinoisNerExtended/"
