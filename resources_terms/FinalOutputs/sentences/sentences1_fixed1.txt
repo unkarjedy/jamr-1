@@ -1,0 +1,417 @@
+# format: term_snt
+
+# ::sntId 0
+data
+raw facts , which are processed into information , such as balance due and quantity on hand
+
+# ::sntId 1
+data
+Any form of information whether on paper or in electronic form
+
+# ::sntId 2
+system
+A group of related components that interact to perform a task
+
+# ::sntId 3
+computer
+A general-purpose machine that processes data according to a set of instructions stored internally
+
+# ::sntId 4
+windows
+The most widely used operating system for desktop and laptop computers
+
+# ::sntId 5
+network
+Any arrangement of elements that are interconnected
+
+# ::sntId 6
+network
+A system that transmits data between users , which includes the user devices and the network equipment
+
+# ::sntId 7
+file
+A collection of bytes stored as an individual entity on the computer's hard drive or SSD
+
+# ::sntId 8
+program
+A collection of instructions that tell the computer what to do
+
+# ::sntId 9
+digital
+Data in binary form
+
+# ::sntId 10
+application
+Software that is used for business or entertainment
+
+# ::sntId 11
+user
+An individual who uses a computer or some other equipment
+
+# ::sntId 12
+video
+Any digital moving picture object , which includes a computer file in video formats such as MP4 , MOV , M4V , AVI , DivX or FLV
+
+# ::sntId 13
+video
+The moving picture technology developed for the television industry , initially for real-time capture
+
+# ::sntId 14
+memory
+The computer's workspace , which is physically a collection of dynamic RAM chips
+
+# ::sntId 15
+server
+A computer system in a network that is shared by multiple users
+
+# ::sntId 16
+contrast
+The white level of a display screen
+
+# ::sntId 17
+service
+Functionality derived from a particular software program
+
+# ::sntId 18
+screen
+The display area of a computer monitor or TV set
+
+# ::sntId 21
+access
+the opportunity for use of a resource
+
+# ::sntId 22
+version
+A specific edition of a software package
+
+# ::sntId 23
+disk
+A direct access storage device
+
+# ::sntId 25
+interface
+The interaction between hardware , software and the user
+
+# ::sntId 28
+line
+A communications channel
+
+# ::sntId 29
+storage
+The permanent holding place for digital data , until purposely erased
+
+# ::sntId 30
+format
+The structure of an item
+
+# ::sntId 31
+machine
+Any electronic or electromechanical unit of equipment
+
+# ::sntId 32
+language
+A set of symbols and rules used to convey information
+
+# ::sntId 33
+pc
+Any laptop or desktop computer such as a Windows , Mac or Linux machine
+
+# ::sntId 34
+control
+A program module that enhances the functionality of a program
+
+# ::sntId 35
+programming
+Creating a computer program
+
+# ::sntId 36
+code
+A set of machine symbols that represents data or instructions
+
+# ::sntId 37
+code
+Any representation of one set of data for another
+
+# ::sntId 39
+processing
+Manipulating data within the computer
+
+# ::sntId 40
+mac
+A number computed from the contents of a text message that is used to prove the integrity of a message
+
+# ::sntId 41
+protocol
+The format that governs the transmitting of data
+
+# ::sntId 42
+desktop
+The layout of a graphical user interface , which simulates a physical desktop by allowing objects to be placed anywhere on its surface
+
+# ::sntId 43
+page
+A segment of a running program that is transferred back and forth between memory and disk
+
+# ::sntId 44
+chip
+A set of microminiaturized , electronic circuits fabricated on a single piece of semiconducting material
+
+# ::sntId 46
+database
+A set of related files that is managed by a database management system
+
+# ::sntId 47
+graphics
+The computer's display system
+
+# ::sntId 48
+microsoft
+The most successful software company in the industry
+
+# ::sntId 49
+wireless
+Transmission through the air
+
+# ::sntId 50
+e-mail
+The transmission of text messages from sender to recipient
+
+# ::sntId 51
+drive
+An electromechanical device that reads magnetic disks , optical discs or magnetic tapes
+
+# ::sntId 52
+drive
+A solid state flash drive that contains no moving parts
+
+# ::sntId 53
+ibm
+One of the world's largest computer companies with revenues of USD $93 billion in 2014
+
+# ::sntId 54
+content
+Any information that is available for retrieval by the user Including Web pages , images , music , audio , white papers , driver and software downloads as well as training , educational and reference materials
+
+# ::sntId 55
+open
+To engage a file for reading
+
+# ::sntId 56
+ip
+The communications technology used worldwide in local networks , wide area networks and the Internet
+
+# ::sntId 57
+ip
+The numeric address assigned to every laptop and desktop computer , server , router , smartphone and tablet in an IP network
+
+# ::sntId 59
+key
+A numeric code that is used to encrypt text for security purposes
+
+# ::sntId 60
+key
+An essential field in a database record
+
+# ::sntId 61
+key
+A wireless charging system
+
+# ::sntId 62
+transmission
+The transfer of data over a communications channel
+
+# ::sntId 63
+cpu
+The computing part of the computer
+
+# ::sntId 64
+method
+The processing that an object performs
+
+# ::sntId 65
+address
+The location of a Web site or other Internet facility
+
+# ::sntId 66
+www
+The common hostname for a Web server
+
+# ::sntId 67
+media
+Any form of information Including music and movies
+
+# ::sntId 68
+word
+The computer's internal storage unit
+
+# ::sntId 69
+organization
+An umbrella term for any company or association
+
+# ::sntId 70
+browser
+A program that lets you look through a collection of data
+
+# ::sntId 71
+document
+Any paper form that is used to transact business or make some official statement
+
+# ::sntId 72
+cable
+A flexible metal or glass wire or group of wires
+
+# ::sntId 73
+dos
+A family of IBM mainframe operating systems
+
+# ::sntId 74
+apple
+The world's second largest manufacturer of computers and consumer electronics with revenues of USD $184 billion in 2014
+
+# ::sntId 75
+unix
+A multiuser , multitasking operating system that is widely used as the master control program in workstations and servers
+
+# ::sntId 77
+client
+The customer of a vendor or consultant
+
+# ::sntId 78
+security
+Protection against illegal or wrongful intrusion
+
+# ::sntId 79
+com
+A Microsoft architecture for building software modules that are executed in Windows
+
+# ::sntId 80
+search
+To look for an occurrence of text in a file
+
+# ::sntId 81
+message
+An e-mail that contains text and possibly other file attachments
+
+# ::sntId 82
+wi-fi
+The standard wireless local area network technology for connecting computers to the Internet
+
+# ::sntId 83
+printer
+A device that converts computer output into printed images
+
+# ::sntId 84
+function
+A self-contained software routine that performs a task
+
+# ::sntId 85
+os
+The master control program in a computer or mobile device
+
+# ::sntId 86
+circuit
+A set of electronic components that perform a particular function in an electronic system
+
+# ::sntId 87
+signal
+Any electrical or light pulse in a wire or fiber
+
+# ::sntId 88
+process
+To manipulate data in the computer
+
+# ::sntId 89
+process
+Software running in the computer
+
+# ::sntId 90
+pcs
+A videoconferencing technology that uses Intel's Indeo compression method
+
+# ::sntId 91
+switch
+A mechanical or electronic device that directs the flow of electrical or optical signals from one side to the other
+
+# ::sntId 92
+model
+A mathematical representation of a device used for analysis and planning
+
+# ::sntId 93
+channel
+A high-speed mainframe subsystem that provides a pathway between the CPU and the control units of peripheral devices
+
+# ::sntId 94
+channel
+A frequency assigned to a TV or radio station , which allows it to transmit over the air simultaneously with other broadcasters
+
+# ::sntId 95
+google
+The largest Web search engine and one of the most influential companies in the high-tech world
+
+# ::sntId 96
+include
+A statement in a program that directs the compiler to process another file of code at that point
+
+# ::sntId 97
+resolution
+The degree of sharpness of a displayed or printed image
+
+# ::sntId 98
+command
+An instruction for the computer
+
+# ::sntId 99
+port
+A number that identifies applications and services in a TCP/IP network
+
+# ::sntId 100
+android
+An operating system for smartphones , tablets and laptops from the Google-sponsored Open Handset Alliance
+
+# ::sntId 101
+output
+To transfer from the computer to a peripheral device
+
+# ::sntId 102
+linux
+A very popular open source operating system that runs on all major hardware platforms including x86 , Itanium , PowerPC , ARM and IBM mainframes
+
+# ::sntId 104
+click
+To select an object by pressing the mouse button when the cursor is pointing to the required menu option , icon or hypertext link
+
+# ::sntId 105
+top
+A communications protocol for office systems developed in the early 1980s by the Computer Services division of Boeing in Seattle
+
+# ::sntId 106
+radio
+An electronic circuit that transmits wireless signals
+
+# ::sntId 107
+camera
+A stand-alone device that records still or moving images as analog scenes or as pixels in digital storage
+
+# ::sntId 108
+camera
+A back-facing element in a smartphone or tablet that records still and moving images for later viewing
+
+# ::sntId 109
+camera
+A front-facing element in a smartphone , tablet or laptop computer that transmits images in real time for video calls
+
+# ::sntId 110
+monitor
+A display screen used to provide visual output from a computer , cable box , video camera , VCR or other video generating device
+
+# ::sntId 111
+monitor
+Software that monitors the progress of activities within a computer system
+
+# ::sntId 112
+monitor
+A device that gathers performance statistics of a running system via direct attachment to the CPU's circuit boards
+
+# ::sntId 113
+monitor
+Software that provides utility and control functions such as setting communications parameters

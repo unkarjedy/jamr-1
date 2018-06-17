@@ -13,10 +13,12 @@ import edu.stanford.nlp.trees.TreeCoreAnnotations.TreeAnnotation
 import edu.stanford.nlp.trees._
 import edu.stanford.nlp.util.{CoreMap, Filters}
 import scripts.parse.InputSentencesReader
+import scripts.parse.InputSentencesReader.SentenceWithTerm
 import scripts.utils.logger.SimpleLoggerLike
 
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
+import scala.collection.immutable
 
 
 /*
@@ -193,14 +195,12 @@ class RunStanfordParser(in: InputStream, out: PrintStream,
   override def run(): Unit = {
     val processor = new StanfordProcessor(verbose)
 
-    val lines = InputSentencesReader.getStream(Source.fromInputStream(in))
-      .map(_.sentence)
-      // .take(10)
-      .takeWhile(_ != SPECIAL_STOP_SENTENCE)
+    val sentences: Seq[SentenceWithTerm] = InputSentencesReader.getStream(Source.fromInputStream(in))
+      .takeWhile(_.sentence != SPECIAL_STOP_SENTENCE)
 
-    for ((sentence, sntIdx) <- lines.zipWithIndex) {
+    for (SentenceWithTerm(sntId, sentence, term) <- sentences) {
       if (verbose) {
-        logger.info(s"parsing sentence $sntIdx")
+        logger.info(s"parsing sentence $sntId")
       }
       val result = processor
         .parseToConllString(sentence)
@@ -209,7 +209,7 @@ class RunStanfordParser(in: InputStream, out: PrintStream,
 
       outKBestOpt match {
         case Some(outKBest) =>
-          processor.parseToKBestConllString(sentence, sntIdx).foreach(outKBest.println)
+          processor.parseToKBestConllString(sentence, sntId).foreach(outKBest.println)
           outKBest.println()
         case None =>
       }

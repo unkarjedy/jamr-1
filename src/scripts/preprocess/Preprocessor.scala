@@ -173,20 +173,22 @@ case class Preprocessor(ctx: Context) extends ContextLike(ctx)
   // cmd.snt.IllinoisNER
   def runIllinoisNamedEntityTagger(amrFile: File): Unit = {
     logger.info(s"Run Named Entity Tagger for ${amrFile.getName}")
-    runIllinoisNamedEntityTagger(new File(s"$amrFile.snt"))
+    val sntFile = s"$amrFile.snt"
+    val nerFile = s"$amrFile.IllinoisNER"
+    runIllinoisNamedEntityTagger(new File(sntFile), nerFile)
   }
 
   def runIllinoisNamedEntityTagger(inputFile: File,
+                                   nerFile: String,
                                    outRedirect: PrintStream = System.out,
                                    errRedirect: PrintStream = System.err): Unit = {
     val nerPath = ctx.illinoisNerPath
     val cPathSeparator = Option(System.getProperty("path.separator")).getOrElse(";")
     val nerClasspath = Seq(nerPath, s"${nerPath}target/classes", s"${nerPath}target/dependency/*").mkString(cPathSeparator)
 
-    val inputFilePath = inputFile.getPath
-    val inputFileTmp = s"$inputFilePath.tmp"
-    val outputFileTmp = s"$inputFilePath.IllinoisNER.tmp"
-    val outputFile = s"$inputFilePath.IllinoisNER"
+    val inputFileTmp = s"${inputFile.getPath}.tmp"
+    val outputFile = nerFile
+    val outputFileTmp = s"$outputFile.tmp"
 
     // cat "$inputfile" | sed $'s/$//\n####/\n/' > "$inputfile".tmp
     val tmpWriter = new PrintWriter(inputFileTmp)
@@ -233,7 +235,7 @@ object Preprocessor {
     val jamrRoot = "C:/Users/unkarjedy/Desktop/Diploma/Jamr_Fork"
 
     val preprocessor = new Preprocessor(ContextBuilder.createContext(jamrRoot))
-    val goldAmrs = new File(jamrRoot + "/resources_terms/FinalOutputs/gold_amr/most_used_term_defs_manual_FIXED1.txt.amr_gold")
+    val goldAmrs = new File(jamrRoot + "/resources_terms/FinalOutputs/gold_amr/sentences2.txt.amr_gold")
 
     preprocessor.extractSentencesAndTokens(goldAmrs)
     preprocessor.runAligner(goldAmrs)

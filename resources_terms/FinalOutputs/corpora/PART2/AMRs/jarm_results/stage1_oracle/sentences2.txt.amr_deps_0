@@ -1,0 +1,1338 @@
+# ::snt A cellphone that created the greatest tech revolution since the Internet
+# ::term smartphone
+# ::sntId 114
+# ::treeId 0
+# ::src jamr
+(c / cellphone 
+      :ARG2-of (c2 / create-01 
+            :ARG1 (r / revolution 
+                  :mod (t / tech)) 
+            :cause-of (g / great 
+                  :degree (m / most)) 
+            :direction (s / since 
+                  :op1 (i / internet))))
+
+# ::snt To input into the computer from a peripheral device or the network
+# ::term read
+# ::sntId 115
+# ::treeId 0
+# ::src jamr
+(i / input-01 
+      :ARG1 (c / computer) 
+      :concession (o / or 
+            :op1 (d / device 
+                  :mod (p / peripheral)) 
+            :op2 (n / network)))
+
+# ::snt An independent block of data , text or graphics that was created by a separate application
+# ::term object
+# ::sntId 116
+# ::treeId 0
+# ::src jamr
+(b / block 
+      :ARG0-of (d / depend-01 
+            :ARG1 (c / create-01 
+                  :ARG0 (a / application 
+                        :mod (s / separate)) 
+                  :ARG1 (o / or 
+                        :op1 (d2 / data) 
+                        :op2 (t / text) 
+                        :op3 (g / graphic))) 
+            :polarity -))
+
+# ::snt A viewing area on screen that contains a surrounding frame
+# ::term window
+# ::sntId 117
+# ::treeId 0
+# ::src jamr
+(c / contain-01 
+      :ARG0 (a / area 
+            :ARG0-of (v / view-01) 
+            :location (s2 / screen)) 
+      :ARG1 (f / frame 
+            :ARG1-of (s / surround-01)))
+
+# ::snt It is used to separate parts of an application from each other and to separate one application from another
+# ::term window
+# ::sntId 118
+# ::treeId 0
+# ::src jamr
+(u / use-01 
+      :ARG0 (a / and 
+            :op1 (s2 / separate-01 
+                  :ARG0 (a4 / application) 
+                  :ARG1 (p / part)) 
+            :op2 (s / separate-01 
+                  :ARG1 (a3 / application))) 
+      :ARG1 (i / it))
+
+# ::snt A computer company that became a software company and then merged into Apple
+# ::term next
+# ::sntId 119
+# ::treeId 0
+# ::src jamr
+(b / become-01 
+      :ARG1 (c / company 
+            :ARG1-of (m / merge-01 
+                  :ARG2 (o / organization 
+                        :name (n / name 
+                              :op1 "Apple")) 
+                  :time (t / then)) 
+            :mod (c2 / computer)) 
+      :ARG2 (c3 / company 
+            :mod (s / software)))
+
+# ::snt An address that points to a Web page or other file on a Web server
+# ::term link
+# ::sntId 120
+# ::treeId 0
+# ::src jamr
+(p / point-01 
+      :ARG0 (s / server 
+            :mod (w / web)) 
+      :ARG1 (a / address) 
+      :ARG2 (p2 / page 
+            :mod (w2 / web) 
+            :op1-of (o / or 
+                  :op2 (f / file 
+                        :mod (o2 / other)))))
+
+# ::snt A pointer embedded within a record that refers to data or the location of data in another record
+# ::term link
+# ::sntId 121
+# ::treeId 0
+# ::src jamr
+(p / point-01 
+      :ARG0 (t / thing 
+            :ARG1-of (e / embed-01 
+                  :ARG0 (r3 / record 
+                        :mod (a / another)) 
+                  :ARG2 (r / record 
+                        :ARG0-of (r2 / refer-01 
+                              :ARG1 (d2 / data 
+                                    :op1-of (o / or 
+                                          :op2 (l / location 
+                                                :mod (d / data)))))))))
+
+# ::snt A statement that requests services from another subroutine or program
+# ::term call
+# ::sntId 122
+# ::treeId 0
+# ::src jamr
+(s / state-01 
+      :ARG0 (s2 / service 
+            :cause (r / request-01 
+                  :ARG0 (p / program 
+                        :op2-of (o / or 
+                              :op1 (s3 / subroutine) 
+                              :quant (a / another))))) 
+      :ARG1 (t / thing))
+
+# ::snt Ahe action taken by the transmitting station to establish a connection with the receiving station in a dial-up network
+# ::term call
+# ::sntId 123
+# ::treeId 0
+# ::src jamr
+(d / dial-up 
+      :ARG0-of (c / connect-01 
+            :ARG1 (s2 / station 
+                  :ARG0-of (r / receive-01)) 
+            :ARG1-of (e / establish-01 
+                  :ARG0 (s / station 
+                        :ARG1-of (t / transmit-01)))) 
+      :mod-of (n / network))
+
+# ::snt To send information from the computer to an attached printer
+# ::term print
+# ::sntId 124
+# ::treeId 0
+# ::src jamr
+(s / send-01 
+      :ARG0 (c / computer) 
+      :ARG1 (i / information) 
+      :ARG2 (p / printer 
+            :ARG1-of (a / attach-01)))
+
+# ::snt An on-screen list of available actions that a user can perform in a software program
+# ::term menu
+# ::sntId 125
+# ::treeId 0
+# ::src jamr
+(p3 / possible 
+      :domain (p / perform-02 
+            :ARG0 (p2 / person 
+                  :ARG0-of (u / use-01 
+                        :ARG1 (a / action 
+                              :consist (l / list 
+                                    :mod (s / screen)) 
+                              :mod (a2 / available)))) 
+            :ARG1 (p4 / program 
+                  :mod (s2 / software))))
+
+# ::snt A device that adapts one type of signal to another
+# ::term modem
+# ::sntId 127
+# ::treeId 0
+# ::src jamr
+(a / adapt-01 
+      :ARG0 (d / device) 
+      :ARG1 (t / type 
+            :location (s / signal)) 
+      :ARG2 (a2 / another))
+
+# ::snt A device that allows one system to connect to another device and work with the device
+# ::term adapter
+# ::sntId 128
+# ::treeId 0
+# ::src jamr
+(a2 / and 
+      :ARG1-of (a / allow-01 
+            :ARG0 (d / device)) 
+      :op1 (c / connect-01 
+            :ARG0 (s / system) 
+            :ARG1 (d2 / device 
+                  :mod (a3 / another))) 
+      :op2 (w / work-01))
+
+# ::snt Software that performs a very specific and repetitive function
+# ::term engine
+# ::sntId 129
+# ::treeId 0
+# ::src jamr
+(a / and 
+      :op1 (s2 / specific 
+            :degree (v / very)) 
+      :op2 (f / function-01 
+            :ARG1 (r / repetitive) 
+            :ARG1-of (p / perform-02 
+                  :ARG0 (s / software))))
+
+# ::snt An organization that issues digital certificates and makes its public key widely available to its intended audience
+# ::term ca
+# ::sntId 130
+# ::treeId 0
+# ::src jamr
+(i2 / intend-01 
+      :ARG1 (a2 / audience 
+            :mod-of (a / available 
+                  :ARG2-of (i / issue-01 
+                        :ARG0 (o / organization 
+                              :ARG0-of (m / make-02 
+                                    :ARG1 (k / key 
+                                          :mod (p / public)))) 
+                        :ARG1 (c / certificate 
+                              :mod (d / digital))) 
+                  :mod (w / wide))))
+
+# ::snt Folders are created by the operating system and applications when they are installed
+# ::term folder
+# ::sntId 131
+# ::treeId 0
+# ::src jamr
+(a / and 
+      :op1 (s / system 
+            :ARG0-of (c / create-01 
+                  :ARG1 (f / folder)) 
+            :mod (o / operate-01)) 
+      :op2 (a2 / application 
+            :ARG1-of (i / install-01)))
+
+# ::snt Every Web page contains HTML tags embedded in the text that define the page layout , fonts and hypertext links
+# ::term html
+# ::sntId 132
+# ::treeId 0
+# ::src jamr
+(c / contain-01 
+      :ARG0 (p / page) 
+      :ARG1 (t2 / tag 
+            :ARG1-of (e2 / embed-01 
+                  :ARG0 (e / every) 
+                  :ARG2 (t / text) 
+                  :purpose-of (d / define-01 
+                        :ARG1 (l / layout) 
+                        :ARG2 (a / and 
+                              :op1 (f / font) 
+                              :op2 (h / hypertext) 
+                              :op3 (l2 / link)))) 
+            :mod (h2 / html)) 
+      :ARG2 (w / web))
+
+# ::snt A network device that forwards data packets from one network to another
+# ::term router
+# ::sntId 133
+# ::treeId 0
+# ::src jamr
+(d / device 
+      :ARG0-of (f / forward-01 
+            :ARG1 (p / packet 
+                  :quant (d2 / data)) 
+            :ARG2 (a / another) 
+            :time (n2 / network)) 
+      :mod (n3 / network))
+
+# ::snt A relatively large , general-purpose logic function that is used as a building block in a chip design
+# ::term core
+# ::sntId 134
+# ::treeId 0
+# ::src jamr
+(f / function-01 
+      :ARG0 (l / logic) 
+      :ARG1-of (u / use-01 
+            :ARG0 (r / relative 
+                  :mod-of (l2 / large)) 
+            :ARG2 (b / block 
+                  :mod (b2 / build-01)) 
+            :mod (g / general-purpose)))
+
+# ::snt A device that creates a uniform and coherent light that is very different from an ordinary light bulb
+# ::term laser
+# ::sntId 135
+# ::treeId 0
+# ::src jamr
+(a / and 
+      :op1 (u / uniform) 
+      :op2 (c2 / coherent) 
+      :op3 (l2 / light 
+            :ARG1-of (d2 / differ-02 
+                  :ARG0 (o / ordinary) 
+                  :degree (v / very) 
+                  :location (b / bulb 
+                        :mod (l / light))) 
+            :ARG1-of (c / create-01 
+                  :ARG0 (d / device))))
+
+# ::snt Many lasers deliver light in an almost-perfectly parallel beam that is very pure
+# ::term laser
+# ::sntId 136
+# ::treeId 0
+# ::src jamr
+(d / deliver-01 
+      :ARG0 (b / beam 
+            :mod (p / parallel) 
+            :mod (p2 / perfect 
+                  :mod (a / almost)) 
+            :mod (p3 / pure 
+                  :degree (v / very))) 
+      :ARG1 (l / laser 
+            :quant (m / many)) 
+      :ARG2 (l2 / light))
+
+# ::snt Laser light can be focused down to a tiny spot as small as a single wavelength
+# ::term laser
+# ::sntId 137
+# ::treeId 0
+# ::src jamr
+(f / focus-01 
+      :ARG0 (s3 / single 
+            :mod-of (w / wavelength 
+                  :location-of (s2 / small))) 
+      :ARG1 (l / light 
+            :mod (l2 / laser)) 
+      :ARG2 (s / spot 
+            :mod (t / tiny)) 
+      :domain-of (p / possible))
+
+# ::snt Gas lasers are used to cut steel and perform delicate eye surgery
+# ::term laser
+# ::sntId 138
+# ::treeId 0
+# ::src jamr
+(u / use-01 
+      :ARG0 (d / delicate) 
+      :ARG1 (l / laser) 
+      :ARG2 (a / and 
+            :op1 (c / cut-01 
+                  :ARG1 (s / steel)) 
+            :op2 (p / perform-02 
+                  :ARG0 (g / gas) 
+                  :ARG1 (s2 / surgery 
+                        :mod (e / eye)))))
+
+# ::snt A small , marked area on an electronic device that is physically pressed down to activate a function
+# ::term button
+# ::sntId 139
+# ::treeId 0
+# ::src jamr
+(a2 / activate-01 
+      :ARG1 (f / function 
+            :ARG0-of (m / mark-02 
+                  :ARG1 (a / area 
+                        :mod (s / small)))) 
+      :ARG1-of (p / press-01 
+            :ARG0 (d / device 
+                  :mod (e / electronic)) 
+            :time (p2 / physically)))
+
+# ::snt Temporary workspace where instructions are executed and data are processed
+# ::term ram
+# ::sntId 140
+# ::treeId 0
+# ::src jamr
+(a / and 
+      :op1 (e / execute-02 
+            :ARG1 (i / instruction)) 
+      :op2 (p / process-01 
+            :ARG0 (w / workspace 
+                  :mod (t / temporary)) 
+            :ARG1 (d / data)))
+
+# ::snt The metal interconnecting pathways on a chip that tie the transistors , resistors and capacitors together
+# ::term track
+# ::sntId 141
+# ::treeId 0
+# ::src jamr
+(a / and 
+      :ARG1-of (t / tie-01 
+            :ARG0 (c / chip) 
+            :ARG2 (t2 / transistor) 
+            :manner (t3 / together)) 
+      :op1 (r / resistor) 
+      :op2 (c2 / capacitor 
+            :ARG0-of (i / interconnect-01 
+                  :ARG1 (m / metal) 
+                  :cause-of (p / pathway))))
+
+# ::snt An HTML layout feature that renders multiple documents on a Web page at the same time
+# ::term frames
+# ::sntId 143
+# ::treeId 0
+# ::src jamr
+(f / feature 
+      :mod (l / layout 
+            :ARG0-of (r / render-03 
+                  :ARG1 (d / document) 
+                  :ARG2 (p / page 
+                        :mod (w / web)) 
+                  :ARG3 (t / time 
+                        :ARG2-of (s / same-41 
+                              :ARG0 (m / multiple)))) 
+            :mod (h / html)))
+
+# ::snt The Apple device that revolutionized mobile computing and caused an explosion of smartphones worldwide
+# ::term iphone
+# ::sntId 144
+# ::treeId 0
+# ::src jamr
+(c2 / cause-01 
+      :ARG0 (d / device 
+            :ARG0-of (r / revolutionize-05 
+                  :ARG1 (c / compute-01 
+                        :mod (m / mobile))) 
+            :poss (o / organization 
+                  :name (n / name 
+                        :op1 "Apple"))) 
+      :ARG1 (e / explode-02 
+            :ARG1 (s / smartphone) 
+            :location (w / worldwide)))
+
+# ::snt An asynchronous communications protocol used to quickly transmit files over high-quality lines
+# ::term fast
+# ::sntId 145
+# ::treeId 0
+# ::src jamr
+(u / use-01 
+      :ARG0 (p / protocol) 
+      :ARG1 (c / communicate-01 
+            :ARG1 (a / asynchronous)) 
+      :ARG2 (t / transmit-01 
+            :ARG0 (l / line 
+                  :mod (q2 / quality 
+                        :mod (h / high))) 
+            :ARG1 (f / file) 
+            :manner (q / quick)))
+
+# ::snt An organization that provides communications and networking services
+# ::term carrier
+# ::sntId 146
+# ::treeId 0
+# ::src jamr
+(a / and 
+      :ARG1-of (p / provide-01 
+            :ARG0 (o / organization) 
+            :ARG2 (c / communicate-01)) 
+      :op1 (s / service 
+            :mod (n / network)))
+
+# ::snt The title of an on-screen button that is clicked in order to start some action such as a search
+# ::term go
+# ::sntId 148
+# ::treeId 0
+# ::src jamr
+(t / title 
+      :ARG0-of (s4 / search-01 
+            :ARG2-of (s2 / start-01 
+                  :ARG1 (a / action 
+                        :mod (s3 / some)) 
+                  :time-of (c / click-01 
+                        :ARG1 (b / button 
+                              :mod (s / screen))))))
+
+# ::snt To store data in memory or onto a storage medium , such as a disk or flash drive
+# ::term write
+# ::sntId 149
+# ::treeId 0
+# ::src jamr
+(s / store-01 
+      :ARG0 (f / flash 
+            :mod-of (d3 / drive 
+                  :op2-of (o2 / or 
+                        :op1 (d2 / disk)))) 
+      :ARG1 (d / data) 
+      :ARG2 (m / memory 
+            :op1-of (o / or 
+                  :op2 (m2 / medium))))
+
+# ::snt The communications protocol used to connect to Web servers on the Internet or on a local network
+# ::term http
+# ::sntId 150
+# ::treeId 0
+# ::src jamr
+(u / use-01 
+      :ARG0 (p / protocol) 
+      :ARG1 (c / communicate-01 
+            :ARG0 (n / network 
+                  :mod (l / local))) 
+      :ARG2 (t / connect-01 
+            :ARG1 (s / server 
+                  :location (o / or 
+                        :op1 (i / internet)) 
+                  :poss (w / web))))
+
+# ::snt A screen display technology developed in 1963 at the David Sarnoff Research Center in Princeton , NJ
+# ::term lcd
+# ::sntId 151
+# ::treeId 0
+# ::src jamr
+(s / screen 
+      :mod-of (d / display 
+            :mod-of (t / technology 
+                  :op1 (d2 / develop-02 
+                        :ARG0 (s3 / state 
+                              :location-of (c / city 
+                                    :name (n2 / name 
+                                          :op1 "Princeton")) 
+                              :name (n3 / name 
+                                    :op1 "NJ")) 
+                        :ARG1 (o / organization 
+                              :name (n / name 
+                                    :op1 "Center" 
+                                    :op2 "Research" 
+                                    :op3 "Sarnoff" 
+                                    :op4 "David")) 
+                        :time (d3 / date-entity 
+                              :year 1963)))))
+
+# ::snt A self-contained hardware or software component that interacts with a larger system
+# ::term module
+# ::sntId 152
+# ::treeId 0
+# ::src jamr
+(h / hardware 
+      :mod (s / self-contained) 
+      :op1-of (o / or 
+            :ARG1-of (i / interact-01 
+                  :ARG0 (s3 / system 
+                        :mod (l / large))) 
+            :op2 (c / component 
+                  :mod (s2 / software))))
+
+# ::snt A small graphic symbol on screen that represents an action or a resource such as an application , file , folder , menu or setting
+# ::term icon
+# ::sntId 153
+# ::treeId 0
+# ::src jamr
+(s / symbol 
+      :ARG0-of (r / represent-01 
+            :ARG1 (o / or 
+                  :op1 (a / action) 
+                  :op2 (r2 / resource)) 
+            :location (s4 / setting 
+                  :op4-of (o2 / or 
+                        :op1 (f / file) 
+                        :op2 (f2 / folder) 
+                        :op3 (m / menu)))) 
+      :location (s3 / screen) 
+      :mod (g / graphic) 
+      :mod (s2 / small))
+
+# ::snt A discipline for developing software that emphasizes customer involvement and teamwork
+# ::term xp
+# ::sntId 154
+# ::treeId 0
+# ::src jamr
+(e / emphasize-01 
+      :ARG0 (s / software 
+            :ARG1-of (d2 / develop-02 
+                  :ARG0 (d / discipline))) 
+      :ARG1 (i / involve-01 
+            :ARG1 (c / customer)) 
+      :ARG2 (a / and 
+            :op1 (t / teamwork)))
+
+# ::snt A group of disk or tape records that is stored as a single unit
+# ::term block
+# ::sntId 155
+# ::treeId 0
+# ::src jamr
+(s / store-01 
+      :ARG0 (r / record 
+            :op4-of (o / or 
+                  :op1 (g / group) 
+                  :op2 (d / disk) 
+                  :op3 (t / tape))) 
+      :ARG1 (u / unit 
+            :mod (s2 / single)))
+
+# ::snt A group of bits or bytes that is transmitted as a single unit
+# ::term block
+# ::sntId 156
+# ::treeId 0
+# ::src jamr
+(t / transmit-01 
+      :ARG0 (u / unit 
+            :mod (s2 / single)) 
+      :ARG1 (g / group 
+            :location (b / bit 
+                  :op1-of (o / or 
+                        :op2 (b2 / byte)))))
+
+# ::snt An FTP command used to download a file from a server or to display the contents of a text file
+# ::term get
+# ::sntId 157
+# ::treeId 0
+# ::src jamr
+(u / use-01 
+      :ARG0 (c / command 
+            :mod (f / ftp)) 
+      :ARG1 (o / or 
+            :op1 (d / download-01 
+                  :ARG1 (f3 / file 
+                        :poss (s / server))) 
+            :op2 (d2 / display-01 
+                  :ARG0 (f2 / file 
+                        :mod (t / text)) 
+                  :ARG1 (c2 / content))))
+
+# ::snt An HTTP command used to retrieve data from a Web server
+# ::term get
+# ::sntId 158
+# ::treeId 0
+# ::src jamr
+(u / use-01 
+      :ARG0 (c / command) 
+      :ARG1 (h / http) 
+      :ARG2 (r / retrieve-01 
+            :ARG0 (s / server 
+                  :mod (w / web)) 
+            :ARG1 (d / data)))
+
+# ::snt A monetary amount that is added to an account balance
+# ::term credit
+# ::sntId 159
+# ::treeId 0
+# ::src jamr
+(a2 / add-02 
+      :ARG1 (a / amount 
+            :mod (m / monetary)) 
+      :ARG2 (b / balance 
+            :mod (a3 / account)))
+
+# ::snt A software control panel that enables the user to configure the appearance or actions in an application , operating system or the hardware
+# ::term settings
+# ::sntId 160
+# ::treeId 0
+# ::src jamr
+(a / appear-01 
+      :ARG0 (o / or) 
+      :ARG1 (o2 / operate 
+            :op1-of (a2 / application) 
+            :op1-of (h / hardware) 
+            :op1-of (s / system)) 
+      :ARG1-of (c2 / configure-01 
+            :ARG0 (p / panel 
+                  :ARG0-of (c / control-01) 
+                  :ARG0-of (e / enable-01 
+                        :ARG1 (p2 / person 
+                              :ARG0-of (u / use-01))))))
+
+# ::snt To store data locally in order to speed up subsequent retrievals
+# ::term cache
+# ::sntId 161
+# ::treeId 0
+# ::src jamr
+(s / store-01 
+      :ARG0 (l / local) 
+      :ARG1 (d / data) 
+      :purpose (s2 / speed-02 
+            :ARG1 (r / retrieve-01 
+                  :ARG1 (s3 / subsequent))))
+
+# ::snt Reserved areas of memory in every computer that are used to speed up instruction execution , data retrieval and data updating
+# ::term cache
+# ::sntId 162
+# ::treeId 0
+# ::src jamr
+(r / reserve-01 
+      :ARG0 (m / memory) 
+      :ARG1 (a / area) 
+      :ARG2 (c / computer 
+            :ARG1-of (u / use-01 
+                  :ARG2 (s / speed-02 
+                        :ARG0 (e / every) 
+                        :ARG1 (e2 / execute-02 
+                              :ARG1 (i / instruction)) 
+                        :ARG2 (a2 / and 
+                              :op1 (r2 / retrieve-01 
+                                    :ARG1 (d2 / data)) 
+                              :purpose (u2 / update-01 
+                                    :ARG1 (d / data)))))))
+
+# ::snt Verifying the identity of a user logging into a network
+# ::term authentication
+# ::sntId 163
+# ::treeId 0
+# ::src jamr
+(v / verify-01 
+      :ARG1 (i / identity 
+            :poss (u / user 
+                  :ARG1-of (l / log-05 
+                        :ARG2 (n / network)))))
+
+# ::snt A storage device that converts chemical energy into electrical energy
+# ::term battery
+# ::sntId 164
+# ::treeId 0
+# ::src jamr
+(d / device 
+      :ARG0-of (s / store-01 
+            :ARG1 (e3 / electricity 
+                  :mod-of (e / energy))) 
+      :ARG0-of (c / convert-01 
+            :ARG1 (e2 / energy 
+                  :mod (c2 / chemical))))
+
+# ::snt The audio compression technology that revolutionized digital music
+# ::term mp3
+# ::sntId 165
+# ::treeId 0
+# ::src jamr
+(r / revolutionize-05 
+      :ARG0 (t / technology 
+            :mod (c / compression) 
+            :mod (a / audio)) 
+      :ARG1 (m / music 
+            :mod (d / digital)))
+
+# ::snt A collection of software routines that programmers incorporate into their applications
+# ::term library
+# ::sntId 166
+# ::treeId 0
+# ::src jamr
+(c / collection 
+      :topic (r / routine 
+            :ARG1-of (i / incorporate-02 
+                  :ARG0 (p / programmer) 
+                  :ARG2 (a / application)) 
+            :mod (s / software)))
+
+# ::snt The library routines are linked into the program when it is compiled
+# ::term library
+# ::sntId 167
+# ::treeId 0
+# ::src jamr
+(c / compile-01 
+      :ARG1 (p / program 
+            :ARG3-of (l / link-01 
+                  :ARG1 (r / routine 
+                        :mod (l2 / library)))))
+
+# ::snt an executable software module that augments the operating system's functionality
+# ::term library
+# ::sntId 168
+# ::treeId 0
+# ::src jamr
+(m / module 
+      :ARG0-of (a / augment-01 
+            :ARG1 (f / functionality 
+                  :poss (s2 / system 
+                        :ARG0-of (o / operate-01)))) 
+      :mod (s / software) 
+      :mod (e / executable))
+
+# ::snt A widely used programming language that is embedded in most Web pages
+# ::term javascript
+# ::sntId 169
+# ::treeId 0
+# ::src jamr
+(l / language 
+      :ARG0-of (e / embed-01 
+            :ARG2 (p2 / page 
+                  :quant (m / most))) 
+      :ARG1-of (u / use-01 
+            :ARG0 (w2 / web) 
+            :ARG2 (w / wide)) 
+      :mod (p / program))
+
+# ::snt A facility that holds servers and related network equipment
+# ::term datacenter
+# ::sntId 170
+# ::treeId 0
+# ::src jamr
+(a / and 
+      :ARG0-of (h / hold-01 
+            :ARG1 (s / server) 
+            :ARG2 (f / facility)) 
+      :op1 (e / equipment 
+            :ARG1-of (r / relate-01) 
+            :mod (n / network)))
+
+# ::snt A common method for keeping track of data so that it can be accessed quickly
+# ::term index
+# ::sntId 171
+# ::treeId 0
+# ::src jamr
+(p / possible 
+      :domain (a / access-01 
+            :manner (q / quick)) 
+      :purpose-of (k / keep-03 
+            :ARG0 (m / method 
+                  :mod (c / common)) 
+            :ARG1 (t / track-01 
+                  :ARG1 (d / data))))
+
+# ::snt Software that is installed into an existing application in order to enhance its capability
+# ::term plug-in
+# ::sntId 172
+# ::treeId 0
+# ::src jamr
+(c / capable-41 
+      :ARG1-of (e2 / enhance-01 
+            :time-of (i / install-01 
+                  :ARG0 (s / software) 
+                  :ARG1 (a / application 
+                        :ARG1-of (e / exist-01)))))
+
+# ::snt A removable storage module that contains magnetic disks , optical discs , magnetic tape or memory chips
+# ::term cartridge
+# ::sntId 173
+# ::treeId 0
+# ::src jamr
+(c / contain-01 
+      :ARG0 (m / module 
+            :ARG0-of (s / store-01 
+                  :ARG1 (m2 / optics)) 
+            :ARG1-of (r / remove-01)) 
+      :ARG1 (d2 / disk 
+            :mod (m3 / magnetic)) 
+      :op1-of (o / or 
+            :op2 (t / tape 
+                  :mod (m1 / magnetic)) 
+            :op3 (c2 / chip 
+                  :mod (m4 / memory))))
+
+# ::snt The world's largest database and enterprise software vendor founded in 1977 by Larry Ellison
+# ::term oracle
+# ::sntId 174
+# ::treeId 0
+# ::src jamr
+(a / and 
+      :op1 (d / database) 
+      :op2 (v / vend-01 
+            :ARG0 (l / large 
+                  :degree (m / most)) 
+            :ARG2 (f / found-01 
+                  :ARG0 (w / world) 
+                  :ARG2 (p / person 
+                        :name (n / name 
+                              :op1 "Ellison" 
+                              :op2 "Larry")) 
+                  :time (d2 / date-entity 
+                        :year 1977)) 
+            :mod (s / software 
+                  :mod (e / enterprise))))
+
+# ::snt The symbol used to point to some element on screen
+# ::term cursor
+# ::sntId 176
+# ::treeId 0
+# ::src jamr
+(p / point-01 
+      :ARG0 (s2 / some) 
+      :ARG1 (e / element) 
+      :ARG2 (s3 / screen) 
+      :ARG2-of (u / use-01 
+            :ARG0 (s / symbol)))
+
+# ::snt A program that helps the user analyze data
+# ::term tool
+# ::sntId 177
+# ::treeId 0
+# ::src jamr
+(h / help-01 
+      :ARG0 (p / program) 
+      :ARG2 (p2 / person 
+            :ARG0-of (u / use-01) 
+            :ARG0-of (a / analyze-01 
+                  :ARG1 (d / data))))
+
+# ::snt A software control panel for setting user preferences
+# ::term tool
+# ::sntId 179
+# ::treeId 0
+# ::src jamr
+(p / panel 
+      :ARG0-of (c / control-01 
+            :ARG1 (s / software)) 
+      :ARG0-of (s2 / set-02 
+            :ARG1 (p2 / preference 
+                  :mod (u / user))))
+
+# ::snt A group of fields added to the beginning of the message
+# ::term header
+# ::sntId 180
+# ::treeId 0
+# ::src jamr
+(b / begin-01 
+      :ARG0 (g / group 
+            :ARG0-of (a / add-02 
+                  :ARG1 (f / field))) 
+      :ARG1 (m / message))
+
+# ::snt Software that converts a set of high-level language statements into a lower-level representation
+# ::term compiler
+# ::sntId 181
+# ::treeId 0
+# ::src jamr
+(s / software 
+      :ARG0-of (c / convert-01 
+            :ARG1 (s2 / set 
+                  :consist-of (s3 / statement 
+                        :mod (l2 / language 
+                              :mod (l3 / level 
+                                    :mod (h / high))))) 
+            :ARG2 (r / representation 
+                  :mod (l / level 
+                        :mod (l4 / low)))))
+
+# ::snt Software from Apple that is widely used to organize media on the computer as well as iPods , iPhones and iPads
+# ::term itunes
+# ::sntId 182
+# ::treeId 0
+# ::src jamr
+(a / and 
+      :op1 (o / organization 
+            :ARG1-of (u / use-01 
+                  :ARG0 (c / computer) 
+                  :ARG2 (o2 / organize-01 
+                        :ARG0 (w / wide) 
+                        :ARG1 (m / media))) 
+            :location-of (s / software) 
+            :name (n / name 
+                  :op1 "Apple")) 
+      :op2 (i1 / ipod) 
+      :op3 (i2 / iphone) 
+      :op4 (i3 / ipad))
+
+# ::snt To replace existing software or hardware with a newer version
+# ::term upgrade
+# ::sntId 183
+# ::treeId 0
+# ::src jamr
+(r / replace-01 
+      :ARG0 (s / software) 
+      :ARG1 (o / or 
+            :op1 (h / hardware 
+                  :ARG1-of (e / exist-01 
+                        :ARG0 (n / new 
+                              :mod-of (v / version))))))
+
+# ::snt The glass or plastic elements that focus light onto sensor in a video camera
+# ::term lens
+# ::sntId 184
+# ::treeId 0
+# ::src jamr
+(f / focus-01 
+      :ARG0 (e / element 
+            :mod (p / plastic) 
+            :op2-of (o / or 
+                  :op1 (g / glass))) 
+      :ARG1 (l / light) 
+      :ARG2 (s / sensor 
+            :poss (c / camera 
+                  :mod (v / video))))
+
+# ::snt An organization that provides access to the Internet
+# ::term isp
+# ::sntId 185
+# ::treeId 0
+# ::src jamr
+(p / provide-01 
+      :ARG0 (o / organization) 
+      :ARG1 (a / access-01 
+            :ARG1 (i / internet)))
+
+# ::snt Data that are turned into unreadable text in order to prevent unauthorized viewing
+# ::term encrypted
+# ::sntId 186
+# ::treeId 0
+# ::src jamr
+(d / data 
+      :ARG0-of (p / prevent-01 
+            :ARG1 (v / view-01 
+                  :ARG1 (u / unreadable) 
+                  :ARG1-of (a / authorize-01 
+                        :polarity -)) 
+            :purpose-of (t / turn-02 
+                  :ARG1 (t2 / text))))
+
+# ::snt A programming statement that points to the beginning of the loop that it is in
+# ::term continue
+# ::sntId 187
+# ::treeId 0
+# ::src jamr
+(p2 / point-01 
+      :ARG0 (s / statement 
+            :mod (p / program)) 
+      :ARG1 (b / begin-01 
+            :ARG1 (l / loop)))
+
+# ::snt A symbol that identifies a positive or negative numberbyte
+# ::term sign
+# ::sntId 188
+# ::treeId 0
+# ::src jamr
+(s / symbol 
+      :ARG0-of (i / identify-01 
+            :ARG1 (n / numberbyte 
+                  :mod (n2 / negative) 
+                  :op2-of (o / or 
+                        :op1 (p / positive)))))
+
+# ::snt A person that designs software
+# ::term developer
+# ::sntId 189
+# ::treeId 0
+# ::src jamr
+(d / design-01 
+      :ARG0 (p / person) 
+      :ARG1 (s / software))
+
+# ::snt To remove a file from the disk
+# ::term delete
+# ::sntId 190
+# ::treeId 0
+# ::src jamr
+(r / remove-01 
+      :ARG0 (d / disk) 
+      :ARG1 (f / file))
+
+# ::snt An organization that provides communications services
+# ::term operator
+# ::sntId 191
+# ::treeId 0
+# ::src jamr
+(p / provide-01 
+      :ARG0 (o / organization) 
+      :ARG1 (s / service) 
+      :ARG1-of (c / communicate-01))
+
+# ::snt A program that renders the contents of a digital file on screen
+# ::term viewer
+# ::sntId 192
+# ::treeId 0
+# ::src jamr
+(s / screen 
+      :location-of (f / file 
+            :ARG2-of (r / render-03 
+                  :ARG0 (p / program) 
+                  :ARG1 (c / content)) 
+            :mod (d / digital)))
+
+# ::snt An optical device that reads a printed page and that converts it into a graphics image for the computer
+# ::term scanner
+# ::sntId 193
+# ::treeId 0
+# ::src jamr
+(c / convert-01 
+      :ARG0 (d / device 
+            :ARG0-of (r / read-01 
+                  :ARG1 (p / page 
+                        :ARG1-of (p2 / print-01))) 
+            :mod (o / optics)) 
+      :ARG1 (i / image 
+            :mod (c2 / computer) 
+            :mod (g / graphic)))
+
+# ::snt Replacing manual operations with electronics and computer-controlled devices
+# ::term automation
+# ::sntId 194
+# ::treeId 0
+# ::src jamr
+(a / and 
+      :op1 (e / electronics) 
+      :op2 (d / device 
+            :ARG1-of (c / control-01 
+                  :ARG0 (c2 / computer)) 
+            :ARG2-of (r / replace-01 
+                  :ARG1 (o / operation 
+                        :mod (m / manual)))))
+
+# ::snt The rules governing the structure of a programming language
+# ::term syntax
+# ::sntId 195
+# ::treeId 0
+# ::src jamr
+(s / structure 
+      :ARG1-of (g / govern-01 
+            :ARG0 (r / rule)) 
+      :poss (l / language 
+            :mod (p / program)))
+
+# ::snt A very popular message broadcasting system that lets anyone send alphanumeric text messages to a list of followers
+# ::term twitter
+# ::sntId 196
+# ::treeId 0
+# ::src jamr
+(s2 / send-01 
+      :ARG0 (s / system 
+            :ARG0-of (b / broadcast-01 
+                  :ARG1 (m2 / message)) 
+            :ARG0-of (l / let-01 
+                  :ARG1 (a / anyone)) 
+            :mod (p / popular 
+                  :degree (v / very))) 
+      :ARG1 (m / message) 
+      :ARG2 (l2 / list 
+            :ARG1-of (f / follow-02 
+                  :ARG0 (p2 / person))) 
+      :manner (a2 / alphanumeric))
+
+# ::snt To identify a block of text in order to perform some task on it such as deletion , copying and moving
+# ::term mark
+# ::sntId 197
+# ::treeId 0
+# ::src jamr
+(m / move-01 
+      :op3-of (a / and 
+            :op1 (d / delete-01 
+                  :ARG2-of (p / perform-02 
+                        :ARG0 (t / text) 
+                        :ARG1 (t2 / task) 
+                        :purpose-of (i / identify-01 
+                              :ARG1 (b / block)))) 
+            :op2 (c / copy-01)))
+
+# ::snt A symbol used to point to some element on screen
+# ::term pointer
+# ::sntId 198
+# ::treeId 0
+# ::src jamr
+(p / point-01 
+      :ARG1 (e / element) 
+      :ARG2 (s2 / screen) 
+      :ARG2-of (u / use-01 
+            :ARG0 (s / symbol)))
+
+# ::snt The part of a network that handles the major traffic
+# ::term backbone
+# ::sntId 199
+# ::treeId 0
+# ::src jamr
+(p / thing 
+      :ARG0-of (h / handle-01 
+            :ARG1 (t / traffic 
+                  :mod (m / major))) 
+      :part-of (n / network))
+
+# ::snt An organization that sets international standards , founded in 1946
+# ::term iso
+# ::sntId 200
+# ::treeId 0
+# ::src jamr
+(f / found-01 
+      :ARG0 (o / organization 
+            :ARG0-of (s / set-02 
+                  :ARG1 (s2 / standard 
+                        :mod (i / international)))) 
+      :ARG1 (d / date-entity 
+            :year 1946))
+
+# ::snt To convert any coded content to the required format for display or printing
+# ::term render
+# ::sntId 201
+# ::treeId 0
+# ::src jamr
+(c3 / convert-01 
+      :ARG1 (c / content 
+            :ARG1-of (c2 / code-01) 
+            :mod (a / any)) 
+      :ARG2 (f / format 
+            :ARG1-of (d / display-01 
+                  :op1-of (o / or 
+                        :op2 (p / print-01))) 
+            :ARG1-of (r / require-01)))
+
+# ::snt A memory chip that permanently stores instructions and data
+# ::term rom
+# ::sntId 202
+# ::treeId 0
+# ::src jamr
+(a / and 
+      :ARG2-of (s / store-01 
+            :ARG0 (c / chip 
+                  :mod (m / memory)) 
+            :ARG1 (i / instruction) 
+            :manner (p / permanently)) 
+      :op1 (d / data))
+
+# ::snt An on-screen toolbar that displays the active applications
+# ::term taskbar
+# ::sntId 203
+# ::treeId 0
+# ::src jamr
+(t / toolbar 
+      :ARG0-of (d / display-01 
+            :ARG1 (a / application 
+                  :mod (a2 / active))) 
+      :mod (s / screen))
+
+# ::snt A list of parameters read by a program in order to modify its behavior
+# ::term profile
+# ::sntId 204
+# ::treeId 0
+# ::src jamr
+(b / behave-01 
+      :ARG1 (p / parameter) 
+      :ARG1-of (m / modify-01 
+            :ARG0 (l / list 
+                  :ARG0-of (r / read-01 
+                        :ARG1 (p2 / program)))))
+
+# ::snt A brand name from Microsoft that has been used very specifically and very broadly
+# ::term activex
+# ::sntId 205
+# ::treeId 0
+# ::src jamr
+(a / and 
+      :op1 (u / use-01 
+            :ARG1 (n / name 
+                  :name-of (b / brand)) 
+            :ARG2 (b2 / broad 
+                  :degree (v / very)) 
+            :location (c / company 
+                  :name (n2 / name 
+                        :op1 "Microsoft")) 
+            :op1-of (v2 / very 
+                  :degree-of (s / specific))))
+
+# ::snt A file that contains one or more compressed files
+# ::term archive
+# ::sntId 206
+# ::treeId 0
+# ::src jamr
+(c / contain-01 
+      :ARG0 (f / file) 
+      :ARG1 (f2 / file 
+            :ARG1-of (c2 / compress-01) 
+            :quant 1))
+
+# ::snt A device that converts sound waves into analogous electrical waves
+# ::term microphone
+# ::sntId 207
+# ::treeId 0
+# ::src jamr
+(d / device 
+      :ARG0-of (c / convert-01 
+            :ARG1 (w2 / wave 
+                  :mod (s / sound)) 
+            :ARG2 (a / analogous 
+                  :cause (w / wave 
+                        :mod (e / electricity)))))
+
+# ::snt A line of source code that returns a value when executed
+# ::term expression
+# ::sntId 208
+# ::treeId 0
+# ::src jamr
+(l / line 
+      :ARG0-of (r / return-02 
+            :ARG1 (v / value) 
+            :purpose (e / execute-02 
+                  :ARG0 (c / code 
+                        :mod (s / source)))))
+
+# ::snt An instruction that converts a decimal number into a packed decimal format
+# ::term pack
+# ::sntId 209
+# ::treeId 0
+# ::src jamr
+(i / instruction 
+      :ARG0-of (c / convert-01 
+            :ARG1 (n / number 
+                  :mod (d2 / decimal)) 
+            :ARG2 (f / format 
+                  :ARG1-of (p / pack-01) 
+                  :mod (d / decimal))))
+
+# ::snt A command that removes records that have been marked for deletion
+# ::term pack
+# ::sntId 210
+# ::treeId 0
+# ::src jamr
+(c / command 
+      :ARG0-of (r / remove-01 
+            :ARG1 (r2 / record 
+                  :ARG0-of (m / mark-02 
+                        :ARG2 (d / delete-01)))))
+
+# ::snt An arithmetic expression that solves a problem
+# ::term formula
+# ::sntId 211
+# ::treeId 0
+# ::src jamr
+(p / problem 
+      :ARG1-of (s / solve-01 
+            :ARG0 (e / expression 
+                  :mod (a / arithmetic))))
+
+# ::snt A machine that provides arithmetic capabilities
+# ::term calculator
+# ::sntId 213
+# ::treeId 0
+# ::src jamr
+(c / capable-41 
+      :ARG1-of (p / provide-01 
+            :ARG0 (m / machine)) 
+      :ARG2 (a / arithmetic))
+
+# ::snt An instruction that terminates a script or program
+# ::term exit
+# ::sntId 215
+# ::treeId 0
+# ::src jamr
+(i / instruction 
+      :ARG0-of (t / terminate-01 
+            :ARG1 (o / or 
+                  :op1 (s / script) 
+                  :op2 (p / program))))
+
+# ::snt A programming language written by Larry Wall that combines syntax from several Unix utilities and languages
+# ::term perl
+# ::sntId 217
+# ::treeId 0
+# ::src jamr
+(a / and 
+      :ARG0-of (c / combine-01 
+            :ARG1 (s / syntax) 
+            :purpose (w / write-01 
+                  :ARG0 (p2 / person 
+                        :name (n / name 
+                              :op1 "Wall" 
+                              :op2 "Larry")) 
+                  :ARG1 (l / language 
+                        :mod (p / program)))) 
+      :op1 (u / utility 
+            :mod (u2 / unix) 
+            :quant (s2 / several 
+                  :quant-of (l2 / language))))
+

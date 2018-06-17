@@ -209,7 +209,7 @@ class GraphFeatures(options: mutable.Map[Symbol, String],
   }
 
   /** Used for Dual Decomposition */
-  def ffDDEdgeId {
+  def ffDDEdgeId: Unit = {
     addFeature("DD:Id1=" + node1.id, 0.0, 1.0)
     //return FeatureVector(Map(("DD:Id1="+node1.id+"+Id2="+node2.id+"+L="+label) -> 1.0))
   }
@@ -222,9 +222,10 @@ class GraphFeatures(options: mutable.Map[Symbol, String],
     feats
   }
 
-  def ffLRLabelWithId {
+  def ffLRLabelWithId: Unit = {
     // Used for Langragian Relaxation
     addFeature("LR:Id1=" + node1.id, 0.0, 1.0)
+    // TODO: NAUMENKO: should not it be "LR:Id1="+node1.id+"+L="+label here?
     //return FeatureVector(Map(("LR:Id1="+node1.id+"+L="+label) -> 1.0))
   }
 
@@ -292,8 +293,10 @@ class GraphFeatures(options: mutable.Map[Symbol, String],
   }
 
   private def calcDistance(nodeA: Node, nodeB: Node): Int = {
-    val dist1 = Math.abs(graph.spans(nodeA.spans(0)).start - graph.spans(nodeB.spans(0)).end)
-    val dist2 = Math.abs(graph.spans(nodeA.spans(0)).end - graph.spans(nodeB.spans(0)).start)
+    val spanA = graph.spans(nodeA.spans(0))
+    val spanB  = graph.spans(nodeB.spans(0))
+    val dist1 = Math.abs(spanA.start - spanB.end)
+    val dist2 = Math.abs(spanA.end - spanB.start)
     min(dist1, dist2)
   }
 
@@ -309,7 +312,7 @@ class GraphFeatures(options: mutable.Map[Symbol, String],
   }
 
   /** Number of tokens (plus one) between the two concepts’ spans (zero if the same) */
-  def ffDistance {
+  def ffDistance: Unit = {
     val distance = calcDistance(node1, node2)
     val pathStrv3 = depPathStrv3(node1, node2)
     addFeature("d=" + min(distance, 20).toString, 1.0, 1.0)
@@ -483,8 +486,8 @@ class GraphFeatures(options: mutable.Map[Symbol, String],
 
   // TODO: could also do all paths instead of just the shortest
   private def getShortestDependencyPath(nodeA: Node, nodeB: Node): (Int, Int, (List[Int], List[Int])) = {
-    val span1 = getNodeDependencySpan(nodeA)
-    val span2 = getNodeDependencySpan(nodeB)
+    val span1: Seq[Int] = getNodeDependencySpan(nodeA)
+    val span2: Seq[Int] = getNodeDependencySpan(nodeB)
     val triples = for {w1 <- span1; w2 <- span2} yield {
       (w1, w2, getDependencyPathBetweenWords(w1, w2))
     }
@@ -577,8 +580,8 @@ class GraphFeatures(options: mutable.Map[Symbol, String],
 
   // same code as above, just only computes pathStr
   def depPathStrv3(node1: Node, node2: Node): String = {
-    val (_, _, path) = getShortestDependencyPath(node1, node2)
-    val posAnnotations = fullPos.annotation.map(normalizeVBAndNN)
+    val (_, _, path: (List[Int], List[Int])) = getShortestDependencyPath(node1, node2)
+    val posAnnotations: Array[String] = fullPos.annotation.map(normalizeVBAndNN)
     val pathStr = if (path._1.size + path._2.size <= 4) {
       dependencyPathString(path, posAnnotations).mkString("_")
     } else {
@@ -592,13 +595,17 @@ class GraphFeatures(options: mutable.Map[Symbol, String],
   def dependencyPathString(path: (List[Int], List[Int]), posAnnotations: Array[String]): List[String] = {
     // Assumes that the POS tags use the same tokenization as the dependencies
     var pathList: List[String] = List()
+
     for (List(word1, word2) <- path._1.sliding(2)) {
-      pathList = posAnnotations(word1) + "_" + dependencies.annotations.find(x => (x.dependent == word1 && x.head == word2)).get.relation + ">_" + posAnnotations(word2) :: pathList
+      val depRel = dependencies.annotations.find(x => (x.dependent == word1 && x.head == word2)).get.relation
+      pathList = posAnnotations(word1) + "_" + depRel + ">_" + posAnnotations(word2) :: pathList
     }
     for (List(word1, word2) <- path._2.sliding(2)) {
-      pathList = posAnnotations(word1) + "_" + dependencies.annotations.find(x => (x.head == word1 && x.dependent == word2)).get.relation + "<_" + posAnnotations(word2) :: pathList
+      val depRel = dependencies.annotations.find(x => (x.head == word1 && x.dependent == word2)).get.relation
+      pathList = posAnnotations(word1) + "_" + depRel + "<_" + posAnnotations(word2) :: pathList
     }
-    return pathList.reverse
+
+    pathList.reverse
   }
 
   def dependencyPathStringv2(path: (List[Int], List[Int]), posAnnotations: Array[String]): List[String] = {

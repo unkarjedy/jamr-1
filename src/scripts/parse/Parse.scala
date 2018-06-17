@@ -39,7 +39,10 @@ case class Parse(context: Context,
     }
 
     runStage("### Running NER system ###", runProperties.skipNER){
-      preprocessor.runIllinoisNamedEntityTagger(inputFile, System.err, System.err) // redirect both to err
+      preprocessor.runIllinoisNamedEntityTagger(
+        inputFile,  s"$inputFile.IllinoisNER",
+        System.err, System.err // redirect both to err
+      )
     }
 
     runStage("### Running dependency parser ###", runProperties.skipDEP) {

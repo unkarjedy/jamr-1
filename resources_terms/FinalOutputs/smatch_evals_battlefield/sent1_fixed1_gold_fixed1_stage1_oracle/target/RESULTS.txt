@@ -1,0 +1,32 @@
+Smatch evaluations
+Gold AMRs file: sentences1_fixed1.txt.amr_gold
+
+amr_deps_gold VS amr_gold
+Precision: 0.743
+Recall: 0.717
+Document F-score: 0.730
+
+amr_deps_0 VS amr_gold
+Precision: 0.735
+Recall: 0.708
+Document F-score: 0.721
+
+amr_deps_1 VS amr_gold
+Precision: 0.716
+Recall: 0.690
+Document F-score: 0.703
+
+amr_deps_2 VS amr_gold
+Precision: 0.707
+Recall: 0.682
+Document F-score: 0.694
+
+amr_deps_3 VS amr_gold
+Precision: 0.708
+Recall: 0.683
+Document F-score: 0.695
+
+amr_deps_4 VS amr_gold
+Precision: 0.713
+Recall: 0.688
+Document F-score: 0.700

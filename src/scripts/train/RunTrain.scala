@@ -49,28 +49,6 @@ object RunTrain {
     Train(context).run()
   }
 
-  private def runLeaveOneFeatureOut(baseInputDataDir: String, corpus: Corpus) = {
-    stage1Features.foreach(featureToRemove => {
-      val modelFolder = s"$jamrRoot/models/${corpus.name}_LOO/$featureToRemove"
-      val context = ContextBuilder.createContextForTraining(
-        jamrRoot,
-        baseInputDataDir,
-        corpus.baseFileName,
-        modelFolder = modelFolder
-      )
-
-      val stage1FeaturesWithoutOne = stage1Features.filter(_ != featureToRemove)
-
-      context.stage1Features = stage1FeaturesWithoutOne
-      context.stage2Features = stage2Features
-      context.parserOptions = buildParserOptions(context, stage1SyntheticConcepts)
-      context.conceptIdTrainingOptions = buildConceptIdTrainingOptions(trainingLoss = "Infinite_Ramp")
-      context.relationIdTrainingOptions = buildRelationIdTrainingOptions()
-
-      Train(context).run()
-    })
-  }
-
   private def buildParserOptions(context: Context,
                                  stage1SyntheticConcepts: List[String],
                                  stage1Only: Boolean = false) = {

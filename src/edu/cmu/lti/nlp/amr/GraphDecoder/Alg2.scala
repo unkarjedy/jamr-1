@@ -4,14 +4,13 @@ import edu.cmu.lti.nlp.amr.FastFeatureVector._
 import edu.cmu.lti.nlp.amr._
 import edu.cmu.lti.nlp.amr.graph.{Graph, Node}
 
+import scala.collection.{immutable, mutable}
 import scala.collection.mutable.{Map, PriorityQueue, Set}
 
 class Alg2(options: Map[Symbol, String],
            featureNames: List[String],
            labelSet: Array[(String, Int)], connected: Boolean = true) extends GraphDecoderAbstract {
-  // Base class has defined:
-  // val features: Features
-  var features = new GraphFeatures(options, featureNames, labelSet.map(_._1))
+  override var features = new GraphFeatures(options, featureNames, labelSet.map(_._1))
 
   private var inputSave: Input = _
   def input: Input = inputSave
@@ -26,7 +25,7 @@ class Alg2(options: Map[Symbol, String],
   def precomputeEdgeWeights() {
     // WARNING: THIS CODE ASSUMES THAT THE LAGRANGE MULTIPLIERS ARE SET TO ZERO
     // TODO: fix this so errors don't occur
-    var graph = input.graph.get.duplicate
+    val graph = input.graph.get.duplicate
     val nodes: Array[Node] = graph.nodes.filter(_.name.isDefined).toArray
     //val nonDistinctLabels = labelSet.toList.filter(x => x._2 > 1) // TODO: remove
     //val distinctLabels = labelSet.filter(x => x._2 == 1)  // TODO: remove
@@ -40,7 +39,8 @@ class Alg2(options: Map[Symbol, String],
   def weightMatrix(nodes: Array[Node], labels: Array[(String, Int)]): Array[Array[Array[(String, Double)]]] = {
     //logger(1, "Computing edgeWeights")
     //logger(1, "featureNames = "+features.featureNames.toString)
-    val edgeWeights: Array[Array[Array[(String, Double)]]] = nodes.map(x => Array.fill(0)(Array.fill(0)("", 0.0)))
+    val edgeWeights: Array[Array[Array[(String, Double)]]] = nodes.map(_ => Array.fill(0)(Array.fill(0)("" -> 0.0)))
+
     for (i <- nodes.indices) {
       edgeWeights(i) = nodes.map(x => Array.fill(0)(("", 0.0)))
       for (j <- nodes.indices) {
@@ -48,18 +48,23 @@ class Alg2(options: Map[Symbol, String],
           edgeWeights(i)(j) = Array((":self", 0.0)) // we won't add this to the queue anyway, so it's ok
         } else {
           edgeWeights(i)(j) = Array.fill(labelSet.size)(("", 0.0))
-          val feats = features.localFeatures(nodes(i), nodes(j))
+
+          type FeatureValue = (String, Value, immutable.Map[Int, Double])
+          val feats: List[FeatureValue] = features.localFeatures(nodes(i), nodes(j))
           //logger(0, "localFeatures("+nodes(i).concept+")("+nodes(j).concept+") = "+feats.toString)
-          features.weights.iterateOverLabels2(feats,
-                                              x => { //logger(3, "These should be equal: " + x.value.toString + " " + features.localScore(nodes(i), nodes(j), features.weights.labelset(x.labelIndex).toString));
-                                                //edgeWeights(i)(j)(x.labelIndex) = (features.weights.labelset(x.labelIndex), features.localScore(nodes(i), nodes(j), features.weights.labelset(x.labelIndex))) })
-                                                edgeWeights(i)(j)(x.labelIndex) = (features.weights.labelset(x.labelIndex), x.value)
-                                              })
+
+          features.weights.iterateOverLabels2(feats, x => {
+            //logger(3, "These should be equal: " + x.value.toString + " " + features.localScore(nodes(i), nodes(j), features.weights.labelset(x.labelIndex).toString));
+            //edgeWeights(i)(j)(x.labelIndex) = (features.weights.labelset(x.labelIndex), features.localScore(nodes(i), nodes(j), features.weights.labelset(x.labelIndex))) })
+            edgeWeights(i)(j)(x.labelIndex) = (features.weights.labelset(x.labelIndex), x.value)
+          })
+
           //logger(0, "edgeWeights("+nodes(i).concept+")("+nodes(j).concept+") = "+edgeWeights(i)(j).toList.sortBy(-_._2))
         }
       }
     }
-    return edgeWeights
+
+    edgeWeights
   }
 
   def decode(i: Input): DecoderResult = {
@@ -89,11 +94,11 @@ class Alg2(options: Map[Symbol, String],
     // Each set is numbered by its index in 'setArray'
     // 'set' contains the index of the set that each node is assigned to
     // At the start each node is in its own set
-    val set: Array[Int] = nodes.zipWithIndex.map(_._2)
+    val setIds: Array[Int] = nodes.zipWithIndex.map(_._2)
     val setArray: Array[Set[Int]] = nodes.zipWithIndex.map(x => Set(x._2))
 
     def getSet(nodeIndex: Int): Set[Int] = {
-      setArray(set(nodeIndex))
+      setArray(setIds(nodeIndex))
     }
 
     var score = 0.0
@@ -115,12 +120,12 @@ class Alg2(options: Map[Symbol, String],
       //logger(2, "set = " + set.toList)
       //logger(2, "nodes = " + nodes.map(x => x.concept).toList)
       //logger(2, "setArray = " + setArray.toList)
-      if (set(index1) != set(index2)) { // If different sets, then merge them
+      if (setIds(index1) != setIds(index2)) { // If different sets, then merge them
         //logger(2, "Merging sets")
         getSet(index1) ++= getSet(index2)
         val set2 = getSet(index2)
         for (index <- set2) {
-          set(index) = set(index1)
+          setIds(index) = setIds(index1)
         }
         set2.clear()
       }
@@ -224,10 +229,10 @@ class Alg2(options: Map[Symbol, String],
     // Add negative weights to the queue
     //logger(1, "Adding negative edges")
     val queue = new PriorityQueue[(Double, Int, Int, String)]()(Ordering.by(x => x._1))
-    if (connected && set.size != 0 && getSet(0).size != nodes.size) {
+    if (connected && setIds.size != 0 && getSet(0).size != nodes.size) {
       for {(node1, index1) <- nodes.zipWithIndex
            ((label, weight), index2) <- neighbors(index1).zipWithIndex
-           if index1 != index2 && weight <= 0 && set(index1) != set(index2)} {
+           if index1 != index2 && weight <= 0 && setIds(index1) != setIds(index2)} {
         queue.enqueue((weight, index1, index2, label))
       }
     }
@@ -238,10 +243,10 @@ class Alg2(options: Map[Symbol, String],
       //logger(1, "set = " + set.toList)
       //logger(1, "nodes = " + nodes.map(x => x.concept).toList)
       //logger(1, "setArray = " + setArray.toList)
-      while (set.size != 0 && getSet(0).size != nodes.size) {
+      while (setIds.size != 0 && getSet(0).size != nodes.size) {
         //logger(2, queue.toString)
         val (weight, index1, index2, label) = queue.dequeue
-        if (set(index1) != set(index2)) {
+        if (setIds(index1) != setIds(index2)) {
           addEdge(nodes(index1), index1, nodes(index2), index2, label, weight)
           //logger(2, "set = " + set.toList)
           //logger(2, "getSet(0)" + getSet(0))
@@ -275,7 +280,7 @@ class Alg2(options: Map[Symbol, String],
     }
 
     logger(1, "Alg2 returning score = " + score.toString)
-    return DecoderResult(graph, feats, score)
+    DecoderResult(graph, feats, score)
   }
 
   private def findRootNode(nodes: Array[Node]) = {

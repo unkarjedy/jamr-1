@@ -4,6 +4,7 @@ import java.io.{OutputStream, PrintStream, PrintWriter, StringWriter}
 import java.text.SimpleDateFormat
 import java.util.Date
 
+import edu.cmu.lti.nlp.amr.BasicFeatureVector.DecoderResult
 import edu.cmu.lti.nlp.amr.ConceptInvoke.ConceptDecoderAbstract
 import edu.cmu.lti.nlp.amr.GraphDecoder.GraphDecoderAbstract
 import edu.cmu.lti.nlp.amr.graph.Graph
@@ -142,6 +143,7 @@ object AMRParser {
           false
         } else {
           assert(!options.contains('stage1Train), "Error: --stage1-oracle should not be specified with --stage1-train")
+          assert(options.contains('trainingData), "Error: --stage1-oracle should be specified with --training-data")
           true
         }
       ConceptInvoke.buildCondeptDecoder(options, oracle = useOracle)
@@ -204,19 +206,22 @@ object AMRParser {
       logger(0, "Reading weights")
       stage1.features.weights.read(Source.fromFile(options('stage1Weights)).getLines())
       if (stage2.isDefined) {
-        val stage2WeightFile: String = options('stage2Weights)
-        val stage2Actual: GraphDecoderAbstract = stage2Oracle.getOrElse(stage2.get)
-        stage2Actual.features.weights.read(Source.fromFile(stage2WeightFile).getLines())
+        def stage2WaeightSource = Source.fromFile(options('stage2Weights)).getLines()
+
+        stage2.get.features.weights.read(stage2WaeightSource)
+        if (stage2Oracle.isDefined) {
+          stage2Oracle.get.features.weights.read(stage2WaeightSource)
+        }
       }
       logger(0, "done")
 
-      val inputArray = InputSentencesReader.getStream(stdin).toArray
+      val inputArray: Array[SentenceWithTerm] = InputSentencesReader.getStream(stdin).toArray
       val tokenizedArray = fromFile(options('tokenized)).getLines.toArray
       val nerArray = CorpusUtils.splitOnNewline(fromFile(options('ner)).getLines).toArray
       val dependenciesKBest: Map[Int, Array[DepsTextBlock]] = {
         def fromKBestDepFile(fileName: String) = {
           // NAUMENKO: LineUtils.cleanDependencyStr is called inside CorpusUtils.getDepsBlocks
-          val depsBlock = CorpusUtils.getDepsBlocks(Source.fromFile(fileName).getLines()).toArray
+          val depsBlock: Array[DepsTextBlock] = CorpusUtils.getDepsBlocks(Source.fromFile(fileName).getLines()).toArray
 
           depsBlock
             .filter(_.sntId.nonEmpty)
@@ -226,16 +231,14 @@ object AMRParser {
               val GoldTreeId = "gold"
 
               def sortPlaceGoldFirst: (DepsTextBlock, DepsTextBlock) => Boolean = {
-                {
-                  case (a, b) =>
-                    val aTreeId = a.treeId.getOrElse("").toLowerCase()
-                    val bTreeId = b.treeId.getOrElse("").toLowerCase()
-                    (aTreeId, bTreeId) match {
-                      case (GoldTreeId, _) => true
-                      case (_, GoldTreeId) => false
-                      case (_) => aTreeId.compareTo(bTreeId) < 0
-                    }
-                }
+                case (a, b) =>
+                  val aTreeId = a.treeId.getOrElse("").toLowerCase()
+                  val bTreeId = b.treeId.getOrElse("").toLowerCase()
+                  (aTreeId, bTreeId) match {
+                    case (GoldTreeId, _) => true
+                    case (_, GoldTreeId) => false
+                    case (_) => aTreeId.compareTo(bTreeId) < 0
+                  }
               }
 
               blocks.sortWith(sortPlaceGoldFirst)
@@ -247,7 +250,8 @@ object AMRParser {
             .map(LineUtils.cleanDependencyStr)
             .toArray
           depsBlocks.zipWithIndex.map { case (depStr, idx) =>
-            idx -> Array(DepsTextBlock(depStr.split("\n"), blockIdx = idx, snt = None, sntId = Some(idx), treeId = Some("0")))
+            val block = DepsTextBlock(idx, depStr.split("\n"), Seq()).withSntId(idx.toString).withTreeId("0")
+            idx -> Array(block)
           }.toMap
         }
 
@@ -258,29 +262,48 @@ object AMRParser {
           .withDefaultValue(Array())
       }
 
-      val oracleAmrsArray: Array[String] = options.get('trainingData)
-        .map(fileName => CorpusUtils.getAMRBlocks(fromFile(fileName).getLines()).toArray)
-        .getOrElse(Array())
+      // Contains mapping sentId -> AMR (aligned gold ) (!! not blockId -> AMR!!)
+      val sntIdToOracleAmr: Map[Int, String] = options.get('trainingData)
+        .map { fileName =>
+          val blocks = CorpusUtils.getAMRBlocks(fromFile(fileName).getLines()).toArray
+          blocks.zipWithIndex
+            .map { case (block, idx) =>
+              val sntIdPrefix = "# ::sntId "
+              val sntId = block.lines.find(_.startsWith(sntIdPrefix))
+                .map(_.substring(sntIdPrefix.length).trim.toInt)
+                .getOrElse(idx)
+              sntId -> block
+            }
+            .toMap
+        }
+        .getOrElse(Map())
 
       // TODO NAUMENKO: Note that if dependenciesKBestArray is used then  don't guarantee that spanF1 calculation is valid
       val spanF1 = F1(0, 0, 0)
 
       def decodeLine(block: String, blockId: Int): Unit = {
         logStream.print(s"Decoding block $blockId. ")
-
-        val SentenceWithTerm(inputSentence: String, term: Option[String]) = inputArray(blockId)
-        logger(0, "Sentence: " + inputSentence + "\n")
-        val tokenized = tokenizedArray(blockId)
-        val ner = nerArray(blockId)
-        val oracleGraphOpt = if (options.contains('stage1Oracle)) {
-          Some(AMRTrainingData(oracleAmrsArray(blockId)).toInputGraph())
-        } else {
-          None
-        }
+        val SentenceWithTerm(sntId, inputSentence: String, term: Option[String]) = inputArray(blockId)
 
         def decodeForDepsBlock(depsBlock: DepsTextBlock): Unit = {
-          val block@DepsTextBlock(_, blockIdx, snt, sntId, treeId) = depsBlock
-          val deps = block.conllText
+          val depBlockIdx  = depsBlock.blockIdx
+          val snt = depsBlock.snt
+          val treeId = depsBlock.treeId
+
+          logger(0, "Sentence: " + inputSentence + "\n")
+          // NAUMENKO NOTE!!!
+          // Do not move it outside decodeForDepsBlock, do not reuse nothing between multiple run for different
+          // dependency trees for the same sentence (+term), because EVERYTHING is mutable and is changed between runs!
+          val tokenized = tokenizedArray(blockId)
+          val ner = nerArray(blockId)
+          val deps = depsBlock.conllText
+          lazy val stage1OracleData: String = sntIdToOracleAmr(sntId)
+
+          val oracleGraphOpt: Option[Graph] = if (options.contains('stage1Oracle)) {
+            Some(AMRTrainingData(stage1OracleData).toInputGraph())
+          } else {
+            None
+          }
 
           val input = new Input(
             oracleGraphOpt,
@@ -290,7 +313,7 @@ object AMRParser {
             ner,
             blockId
           )
-          val stage1Result = stage1.decode(input)
+          val stage1Result: DecoderResult = stage1.decode(input)
 
           logger(1, "ConceptInvoker:")
           for ((id, node) <- stage1Result.graph.getNodeById) {
@@ -305,21 +328,18 @@ object AMRParser {
           stage1Result.graph.normalizeInverseRelations()
           stage1Result.graph.addVariableToSpans()
 
-          // TODO: in future just do decoderResult.graph instead (when BasicFeatureVector is removed from stage1)
-          var decoderResultGraph = stage1Result.graph
-
           // TODO: clean up this code
           val proceedStage2: Boolean = !options.contains('stage1Only)
+          val decoderResultGraph: Graph =
+            if (proceedStage2) {
+              if (options.contains('stage2CostDiminished)) {
+                val input = new Input(
+                  amrdata = AMRTrainingData(stage1OracleData),
+                  conllx = deps,
+                  oracle = true,
+                  index = blockId
+                )
 
-          if (proceedStage2) {
-            if (options.contains('stage2CostDiminished)) {
-              val input = new Input(
-                AMRTrainingData(oracleAmrsArray(blockId)),
-                deps,
-                oracle = true,
-                index = blockId
-              )
-              decoderResultGraph =
                 if (options.contains('stage1Oracle)) {
                   val decoder = stage2.get
                   decoder.decode(input).graph
@@ -327,22 +347,25 @@ object AMRParser {
                   val decoder = stage2.get.asInstanceOf[GraphDecoder.CostAugmented]
                   decoder.decode(input, Some(stage1Result.graph)).graph
                 }
+              } else {
+                val decoder = stage2.get
+                val stage1Graph: Graph = stage1Result.graph//.duplicate
+                stage1Graph.root = Graph.parse("(n / null)").root// Node("0", None, "null", List(), List(), List(), None, ArrayBuffer())
+                val input = new Input(
+                  graph = stage1Graph,
+                  sentence = tokenized.split(" "),
+                  conllx = deps,
+                  index = blockId
+                )
+                decoder.decode(input).graph
+              }
             } else {
-              val decoder = stage2.get
-              val input = new Input(
-                stage1Result.graph,
-                tokenized.split(" "),
-                deps,
-                blockId
-              )
-              decoderResultGraph = decoder.decode(input).graph
+              logStream.print("stage2 skipped")
+              stage1Result.graph
             }
-          } else {
-            logStream.print("stage2 skipped")
-          }
 
-          if (options.contains('trainingData)) {
-            val amrdata2 = AMRTrainingData(oracleAmrsArray(blockId)) // 2nd copy for oracle
+          if (stage2Oracle.isDefined) {
+            val amrdata2 = AMRTrainingData(stage1OracleData) // 2nd copy for oracle
             logger(1, "Node.spans:")
             for (node <- amrdata2.graph.nodes) {
               logger(1, node.concept + " " + node.spans.toList)
@@ -375,7 +398,7 @@ object AMRParser {
 
             amrOutput.println("# ::snt " + inputSentence)
             term.foreach(x => amrOutput.println("# ::term " + x))
-            sntId.foreach(x => amrOutput.println("# ::sntId " + x))
+            Option(sntId).foreach(x => amrOutput.println("# ::sntId " + x))
             treeId.foreach(x => amrOutput.println("# ::treeId " + x))
             amrOutput.println("# ::tok " + tokenized)
 
@@ -398,7 +421,7 @@ object AMRParser {
             }
             if (outputFormat.contains("AMR")) {
               if (options.contains('trainingData)) {
-                val amrdata2 = AMRTrainingData(oracleAmrsArray(blockId))
+                val amrdata2 = AMRTrainingData(stage1OracleData)
                 amrOutput.println(amrdata2.graph.prettyString(detail = 1, pretty = true, indent = "#"))
               }
               amrOutput.println(decoderResultGraph.prettyString(detail = 1, pretty = true))
@@ -413,9 +436,9 @@ object AMRParser {
           }
         }
 
-        val kBest = dependenciesKBest(blockId)
+        val kBest = dependenciesKBest(sntId)
         if (kBest.isEmpty) {
-          logStream.print(s"[Naumenko] Warning! No dependency trees found for sentence $blockId")
+          logStream.print(s"[Naumenko] Warning! No dependency trees found for sentence $sntId")
         } else {
           logStream.print(s"sntId: ${kBest.head.sntId.getOrElse("")}. trees: ${kBest.size}. ")
         }
@@ -431,7 +454,12 @@ object AMRParser {
       for ((block, blockId) <- inputArray.zipWithIndex) {
         try {
           time {
-            decodeLine(block.sentence, blockId)
+            val sntId = inputArray(blockId).sntId
+            if (options.contains('stage1Oracle) && !sntIdToOracleAmr.isDefinedAt(sntId)) {
+              logStream.println(s" skipping block $blockId: oracle amr is missing.")
+            } else {
+              decodeLine(block.sentence, blockId)
+            }
 
             progressPrintStreamOpt.foreach(ps => {
               val progress = (blockId * 100) / inputArray.length
@@ -457,6 +485,7 @@ object AMRParser {
             }
             logger(-1, "Continuing. To exit on errors, please run without --ignore-parser-errors")
             amrOutput.println(Graph.AMREmpty().prettyString(detail = 1, pretty = true) + '\n')
+            e.printStackTrace(logStream)
           } else {
             throw e
           }

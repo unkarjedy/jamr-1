@@ -1,6 +1,6 @@
 package scripts.utils
 
-import java.io.{FileInputStream, PrintStream}
+import java.io.{FileInputStream, InputStream, PrintStream}
 
 import edu.cmu.lti.nlp.amr.AMRParser
 
@@ -19,9 +19,8 @@ object AMRParserRunner {
     val err = new PrintStream(errFilePath)
 
     try {
-      System.setIn(in)
-      // System.setOut(out)
       AMRParser.amrOutput = out
+      System.setIn(in)
       System.setErr(err)
 
       val args = ArgsParser.getArgsFromString(argsString)

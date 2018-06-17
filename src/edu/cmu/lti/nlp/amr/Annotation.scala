@@ -30,7 +30,12 @@ case class Annotation[T](var snt: Array[String],
     * Output: Span in annoTok */
   // TODO: comment this out, and convert everything to use slice
   def annotationSpan(span: (Int, Int)): (Int, Int) = {
-    (leftinv(span._1), rightinv(span._2 - 1))
+    try {
+      (leftinv(span._1), rightinv(span._2 - 1))
+    } catch {
+      case ex: ArrayIndexOutOfBoundsException =>
+        throw ex
+    }
   }
 
   def slice(start: Int, end: Int): Array[T] = {

@@ -1,0 +1,419 @@
+# format: term_snt
+# size: 104
+
+# ::sntId 114
+smartphone
+A cellphone that created the greatest tech revolution since the Internet
+
+# ::sntId 115
+read
+To input into the computer from a peripheral device or the network
+
+# ::sntId 116
+object
+An independent block of data , text or graphics that was created by a separate application
+
+# ::sntId 117
+window
+A viewing area on screen that contains a surrounding frame
+
+# ::sntId 118
+window
+It is used to separate parts of an application from each other and to separate one application from another
+
+# ::sntId 119
+next
+A computer company that became a software company and then merged into Apple
+
+# ::sntId 120
+link
+An address that points to a Web page or other file on a Web server
+
+# ::sntId 121
+link
+A pointer embedded within a record that refers to data or the location of data in another record
+
+# ::sntId 122
+call
+A statement that requests services from another subroutine or program
+
+# ::sntId 123
+call
+Ahe action taken by the transmitting station to establish a connection with the receiving station in a dial-up network
+
+# ::sntId 124
+print
+To send information from the computer to an attached printer
+
+# ::sntId 125
+menu
+An on-screen list of available actions that a user can perform in a software program
+
+# ::sntId 126
+box
+A cloud storage service from Box , Los Altos , CA that is used to share files between desktop computers and mobile devices
+
+# ::sntId 127
+modem
+A device that adapts one type of signal to another
+
+# ::sntId 128
+adapter
+A device that allows one system to connect to another device and work with the device
+
+# ::sntId 129
+engine
+Software that performs a very specific and repetitive function
+
+# ::sntId 130
+ca
+An organization that issues digital certificates and makes its public key widely available to its intended audience
+
+# ::sntId 131
+folder
+Folders are created by the operating system and applications when they are installed
+
+# ::sntId 132
+html
+Every Web page contains HTML tags embedded in the text that define the page layout , fonts and hypertext links
+
+# ::sntId 133
+router
+A network device that forwards data packets from one network to another
+
+# ::sntId 134
+core
+A relatively large , general-purpose logic function that is used as a building block in a chip design
+
+# ::sntId 135
+laser
+A device that creates a uniform and coherent light that is very different from an ordinary light bulb
+
+# ::sntId 136
+laser
+Many lasers deliver light in an almost-perfectly parallel beam that is very pure
+
+# ::sntId 137
+laser
+Laser light can be focused down to a tiny spot as small as a single wavelength
+
+# ::sntId 138
+laser
+Gas lasers are used to cut steel and perform delicate eye surgery
+
+# ::sntId 139
+button
+A small , marked area on an electronic device that is physically pressed down to activate a function
+
+# ::sntId 140
+ram
+Temporary workspace where instructions are executed and data are processed
+
+# ::sntId 141
+track
+The metal interconnecting pathways on a chip that tie the transistors , resistors and capacitors together
+
+# ::sntId 142
+move
+An external DOS or Windows command that moves a file to a new location
+
+# ::sntId 143
+frames
+An HTML layout feature that renders multiple documents on a Web page at the same time
+
+# ::sntId 144
+iphone
+The Apple device that revolutionized mobile computing and caused an explosion of smartphones worldwide
+
+# ::sntId 145
+fast
+An asynchronous communications protocol used to quickly transmit files over high-quality lines
+
+# ::sntId 146
+carrier
+An organization that provides communications and networking services
+
+# ::sntId 147
+vs
+An earlier family of minicomputers from Wang introduced in 1977 , which used virtual memory techniques
+
+# ::sntId 148
+go
+The title of an on-screen button that is clicked in order to start some action such as a search
+
+# ::sntId 149
+write
+To store data in memory or onto a storage medium , such as a disk or flash drive
+
+# ::sntId 150
+http
+The communications protocol used to connect to Web servers on the Internet or on a local network
+
+# ::sntId 151
+lcd
+A screen display technology developed in 1963 at the David Sarnoff Research Center in Princeton , NJ
+
+# ::sntId 152
+module
+A self-contained hardware or software component that interacts with a larger system
+
+# ::sntId 153
+icon
+A small graphic symbol on screen that represents an action or a resource such as an application , file , folder , menu or setting
+
+# ::sntId 154
+xp
+A discipline for developing software that emphasizes customer involvement and teamwork
+
+# ::sntId 155
+block
+A group of disk or tape records that is stored as a single unit
+
+# ::sntId 156
+block
+A group of bits or bytes that is transmitted as a single unit
+
+# ::sntId 157
+get
+An FTP command used to download a file from a server or to display the contents of a text file
+
+# ::sntId 158
+get
+An HTTP command used to retrieve data from a Web server
+
+# ::sntId 159
+credit
+A monetary amount that is added to an account balance
+
+# ::sntId 160
+settings
+A software control panel that enables the user to configure the appearance or actions in an application , operating system or the hardware
+
+# ::sntId 161
+cache
+To store data locally in order to speed up subsequent retrievals
+
+# ::sntId 162
+cache
+Reserved areas of memory in every computer that are used to speed up instruction execution , data retrieval and data updating
+
+# ::sntId 163
+authentication
+Verifying the identity of a user logging into a network
+
+# ::sntId 164
+battery
+A storage device that converts chemical energy into electrical energy
+
+# ::sntId 165
+mp3
+The audio compression technology that revolutionized digital music
+
+# ::sntId 166
+library
+A collection of software routines that programmers incorporate into their applications
+
+# ::sntId 167
+library
+The library routines are linked into the program when it is compiled
+
+# ::sntId 168
+library
+an executable software module that augments the operating system's functionality
+
+# ::sntId 169
+javascript
+A widely used programming language that is embedded in most Web pages
+
+# ::sntId 170
+datacenter
+A facility that holds servers and related network equipment
+
+# ::sntId 171
+index
+A common method for keeping track of data so that it can be accessed quickly
+
+# ::sntId 172
+plug-in
+Software that is installed into an existing application in order to enhance its capability
+
+# ::sntId 173
+cartridge
+A removable storage module that contains magnetic disks , optical discs , magnetic tape or memory chips
+
+# ::sntId 174
+oracle
+The world's largest database and enterprise software vendor founded in 1977 by Larry Ellison
+
+# ::sntId 175
+framework
+One of the first integrated software packages for PCs that included a programming language
+
+# ::sntId 176
+cursor
+The symbol used to point to some element on screen
+
+# ::sntId 177
+tool
+A program that helps the user analyze data
+
+# ::sntId 178
+tool
+An on-screen function in a graphics program; for example , a line draw , circle draw or brush tool
+
+# ::sntId 179
+tool
+A software control panel for setting user preferences
+
+# ::sntId 180
+header
+A group of fields added to the beginning of the message
+
+# ::sntId 181
+compiler
+Software that converts a set of high-level language statements into a lower-level representation
+
+# ::sntId 182
+itunes
+Software from Apple that is widely used to organize media on the computer as well as iPods , iPhones and iPads
+
+# ::sntId 183
+upgrade
+To replace existing software or hardware with a newer version
+
+# ::sntId 184
+lens
+The glass or plastic elements that focus light onto sensor in a video camera
+
+# ::sntId 185
+isp
+An organization that provides access to the Internet
+
+# ::sntId 186
+encrypted
+Data that are turned into unreadable text in order to prevent unauthorized viewing
+
+# ::sntId 187
+continue
+A programming statement that points to the beginning of the loop that it is in
+
+# ::sntId 188
+sign
+A symbol that identifies a positive or negative numberbyte
+
+# ::sntId 189
+developer
+A person that designs software
+
+# ::sntId 190
+delete
+To remove a file from the disk
+
+# ::sntId 191
+operator
+An organization that provides communications services
+
+# ::sntId 192
+viewer
+A program that renders the contents of a digital file on screen
+
+# ::sntId 193
+scanner
+An optical device that reads a printed page and that converts it into a graphics image for the computer
+
+# ::sntId 194
+automation
+Replacing manual operations with electronics and computer-controlled devices
+
+# ::sntId 195
+syntax
+The rules governing the structure of a programming language
+
+# ::sntId 196
+twitter
+A very popular message broadcasting system that lets anyone send alphanumeric text messages to a list of followers
+
+# ::sntId 197
+mark
+To identify a block of text in order to perform some task on it such as deletion , copying and moving
+
+# ::sntId 198
+pointer
+A symbol used to point to some element on screen
+
+# ::sntId 199
+backbone
+The part of a network that handles the major traffic
+
+# ::sntId 200
+iso
+An organization that sets international standards , founded in 1946
+
+# ::sntId 201
+render
+To convert any coded content to the required format for display or printing
+
+# ::sntId 202
+rom
+A memory chip that permanently stores instructions and data
+
+# ::sntId 203
+taskbar
+An on-screen toolbar that displays the active applications
+
+# ::sntId 204
+profile
+A list of parameters read by a program in order to modify its behavior
+
+# ::sntId 205
+activex
+A brand name from Microsoft that has been used very specifically and very broadly
+
+# ::sntId 206
+archive
+A file that contains one or more compressed files
+
+# ::sntId 207
+microphone
+A device that converts sound waves into analogous electrical waves
+
+# ::sntId 208
+expression
+A line of source code that returns a value when executed
+
+# ::sntId 209
+pack
+An instruction that converts a decimal number into a packed decimal format
+
+# ::sntId 210
+pack
+A command that removes records that have been marked for deletion
+
+# ::sntId 211
+formula
+An arithmetic expression that solves a problem
+
+# ::sntId 212
+registration
+To sign up to a Web site by entering name , address , e-mail address , etc . , and very often creating a password to log in
+
+# ::sntId 213
+calculator
+A machine that provides arithmetic capabilities
+
+# ::sntId 214
+exit
+To get out of the current mode or quit the program
+
+# ::sntId 215
+exit
+An instruction that terminates a script or program
+
+# ::sntId 216
+mount
+The process of making an optical disc accessible to the operating system
+
+# ::sntId 217
+perl
+A programming language written by Larry Wall that combines syntax from several Unix utilities and languages
+

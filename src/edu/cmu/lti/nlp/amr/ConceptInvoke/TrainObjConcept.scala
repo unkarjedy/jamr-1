@@ -177,7 +177,7 @@ class TrainObjConcept(val options: m.Map[Symbol, String]) extends TrainObjAbstra
     costFunc3
   }
 
-  def train() {
+  def train(): Unit = {
     train(FeatureVectorBasic())
   }
 
@@ -206,7 +206,9 @@ class TrainObjConcept(val options: m.Map[Symbol, String]) extends TrainObjAbstra
         def f1: Double = 2 * (precision * recall) / (precision + recall)
 
         override def toString: String = {
-          "Precision: " + precision.toString + "\nRecall: " + recall.toString + "\nF1: " + f1.toString
+          s"""Precision: ${precision.toString}
+             |Recall: ${recall.toString}
+             |F1: ${f1.toString}""".stripMargin
         }
       }
       val spanF1 = F1(0, 0, 0)

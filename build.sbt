@@ -1,5 +1,3 @@
-
-
 assemblySettings
 
 name := "jamr"
@@ -23,7 +21,10 @@ libraryDependencies ++= Seq(
   "org.apache.xmlgraphics" % "batik-svggen" % "1.8",
   "org.apache.xmlgraphics" % "batik-codec" % "1.8", // needed to draw SVG to PNG (there are some check at runtime)
   "org.apache.xmlgraphics" % "batik-swing" % "1.8",
-  "org.apache.xmlgraphics" % "xmlgraphics-commons" % "2.2"
+  "org.apache.xmlgraphics" % "xmlgraphics-commons" % "2.2",
+
+  "org.rogach" %% "scallop" % "3.1.2" // main args parser
+
   //  "org.apache.xmlgraphics" % "batik-anim" % "1.6.1"
   //  "org.apache.xmlgraphics" % "batik-transcoder" % "1.7"
   //  "org.apache.xmlgraphics" % "batik-transcoder" % "1.8"

@@ -23,9 +23,9 @@ object RunParse extends StageRunnerLike {
 
   private val stage2Features = List(
     "bias", "typeBias", "self", "fragHead", "edgeCount", "distance", "logDistance",
-    "rootConcept", "rootDependencyPathv1",
+    "rootConcept",
     "conceptBigram",
-    "posPathv3", "dependencyPathv4", "dependencyPathv5"
+    "rootDependencyPathv1", "posPathv3", "dependencyPathv4", "dependencyPathv5"
   ).distinct
 
   private val stage1SyntheticConcepts = List(
@@ -95,17 +95,29 @@ object RunParse extends StageRunnerLike {
     }
   }
   private def buildParserOptionsString(context: Context, stage1SyntheticConcepts: List[String]) = {
-    s"""--stage1-synthetic-concepts ${stage1SyntheticConcepts.mkString(",")}
-       |--stage1-phrase-counts ${context.modelFolder}/wordCounts.train
-       |--stage1-features ${context.stage1Features.mkString(",")}
-       |--stage2-features ${context.stage2Features.mkString(",")}
-       |--stage2-decoder LR
-       |--stage2-labelset ${context.jamrRoot}/resources/labelset-r3
-       |--output-format AMR,nodes,edges,root
-       |--ignore-parser-errors
-       |--print-stack-trace-on-errors
-       |--terms-dict "${context.jamrRoot}/resources_terms/terms_with_synonims.txt"
-       |-v 1
+    val base =
+      s"""--stage1-synthetic-concepts ${stage1SyntheticConcepts.mkString(",")}
+         |--stage1-phrase-counts ${context.modelFolder}/wordCounts.train
+         |--stage1-features ${context.stage1Features.mkString(",")}
+         |--stage2-features ${context.stage2Features.mkString(",")}
+         |--stage2-decoder LR
+         |--stage2-labelset ${context.jamrRoot}/resources/labelset-r3
+         |--output-format AMR,nodes,edges,root
+         |--ignore-parser-errors
+         |--print-stack-trace-on-errors
+         |--terms-dict "${context.jamrRoot}/resources_terms/terms_with_synonims.txt"
+         |-v 1
       """.stripMargin
+
+    //    val trainingFile = "sentences1_fixed1.txt.amr_gold.aligned.no_opN"
+    //    val trainingFile = "sentences1.txt.amr_gold.aligned.no_opN"
+    val trainingFile = "sentences2.txt.amr_gold.aligned.no_opN"
+
+    val extra =
+      s"""--stage1-oracle
+         |--training-data $jamrRoot/resources_terms/FinalOutputs/gold_amr/$trainingFile
+      """.stripMargin // + "\n--stage2-cost-diminished"
+
+    base // + extra
   }
 }

@@ -38,7 +38,12 @@ class DependencySvgPngDrawer(settings: DrawerSettings = DrawerSettings()) extend
     val dependencyBlocks: Iterator[DepsTextBlock] = CorpusUtils.getDepsBlocks(lines)
 
     dependencyBlocks
-      .foreach { case block@DepsTextBlock(conllLines, idx, _, sntIdOpt, treeIdOpt) =>
+      .foreach { block =>
+        val conllLines = block.conllLines
+        val idx = block.blockIdx
+        val sntIdOpt = block.sntId
+        val treeIdOpt = block.treeId
+
         val blockHash: Int = block.conllText.hashCode
         val fileName = Seq(
           Some(idx.toString),
@@ -107,6 +112,22 @@ object DependencySvgPngDrawer extends SimpleLoggerLike {
   case class DrawerSettings()
 
   def main(args: Array[String]): Unit = {
+    // usecase1()
+    usecase2()
+  }
+
+  private def usecase2(): Unit = {
+    val runProperties = new RunProperties("run.properties")
+    val baseDir: File = new File(runProperties.jamrRoot)
+      .resolve("resources_terms/FinalOutputs/for_presentation")
+
+    new DependencySvgPngDrawer().draw(
+      dependenciesFile = baseDir.resolve("test1.conll"),
+      outputFolder = baseDir
+    )
+  }
+
+  private def usecase1(): Unit = {
     val runProperties = new RunProperties("run.properties")
     val baseFolder = new File(s"${runProperties.jamrRoot}/${runProperties.parserInputFolder}/")
     val depsFile = baseFolder.resolve("sentences2.txt.deps")
@@ -124,5 +145,4 @@ object DependencySvgPngDrawer extends SimpleLoggerLike {
       }
     }
   }
-
 }

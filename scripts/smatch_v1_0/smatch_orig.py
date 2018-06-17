@@ -675,7 +675,7 @@ if __name__=="__main__":
       file_handle=[]
       if args.f==None:
          print >> ERROR_LOG, "smatch.py requires -f option to indicate two files containing AMR as input. Please run smatch.py -h to see the argument descriptions."
-	 exit(1)
+	    exit(1)
       if not os.path.exists(args.f[0]):
          print >> ERROR_LOG,"Given file",args.f[0], "does not exist"
          exit(1) 

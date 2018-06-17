@@ -1,0 +1,1151 @@
+# ::snt raw facts , which are processed into information , such as balance due and quantity on hand
+# ::term data
+# ::sntId 0
+# ::src manual
+(f1 / fact
+      :mod (r / raw)
+      :ARG1-of (p2 / process-01
+            :ARG2 (i / information
+                  :example (a3 / and
+                        :op1 (d / due
+                              :mod (b / balance))
+                        :op2 (q / quantity
+                              :location (h / hand))))))
+
+# ::snt Any form of information whether on paper or in electronic form
+# ::term data
+# ::sntId 1
+# ::src manual
+(i / information
+      :mod (f / form
+            :mod (a / any))
+      :location (o / or
+            :op1 (p / paper)
+            :op2 (f2 / form
+                  :mod (e / electronic))))
+
+# ::snt A group of related components that interact to perform a task
+# ::term system
+# ::sntId 2
+# ::src manual
+(g / group
+      :consist-of (c / component
+            :mod (r / relate-01)
+            :ARG0-of (i / interact
+                  :purpose (p / perform-02
+                        :ARG1 (t / task)))))
+
+# ::snt A general-purpose machine that processes data according to a set of instructions stored internally
+# ::term computer
+# ::sntId 3
+# ::src manual
+(m / machine
+      :mod (g / general-purpose)
+      :ARG0-of (p / process-01
+            :ARG1 (d / data)
+            :prep-according-to (s / set
+                  :consist-of (i / instruction
+                        :ARG1-of (s2 / store
+                              :ARG2 (i2 / internally))))))
+
+# ::snt The most widely used operating system for desktop and laptop computers
+# ::term windows
+# ::sntId 4
+# ::src manual
+(s / system
+      :mod (o / operate-01)
+      :ARG1-of (u / use-01
+            :degree (w / wide
+                  :degree (m / most)))
+      :beneficiary (c / computer
+            :mod (a / and
+                  :op1 desktop
+                  :op2 laptop)))
+
+# ::snt Any arrangement of elements that are interconnected
+# ::term network
+# ::sntId 5
+# ::src manual
+(t / thing
+      :ARG1-of (a / arrange-1
+            :ARG2 (e / element
+                  :ARG1-of (i / interconnect-01)))
+      :mod (a2 / any))
+
+# ::snt A system that transmits data between users , which includes the user devices and the network equipment
+# ::term network
+# ::sntId 6
+# ::src manual
+(s / system
+      :ARG0-of (t / transmit-01
+            :ARG1 (d / data)
+            :ARG2 (u / user))
+      :ARG2-of (i / include-91
+            :ARG1 (a / and
+                  :op1 (d2 / device
+                        :poss (u2 / user))
+                  :op2 (e / equipment
+                        :mod (n / network)))))
+
+# ::snt A collection of instructions that tell the computer what to do
+# ::term program
+# ::sntId 8
+# ::src manual
+(c / collection
+      :consist-of (i / instructions)
+      :ARG0-of (t / tell-01
+            :ARG1 (t2 / thing
+                  :ARG0 c2
+                  :ARG1 do-02)
+            :ARG2 (c2 / computer)))
+
+# ::snt Data in binary form
+# ::term digital
+# ::sntId 9
+# ::src manual
+(d / data
+      :mod binary)
+
+# ::snt Software that is used for business or entertainment
+# ::term application
+# ::sntId 10
+# ::src manual
+(s / software
+      :ARG1-of (u / use-01
+            :ARG2 (o / or
+                  :op1 (b / business)
+                  :op2 (e / entertain-01))))
+
+# ::snt An individual who uses a computer or some other equipment
+# ::term user
+# ::sntId 11
+# ::src manual
+(i / individual
+      :ARG0-of (u / use-01
+            :ARG1 (o2 / or
+                  :op1 (c / computer)
+                  :op2 (e / equipment
+                        :mod (o / other)))))
+
+# ::snt Any digital moving picture object , which includes a computer file in video formats such as MP4 , MOV , M4V , AVI , DivX or FLV
+# ::term video
+# ::sntId 12
+# ::src manual
+(o / object
+      :ARG2-of (i / include-91
+            :ARG1 (f / file
+                  :mod (c / computer)
+                  :mod (f2 / format
+                        :domain (v / video)
+                        :example (o2 / or
+                           :op1 MP4
+                           :op2 MOV
+                           :op3 M4V
+                           :op4 AVI
+                           :op5 DivX
+                           :op6 FLV))))
+      :mod (p / picture
+            :mod (d / digital)
+            :ARG1-of (m / move-01)))
+
+# ::snt The moving picture technology developed for the television industry , initially for real-time capture
+# ::term video
+# ::sntId 13
+# ::src manual
+(t / technology
+      :mod (p2 / picture
+            :ARG1-of (m / move-01))
+      :ARG1-of (d / develop-02
+            :ARG3 (i2 / industry
+                  :mod (t2 / television))
+            :ARG4 (c / capture-01
+                  :mod (r / real-time)
+                  :time (i3 / initial))))
+
+# ::snt The computer's workspace , which is physically a collection of dynamic RAM chips
+# ::term memory
+# ::sntId 14
+# ::src manual
+(w / workspace
+      :poss (c / computer)
+      :ARG0-of (c2 / collect-01
+            :ARG1 (c3 / chip
+                  :mod (r / RAM
+                        :mod (d / dynamic)))))
+
+# ::snt A computer system in a network that is shared by multiple users
+# ::term server
+# ::sntId 15
+# ::src manual
+(s / system
+      :mod (c / computer)
+      :location (n / network)
+      :ARG1-of (s2 / share-01)
+            :ARG0 (u / user
+                  :quant (m / multiple)))
+
+# ::snt The white level of a display screen
+# ::term contrast
+# ::sntId 16
+# ::src manual
+(l / level 
+      :domain (s / screen
+            :mod (d / display))
+      :mod (w / white))
+
+# ::snt Functionality derived from a particular software program
+# ::term service
+# ::sntId 17
+# ::src manual
+(f / functionality
+      :ARG1-of (d / derive-01
+            :ARG2 (p / program
+                  :mod (s / software)
+                  :mod (p2 / particular))))
+
+# ::snt The display area of a computer monitor or TV set
+# ::term screen
+# ::sntId 18
+# ::src manual
+(a / area
+      :part-of (o / or
+            :op1 (m / monitor
+                  :mod (c / computer)
+            :op2 (t / television)))
+      :mod (d / display))
+
+# ::snt The opportunity for use of a resource
+# ::term access
+# ::sntId 21
+# ::src note no idea where "computer security" could be... it is just a context constraint
+# ::src manual
+(o / opportunity
+      :prep-for (u / use-01
+            :ARG1 (r / resource)))
+
+# ::snt A specific edition of a software package
+# ::term version
+# ::sntId 22
+# ::src manual
+(e / edition
+      :mod (s2 / specific)
+      :domain (p / package
+            :mod (s / software)))
+
+# ::snt A direct access storage device
+# ::term disk
+# ::sntId 23
+# ::src manual
+(d / device
+      :mod (s / storage
+            :mod (a / access
+                  :mod (d2 / direct))))
+
+# ::snt A communications channel
+# ::term line
+# ::sntId 28
+# ::src manual
+(c / channel
+      :instrument-of (с2 / communicate-01))
+
+# ::snt The permanent holding place for digital data , until purposely erased
+# ::term storage
+# ::sntId 29
+# ::src manual
+(p1 / place
+      :location-of (h / hold-01
+            :ARG0 (d / data
+                  :mod (d2 / digital))
+            :time (u / until
+                  :op1 (e / erase-01
+                        :ARG1 p
+                        :mod (p2 / purposely)))
+            :mod (p3 / permanent)))
+
+# ::snt The structure of an item
+# ::term format
+# ::sntId 30
+# ::src manual
+(s / structure
+      :domain (i / item))
+
+# ::snt Any electronic or electromechanical unit of equipment
+# ::term machine
+# ::sntId 31
+# ::src manual
+(u / unit
+       :mod (a / any)
+       :mod (o / or
+             :op1 (e / electronic)
+             :op2 (e2 / electromechanical))
+       :part-of (e3 / equipment))
+
+# ::snt A set of symbols and rules used to convey information
+# ::term language
+# ::sntId 32
+# ::src manual
+(s / set
+      :consist-of (a / and
+            :op1 (s2 / symbol)
+            :op1 (r / rule))
+      :ARG1-of (u / use-01
+            :ARG2 (c / convey-01
+                  :ARG1 (i / information))))
+
+# ::snt Any laptop or desktop computer such as a Windows , Mac or Linux machine
+# ::term pc
+# ::sntId 33
+# ::src manual
+(c / computer
+      :mod (a / any)
+      :mod (o / or
+            :op1 (l / laptop)
+            :op2 (d / desktop))
+      :example (m / machine
+            :mod (o2 / or
+                  :op1 (p / product :name (n / name :op1 "Windows"))
+                  :op2 (p1 / product :name (n2 / name :op1 "Mac"))
+                  :op3 (p2 / product :name (n3 / name :op1 "Linux")))))
+
+# ::snt A program module that enhances the functionality of a program
+# ::term control
+# ::sntId 34
+# ::src manual
+(m / module
+      :mod (p / program)
+      :ARG0-of (e / enhance-01
+            :ARG1 (f / functionality
+                  :domain (p2 / program))))
+
+# ::snt Creating a computer program
+# ::term programming
+# ::sntId 35
+# ::src manual
+(c / create-01
+      :ARG1-of(p / program
+            :mod (c2 / computer)))
+
+# ::snt A set of machine symbols that represents data or instructions
+# ::term code
+# ::sntId 36
+# ::src manual
+(s / set
+      :consist-of (s2 / symbol
+            :mod (m / machine))
+      :ARG0-of (r / represent-02
+            :ARG1 (o / or
+                  :op1 (d / data)
+                  :op2 (i / instruction))))
+
+# ::snt Any representation of one set of data for another
+# ::term code
+# ::sntId 37
+# ::src manual
+(r / represent-02
+      :ARG1 (s / set
+            :consist-of (d / data))
+      :ARG2 (s2 / set
+            :consist-of (d2 / data))
+      :mod (a / any))
+
+# ::snt Manipulating data within the computer
+# ::term processing
+# ::sntId 39
+# ::src manual
+(m / manipulate-01
+      :ARG1 (d / data)
+      :location (c / computer))
+
+# ::snt A number computed from the contents of a text message that is used to prove the integrity of a message
+# ::term mac
+# ::sntId 40
+# ::src manual
+(n / number
+      :ARG2-of (c / compute-01
+            :ARG1 (t / thing
+                  :ARG1-of (c2 / contain-01
+                        :ARG0 (m / message
+                              :mod text))))
+      :ARG1-of (u / use-01
+            :ARG2 (p / prove-01
+                  :ARG1 (i / integrity
+                        :domain m))))
+
+# ::snt The format that governs the transmitting of data
+# ::term protocol
+# ::sntId 41
+# ::src manual
+(f / format
+      :ARG0-of (g / govern-01
+            :ARG1 (t / transmit-01
+                  :ARG1 (d / data))))
+
+# ::snt The layout of a graphical user interface , which simulates a physical desktop by allowing objects to be placed anywhere on its surface
+# ::term desktop
+# ::sntId 42
+# ::src manual
+(l / layout
+      :poss (i / interface
+            :mod (u / user
+                  :mod (g / graphical)))
+      :ARG0-of (s / simulate-01
+            :ARG1 (d / desktop
+                  :mod (p / physical))
+            :manner (a / allow-01
+                  :ARG1 (r / place-01
+                        :ARG1 (o / object)
+                        :ARG2 (s2 / surface
+                              :poss d)))))
+
+# ::snt A set of microminiaturized , electronic circuits fabricated on a single piece of semiconducting material
+# ::term chip
+# ::sntId 44
+# ::src manual
+(s / set
+      :consist-of (c / circuit
+            :mod (e / electronic)
+            :ARG1-of (m / miniaturize-01
+                  :degree (m2 / micro))
+            :ARG1-of (f / fabricate-01
+                  :location (p / piece
+                        :consist-of (m3 / material
+                              :mod (s2 / semiconducting))))))
+
+# ::snt A set of related files that is managed by a database management system
+# ::term database
+# ::sntId 46
+# ::src manual
+(s / set
+      :consist-of (f / file
+            :ARG1-of (r / relate-01))
+      :ARG1-of (m / manage-01
+            :ARG0 (s2 / system
+                  :mod (d / database
+                        :domain (m2 / manage-01)))))
+
+# ::snt The computer's display system
+# ::term graphics
+# ::sntId 47
+# ::src manual
+(s / system
+      :mod (d / display)
+      :poss (c / computer))
+
+# ::snt The most successful software company in the industry
+# ::term microsoft
+# ::sntId 48
+# ::src manual
+(c / company
+      :mod (s / software)
+      :mod (s2 / successful
+            :degree (m / most))
+    :location (i / industry))
+
+# ::snt Transmission through the air
+# ::term wireless
+# ::sntId 49
+# ::src manual
+(t / transmit-01
+      :instrument (a / air))
+
+# ::snt The transmission of text messages from sender to recipient
+# ::term e-mail
+# ::sntId 50
+# ::src manual
+(t / transmit-01
+      :ARG0 (s / sender)
+      :ARG1 (m / messages)
+      :ARG2 (r / recipient))
+
+# ::snt A solid state flash drive that contains no moving parts
+# ::term drive
+# ::sntId 52
+# ::src manual
+(d / drive
+      :mod (f / flash)
+      :mod (s / solid)
+      :ARG0-of (c / contain-01
+            :ARG1 (p / part
+                  :ARG1-of (m / move-01))
+            :polarity -))
+
+# ::snt One of the world's oldest and largest computer companies with revenues of USD $93 billion in 2014
+# ::term ibm
+# ::sntId 53
+# ::src manual
+(c / company
+      :quant 1
+      :ARG1-of (i / include-91
+            :ARG2 (c2 / company
+                  :mod (c3 / computer)
+                  :mod (o / old
+                        :degree (m / most))
+                  :mod (l / lagre
+                        :degree (m2 / most)))))
+
+# ::snt The communications technology used worldwide in local networks , wide area networks and the Internet
+# ::term ip
+# ::sntId 56
+# ::treeId 0
+# ::src manual
+(t / technology
+      :mod (c / communicate-01)
+      :ARG1-of (u / use-01
+            :location (w / worldwide)
+            :ARG2 (a / and
+                  :op1 (n / network
+                        :mod (l / local))
+                  :op2 (n2 / network
+                        :mod (a2 / area
+                              :mod (w2 / wide)))
+                  :op3 (i / internet))))
+
+# ::snt The numeric address assigned to every laptop and desktop computer , server , router , smartphone and tablet in an IP network
+# ::term ip
+# ::sntId 57
+# ::treeId 0
+# ::src manual
+(a / address
+      :mod (n / numeric)
+      :ARG1-of (a2 / assign-01
+            :ARG2 (a3 / and
+                  :mod (e / every)
+                  :op1 (c / computer
+                        :mod (l / laptop)
+                        :mod (d / desktop))
+                  :op2 (s / server)
+                  :op3 (r / router)
+                  :op4 (s2 / smartphone)
+                  :op5 (t / tablet)
+                  :location (n2 / network
+                        :mod (i / ip)))))
+
+# ::snt A numeric code that is used to encrypt text for security purposes
+# ::term key
+# ::sntId 59
+# ::treeId 0
+# ::src manual
+(c / code
+      :mod (n / numeric)
+      :ARG1-of (u / use-01
+            :ARG2 (e / encrypt-01
+                  :ARG1 (t / text)
+                  :purpose (s / security))))
+
+# ::snt An essential field in a database record
+# ::term key
+# ::sntId 60
+# ::treeId 0
+# ::src manual
+(f / field
+      :mod (e / essential)
+      :location (r / record
+            :mod (d / database)))
+
+# ::snt A wireless charging system
+# ::term key
+# ::sntId 61
+# ::treeId 0
+# ::src manual
+(s / system
+      :instrument-of (с / charge-03
+            :manner (w / wireless)))
+
+# ::snt The transfer of data over a communications channel
+# ::term transmission
+# ::sntId 62
+# ::treeId 0
+# ::src manual
+(t / transfer-01
+      :ARG1 (d / data)
+      :instrument (c / channel
+            :mod (c2 / communicate-01)))
+
+# ::snt The computing part of the computer
+# ::term cpu
+# ::sntId 63
+# ::treeId 0
+# ::src manual
+(p / part
+      :ARG0-of (c / compute-01)
+      :part-of (c2 / computer))
+
+# ::snt The processing that an object performs
+# ::term method
+# ::sntId 64
+# ::treeId 0
+# ::src manual
+(p / process-01
+      :ARG1-of (p2 / perform-02
+            :ARG0 (o / object)))
+
+# ::snt The location of a Web site or other Internet facility
+# ::term address
+# ::sntId 65
+# ::treeId 0
+# ::manual JAMR is very close!
+# ::src manual
+(l / location
+      :location-of (o / or
+            :op1 (s  / site
+                  :mod (w / web))
+            :op2 (f / facility
+                  :mod (o2 / other)
+                  :mod (i / internet))))
+
+# ::snt The common hostname for a Web server
+# ::term www
+# ::sntId 66
+# ::treeId 0
+# ::src manual
+(h / hostname
+      :mod (c / common)
+      :beneficiary (s / server
+            :mod (w / web)))
+
+# ::snt Any form of information Including music and movies
+# ::term media
+# ::sntId 67
+# ::treeId 0
+# ::src manual
+(i / information
+      :mod (f / form
+            :mod (a / any))
+      :ARG2-of (i2 / include-01
+            :ARG1 (a2 / and
+                  :op1 (m / music)
+                  :op2 (m2 / movie))))
+
+# ::snt The computer's internal storage unit
+# ::term word
+# ::sntId 68
+# ::treeId 0
+# ::src manual
+(u / unit
+      :mod (s / store-01
+            :mod (i / internal))
+      :part-of (c / computer))
+
+# ::snt An umbrella term for any company or association
+# ::term organization
+# ::sntId 69
+# ::treeId 0
+# ::src manual
+(t / term
+      :mod (u / umbrella)
+      :topic (o / or
+            :op1 (c / company)
+            :op2 (a / association)
+            :mod (a2 / any)))
+
+# ::snt A program that lets you look through a collection of data
+# ::term browser
+# ::sntId 70
+# ::treeId 0
+# ::src manual
+(p / program
+      :instrument-of (l / look-01
+            :manner (t / through)
+            :ARG0 (y / you)
+            :ARG1 (c / collection
+                  :consist-of (d / data))))
+
+# ::snt A flexible metal or glass wire or group of wires
+# ::term cable
+# ::sntId 72
+# ::treeId 0
+# ::src manual
+(o / or
+      :op1 (w / wire
+            :mod (f / flexible)
+            :consist-of (o2 / or
+                  :op1 (m / metal)
+                  :op2 (g / glass)))
+      :op2 (g2 / group
+            :consist-of w))
+
+# ::snt The world's second largest manufacturer of computers and consumer electronics with revenues of USD $184 billion in 2014
+# ::term apple
+# ::sntId 74
+# ::treeId 0
+# ::src manual
+(o / organization
+      :ARG0-of (m / manufacture-01
+            :ARG1 (a / and
+                  :op1 (c / computer)
+                  :op2 (e / electronics
+                        :mod (c2 / consumer))))
+      :mod (l / large
+            :degree (m2 / most)
+            :compared-to (w / world)
+            :ord (o2 / ordinal-entity :value 2))
+      :prep-with (r / revenue
+            :quant 184000000000
+            :unit (d / dollar)
+            :time (d2 / date-entity
+                  :year 2014)))
+
+# ::snt A multiuser , multitasking operating system that is widely used as the master control program in workstations and servers
+# ::term unix
+# ::sntId 75
+# ::treeId 0
+# ::src manual
+(s / system
+      :mod (o / operate-01)
+      :mod (m / multiuser)
+      :mod (m2 / multitasking)
+      :ARG1-of (u / use-01
+            :ARG2 (p / program
+                  :ARG0-of (c / control-01)
+                  :mod (m3 / master))
+            :degree (w / wide))
+            :location (a / and
+                  :op1 (w2 / workstation)
+                  :op2 (s2 / server)))
+
+# ::snt The customer of a vendor or consultant
+# ::term client
+# ::sntId 77
+# ::treeId 0
+# ::src manual
+(c / customer
+      :prep-of (o / or
+            :op1 (v / vendor)
+            :op2 (c2 / consultant)))
+
+# ::snt Protection against illegal or wrongful intrusion
+# ::term security
+# ::sntId 78
+# ::treeId 0
+# ::src manual
+(p / protect-01
+      :ARG2 (i / intrusion
+            :mod (o / or
+                  :op1 (l2 / legal :polarity -)
+                  :op2 (w / wrongful))))
+
+# ::snt A Microsoft architecture for building software modules that are executed in Windows
+# ::term com
+# ::sntId 79
+# ::treeId 0
+# ::src manual
+(a / architecture
+      :poss (c / company
+            :name (n / name
+                  :op1 "Microsoft"))
+      :instrument-of (b / build-01
+            :ARG1 (m / module
+                  :mod (s / software)
+                  :ARG1-of (e / execute
+                        :location (t / thing
+                              :name (n2 / name
+                                    :op1 "Windows"))))))
+
+# ::snt An e-mail that contains text and possibly other file attachments
+# ::term message
+# ::sntId 81
+# ::treeId 0
+# ::src manual
+(e / e-mail
+      :ARG0-of (c / contain-01
+            :ARG1 (a / and
+                  :op1 (t / text)
+                  :op2 (a2 / attachment
+                        :mod (p3 / possible)
+                        :mod (o / other)
+                        :mod (f / file)))))
+
+# ::snt A device that converts computer output into printed images
+# ::term printer
+# ::sntId 83
+# ::treeId 0
+# ::src manual
+(d / device
+      :ARG0-of (c / convert-01
+            :ARG1 (o / output
+                  :mod (c2 / computer))
+            :ARG2 (i / image
+                  :ARG1-of (p / print-01))))
+
+# ::snt A self-contained software routine that performs a task
+# ::term function
+# ::sntId 84
+# ::treeId 0
+# ::src manual
+(r / routine
+      :mod (s / self-contained)
+      :mod (s2 / software)
+      :ARG0-of (p / perform-02
+            :ARG1 (t / task)))
+
+# ::snt The master control program in a computer or mobile device
+# ::term os
+# ::sntId 85
+# ::treeId 0
+# ::src manual
+(p / program
+      :ARG0-of (c / control-01)
+      :mod (m / master)
+      :location (o / or
+           :op1 (c2 / computer)
+           :op2 (d / device
+                 :mod (m2 / mobile))))
+
+# ::snt A set of electronic components that perform a particular function in an electronic system
+# ::term circuit
+# ::sntId 86
+# ::treeId 0
+# ::src manual
+(s / set
+      :consist-of (c / component
+            :ARG0-of (p / perform-02
+                  :ARG1 (f / function
+                        :location (s2 / system
+                              :mod (e / electronic))
+                        :mod (p2 / particular)))
+            :mod (e2 / electronic)))
+
+# ::snt To manipulate data in the computer
+# ::term process
+# ::sntId 88
+# ::treeId 0
+# ::src manual
+(m / manipulate-01
+      :ARG1 (d / data)
+      :location (c / computer))
+
+# ::snt Software running in the computer
+# ::term process
+# ::sntId 89
+# ::treeId 0
+# ::src manual
+(s / software
+      :ARG1-of (r / run-01
+            :location (c / computer)))
+
+# ::snt A videoconferencing technology that uses Intel's Indeo compression method
+# ::term pcs
+# ::sntId 90
+# ::treeId 0
+# ::src manual
+(t / technology
+      :mod (v / videoconferencing)
+      :ARG0-of (u / use-01
+            :ARG1 (m / method
+                  :mod (c / compress-01)
+                  :name (n / name
+                        :op1 "Indeo")
+                  :poss (c2 / company
+                        :name (n2 / name
+                              :op1 "Intel")))))
+
+# ::snt A mechanical or electronic device that directs the flow of electrical or optical signals from one side to the other
+# ::term switch
+# ::sntId 91
+# ::treeId 0
+# ::src manual
+(d / device
+      :mod (o / or
+            :op1 (m / mechanics)
+            :op2 (e / electronic))
+      :ARG0-of (d2 / direct-01
+            :ARG1 (f / flow-01
+                  :ARG0 (s / signal
+                        :mod (o2 / or
+                              :op1 (e2 / electricity
+                              :op2 (o3 / optics))))
+                  :source (s2 / side)
+                  :destination (s3 / side))))
+
+# ::snt A high-speed mainframe subsystem that provides a pathway between the CPU and the control units of peripheral devices
+# ::term channel
+# ::sntId 93
+# ::treeId 0
+# ::src manual
+(s / subsystem
+      :mod (m / mainframe)
+            :mod (h / high-speed)
+      :ARG0-of (p / provide-01
+            :ARG1 (p2 / pathway
+                  :location (b / between
+                        :op1 (c / cpu)
+                        :op2 (u / unit
+                              :mod (c2 / control-01)
+                              :poss (d / device
+                                    :mod (p3 / peripheral)))))))
+
+# ::snt A frequency assigned to a TV or radio station , which allows it to transmit over the air simultaneously with other broadcasters
+# ::term channel
+# ::sntId 94
+# ::treeId 0
+# ::src manual
+(f / frequency
+      :ARG1-of (a / assign-01
+            :ARG2 (o / or
+                  :op1 (t / television)
+                  :op2 (s / station
+                        :mod (r / radio))))
+      :ARG0-of (a2 / allow-01
+            :ARG1 (t2 / transmit-01
+                  :ARG0 o
+                  :instrument (a3 / air)
+                  :manner (s2 / simultaneous
+                        :prep-with (p / thing
+                              :ARG0-of (b / broadcast-01)
+                              :mod (o2 / other))))))
+
+# ::snt The largest Web search engine and one of the most influential companies in the high-tech world
+# ::term google
+# ::sntId 95
+# ::treeId 0
+# ::src manual
+(a / and
+      :op1 (e / engine
+            :mod (s / search-01)
+            :mod (l / large
+                  :degree (m / most)))
+      :op2 (c / company
+            :ARG0-of (i / include-91
+                  :ARG1 (c2 / company
+                        :ARG0-of (i2 / influence-01
+                              :degree (m2 / most))
+                        :location (w / world
+                              :mod (h / high-tech))))))
+
+# ::snt A statement in a program that directs the compiler or interpreter to process another file of code at that point
+# ::term include
+# ::sntId 96
+# ::treeId 0
+# ::src manual
+(s / statement
+      :location (p / program)
+      :ARG0-of (d / direct-01
+            :ARG1 (o / or
+                  :op1 (p2 / program
+                        :ARG0-of (c / compile-01))
+                  :op1 (p3 / program
+                        :ARG0-of (i / interpret-01)))
+            :ARG2 (p4 / process-01
+                  :ARG0 o
+                  :ARG1 (f / file
+                        :mod (a / another)
+                        :consist-of (c2 / code)))))
+
+# ::snt The degree of sharpness of a displayed or printed image
+# ::term resolution
+# ::sntId 97
+# ::treeId 0
+# ::src manual
+(d / degree
+      :degree-of (s / sharp
+            :domain (i / image
+                  :ARG1-of (d2 / display-01)
+                  :ARG1-of (p / print-02))))
+
+# ::snt An instruction for the computer
+# ::term command
+# ::sntId 98
+# ::treeId 0
+# ::src manual
+(i / instruction
+      :mod (c / computer))
+
+# ::snt A number that identifies applications and services in a TCP/IP network
+# ::term port
+# ::sntId 99
+# ::treeId 0
+# ::src manual
+(n / number
+      :ARG0-of (i / identify-01
+            :ARG1 (a / and
+                  :op1 (a2 / application)
+                  :op2 (s / service))
+            :location(n2 / network
+                  :mod (t / tcp-ip))))
+
+# ::snt An operating system for smartphones , tablets and laptops from the Google-sponsored Open Handset Alliance
+# ::term android
+# ::sntId 100
+# ::treeId 0
+# ::src manual
+(s / system
+      :mod (o / operate-01)
+      :beneficiary (a / and
+            :op1 (s2 / smartphone)
+            :op2 (t / tablet)
+            :op3 (l / laptop))
+      :source (o2 / organization
+            :name (n / name
+                  :op1 "Open"
+                  :op2 "Handset"
+                  :op3 "Alliance")
+            :ARG1-of (s3 / sponsor-01
+                  :ARG0 (c / company
+                        :name (n2 / name
+                              :op1 "Google")))))
+
+# ::snt A very popular open source operating system that runs on all major hardware platforms including x86 , Itanium , PowerPC , ARM and IBM mainframes
+# ::term linux
+# ::sntId 102
+# ::treeId 0
+# ::src manual
+(s / system
+      :mod (o / operate-01)
+      :mod (o2 / open-source)
+      :mod (p / popular
+            :degree (v / very))
+      :ARG1-of (r / run-01
+            :location (p2 / platform
+                  :quant (a / all)
+                  :mod (m / major)
+                  :mod (h / hardware)
+                  :ARG2-of (i / include-91
+                        :ARG1 (a2 / and
+                              :op1 (t1 / thing
+                                    :name (n / name
+                                          :op1 "x86"))
+                              :op2 (t2 / thing
+                                    :name (n2 / name
+                                          :op1 "Itanium"))
+                              :op3 (t3 / thing
+                                    :name (n3 / name
+                                          :op1 "PowerPC"))
+                              :op4 (o3 / organization
+                                    :name (n4 / name
+                                          :op1 "ARM"))
+                              :op4 (m2 / mainframe
+                                    :poss (c / company
+                                          :name (n5 / name
+                                                :op1 "IBM"))))))))
+
+# ::snt To select an object by pressing the mouse button when the cursor is pointing to the required menu option , icon or hypertext link
+# ::term click
+# ::sntId 104
+# ::treeId 0
+# ::src manual
+(s / select-01
+      :ARG1 (o / object)
+      :manner (p / press-01
+            :ARG1 (b / button
+                  :mod (m / mouse))
+            :time (p2 / point-01
+                  :ARG0 (c / cursor)
+                  :ARG1 (o2 / or
+                        :op1 (o3 / option
+                              :mod (m2 / menu))
+                        :op2 (i / icon)
+                        :op3 (l / link
+                              :mod (h / hypertext))
+                        :ARG1-of (r / require-01)))))
+
+# ::snt A communications protocol for office systems developed in the early 1980s by the Computer Services division of Boeing in Seattle
+# ::term top
+# ::sntId 105
+# ::treeId 0
+# ::src manual
+(p / protocol
+      :mod (c / communicate-01)
+      :beneficiary (s / system
+            :mod (o / office))
+      :ARG1-of (d / develop-01
+            :ARG0 (o2 / organization
+                  :name (n / name
+                        :op1 "Computer"
+                        :op2 "Services")
+                  :part-of (c2 / company
+                        :name (n2 / name
+                              :op1 "Boeing"))
+                  :location (c3 / city
+                        :name (n3 / name
+                              :op1 "Seattle")))
+            :time (e / early
+                  :op1 (d2 / date-entity
+                        :decade 1980))))
+
+# ::snt A back-facing element in a smartphone or tablet that records still and moving images for later viewing
+# ::term camera
+# ::sntId 108
+# ::treeId 0
+# ::src manual
+(e / element
+      :ARG0-of (f / face-01
+            :direction (b / back))
+      :location (o / or
+            :op1 (s / smartphone)
+            :op2 (t / tablet))
+      :ARG0-of (r / record-01
+             :ARG1 (i / image
+                   :mod (o2 / or
+                         :op1 (s2 / still)
+                         :op2 (m / move-01)))
+             :purpose (v / view-01
+                   :ARG1 i
+                   :time (l / late
+                         :degree (m2 / more)))))
+
+# ::snt A display screen used to provide visual output from a computer , cable box , video camera , VCR or other video generating device
+# ::term monitor
+# ::sntId 110
+# ::treeId 0
+# ::src manual
+(s / screen
+      :mod (d / display)
+      :ARG1-of (u / use-01
+            :ARG2 (p / provide-01
+                  :ARG1 (o / output
+                        :mod (v / visual)
+                        :source (o2 / or
+                              :op1 (c / computer)
+                              :op2 (b / box
+                                    :mod (c2 / cable))
+                              :op3 (c3 / camera
+                                    :mod (v2 / video))
+                              :op4 (v3 / vcr)
+                              :op5 (d2 / device
+                                    :ARG0-of (g / generate-01
+                                          :ARG1 (v4 / video))
+                                    :mod (o3 / other)))))))
+
+# ::snt Software that monitors the progress of activities within a computer system
+# ::term monitor
+# ::sntId 111
+# ::treeId 0
+# ::src manual
+(s / software
+      :ARG0-of (m / monitor-01
+            :ARG1 (p / progress-01
+                  :ARG1 (a / activity
+                        :location (c / computer)))))
+
+# ::snt A device that gathers performance statistics of a running system via direct attachment to the CPU's circuit boards
+# ::term monitor
+# ::sntId 112
+# ::treeId 0
+# ::src manual
+(d / device
+      :ARG0-of (g / gather-01
+            :ARG1 (s / statistics
+                  :mod (p / performance)
+                  :prep-of (s2 / system
+                        :ARG1-of (r / run-01)))
+            :manner (a / attach-01
+                  :ARG2 (b / board
+                        :mod (c / circuit)
+                        :poss (c2 / cpu))
+                  :mod (d2 / direct))))
+
+# ::snt Software that provides utility and control functions such as setting communications parameters
+# ::term monitor
+# ::sntId 113
+# ::treeId 0
+# ::src manual
+(s / software
+      :ARG0-of (p / provide
+            :ARG1 (f / function
+                  :topic (a / and
+                        :op1 (u / utility)
+                        :op2 (c / control))
+                  :example (s2 / set-01
+                        :ARG1 (p2 / parameter
+                              :mod (c2 / communicate-01))))))
+

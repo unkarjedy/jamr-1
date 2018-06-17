@@ -12,11 +12,13 @@ package object GraphDecoder {
   def loadLabelset(filename: String): Array[(String, Int)] = {
     Source.fromFile(filename).getLines().toArray.map(x => {
       val split = x.split(" +")
-      (split(0), if (split.size > 1) {
+      // NAUMENKO: I moved peace of code to variable `weight`, but actually i do not know what its meaning is
+      val weight = if (split.size > 1) {
         split(1).toInt
       } else {
         1000
-      })
+      }
+      (split(0), weight)
     })
   }
 

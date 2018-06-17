@@ -1,0 +1,3019 @@
+# ::TODO validate variable uniqueness
+# ::note important link https://www.isi.edu/~ulf/amr/lib/amr-dict.html#be
+# ::note important link https://www.isi.edu/~ulf/amr/lib/amr-dict.html#of
+# ::note important link https://www.isi.edu/~ulf/amr/lib/amr-dict.html (search for "extraposition of subject clauses")
+
+# ::see https://www.isi.edu/~ulf/amr/lib/amr-dict.html#:medium
+# ::see https://www.isi.edu/~ulf/amr/lib/popup/rate-entity.html
+
+# ::see https://github.com/unkarjedy/amr-guidelines/blob/master/amr.md#implicit-roles
+# ::see https://github.com/unkarjedy/amr-guidelines/blob/master/amr.md#implicit-concepts
+
+# ::note My Diploma work was made using JAMR trained on LDC2014T12-proxy corpus.
+# ::note That year (2014) AMR was quite old and
+# ::note nowadays AMR is evolved a lot, e.g. there is "have-degree91" concept etc... So, because we compared our manipulations
+# ::note with JAMR trained on the old corpora we used old-fashioned way of expressing some things.
+# ::note Our GOLD AMRs should be reviewed and changed the way to be used in year >=2018
+# ::note (please review other notes/todos/...)
+
+# ::idea 1 for AMR parsing: we could try (in theory...) to separately parse two big parts of projective dependency tree (i mean corresponding subsentences)
+# ::idea 1 and then somehow combine resulting AMRs
+# :: LATER COMMENTS:
+# :: so we could train system on small subsets of frequently used patterns and the somehow combine those patterns
+# :: actually during training we could use not just exact words but sume templates including POS tags... because for some patterns
+# :: it is not critical what exact words are used
+# :: ALA "Split and Conquer!"
+
+
+# ::idea 2 Why those examples AMR have to unwrapp all the concepts to full AMR? Actually, when you see such AMR you do
+# :: understand what is the abstract meaning... when we see a concept like "investor" we do not usually try to expand
+# :: it to "(p / person :ARG0-of (i / invest-01))" in our brain... we could just use concept "investor" with implicit
+# :: or explicit reference to its AMR subgraph? And when we would like to go deeper of the meaning of the sentence that
+# :: contains concept "investor" we could expand it...
+# :: Read more: "Nouns that invoke predicates" (https://github.com/unkarjedy/amr-guidelines/blob/master/amr.md#nouns-that-invoke-predicates)
+
+# ::idea3 DIPLOMA (mention this problem and give examples)
+# ::idea3 About current evaluation of 2 AMR graphs equality...
+# ::idea3 Unfortunately current algorythm of evaluation "Smatch" is too straight-forward.
+# ::idea3 It does not take into account the level of proximity of two concepts, for example synonyms (e.g. "organization" vs "company")
+# ::idea3 For Smatch that two concepts are completely different...
+
+
+# ::idea4 One of the commong problematic patterns is when some predicates share objects and subjects, e.g.
+# ::idea4 "Camera captures and transmits images in real time for video calls". JAMR cant deal with them normally
+# ::idea4 When a human tries to understand the sentence it implicitly expands it to something like
+# ::idea4 "Camera captures images in real time for video calls and transmits images in real time for video calls"
+
+
+# ::note42 the critical part of decoding is using some probabilistic model with some determined ordered space of AMR trees
+# ::note42 because the same sentence could have several meanings and even when building GOLD (manual) AMR trees I did not
+# ::note42 always understand which meaning exactly should the sentence be treated with
+
+# ::TODO __ Review MODIFIED sentences
+# ::TODO Review for using :extent instead of :mod e.g. when seeing "worldwide" / "widely"
+# ::TODO Review using of "form of" pattern (see data-training.txt)
+# ::TODO Review using of consist-of
+# ::TODO Review using of "widely used" (should be use-01 :degree (w / wide))
+# ::TODO Review using of operating system (system :mod operate-01)
+# ::TODO Review using of "between" https://www.isi.edu/~ulf/amr/lib/amr-dict.html#between
+# ::TODO Review using have-degree91 (due to the fact that LDC2014T12-proxy corpus does not contain such structures i would suggest not using it currently)
+# ::TODO Review ":prep-for" vs ":beneficiary"?
+# ::TODO Review "running system" for "system :ARG1-of (r / run-01)" not ":ARG0"
+# ::TODO Review using of ":topic" (currenty is not used but i suppose that it should be...)
+
+
+# ::note Many of PropBank frames should be enhanced! New roles should be added.
+# ::note For example we have a predicate "occur-01" with only two roles.
+# ::note How can sentence like "an occurrence of text in a file" be expressed with that predicate?
+# ::note There is not any role that means "where the event occurred", we could use location but its meaning is too ambiguous!
+
+
+# ::DIPLOMA problem - no standards whether to use reification or not, thus the train/test data can be poluted with different versions
+# This fact is not taken into account when calculating degree of AMR equality using Smatch
+# For example :degree and :have-degree-91
+
+# ::DIPLOMA problem - some of the words are not presented in any dataset and it is not quite clear how to express them.
+# :: different corpora providers can do it in different way, some standardization is needed
+
+# ::CONCEPT_CANDIDATE: "master control program" (search in this file)
+
+
+
+
+# ::snt raw facts and figures , such as orders and payments , which are processed into information , such as balance due and quantity on hand
+# ::term data
+# ::sntId 0
+# ::treeId 0
+# ::todo 1) plurals (orderS)
+# ::todo 2) concept source (balance due - where from)
+# ::todo 3) what about a1/and??
+# ::note "quantity on hand" -?
+# ::note "balance due" -?
+# ::note: Problem: facts and figures but actually the meaning is facts or figures or both
+# ::note: perhaps examples are optional and can be removed (there can be "infinite" amount of examples, that does not mean that we have to build millions of AMRs
+# ::src manual
+(a / and
+      :op1 (f / fact)
+      :op2 (f2 / figure)
+      :mod (r / raw)
+      :example (a2 / and
+            :op1 (o / order)
+            :op2 (p / payment))
+      :ARG1-of (p2 / process-01
+            :ARG2 (i / information
+                  :example (a3 / and
+                        :op1 (d / due
+                              :mod (b / balance-01))
+                        :op2 (q / quantity
+                              :location (h / hand))))))
+# ::src jamr
+(a / and 
+      :op1 (d / due 
+            :ARG0-of (o / order-01 
+                  :ARG1 (s / such) 
+                  :ARG2 (s2 / such) 
+                  :op1-of (a2 / and 
+                        :ARG0-of (p / process-01 
+                              :ARG1 (i / information-777)) 
+                        :op2 (p2 / payment))) 
+            :ARG0-of (b / balance-01 
+                  :ARG1 (r / raw-777 
+                        :mod-of (f2 / fact 
+                              :op1-of (a3 / and 
+                                    :op2 (f / figure))))) 
+            :op1 (h / hand)) 
+      :op2 (q / quantity))
+
+# ::snt Any form of information whether on paper or in electronic form
+# ::term data
+# ::sntId 1
+# ::treeId 0
+# ::src manual 1
+(i / information
+      :location (o / or
+            :op1 (p / paper)
+            :op2 (f / form
+                  :mod (e / electronic)))
+      :mod (f2 / form
+            :mod (a / any)))
+# ::src manual 2
+(f / form
+      :pref-of (i / information
+            :location (o / or
+                  :op1 (p / paper)
+                  :op2 (f2 / form
+                        :mod (e / electronic))))
+      :mod (a / any))
+# ::note "electronic form" was not in terms set but "electronic formS" (plural) was - problem of dictionary? Try to manually add the word to set and see the effect.
+# ::src jamr
+(f2 / form-777 
+      :location (i / information-777 
+            :location (o / or 
+                  :op1 (p / paper) 
+                  :op2 (f / form-777 
+                        :mod (e / electronic-777))) 
+            :location (w / wheth)) 
+      :mod (a / any))
+
+# ::snt A group of related components that interact to perform a task
+# ::term system
+# ::sntId 2
+# ::treeId 0
+# ::note maybe part-of instead of subset-of?
+# ::note "group of related ANYTHING" looks like AMR pattern that is not specific to our dictionary
+# ::note maybe ":mod related" would be better the complex expression using "relate-01"?
+# ::note is it anyway ok/legal to use cyclic reference in "(r2 / relate-01 :ARG2 c)"?
+# ::src manual
+(g / group
+      :consist-of (c / component
+            :ARG1-of (r / relate-01)
+            :ARG0-of (i / interact-01
+                  :ARG1 c
+                  :purpose (p / perform-02
+                        :ARG1 (t / task)))))
+# ::src jamr
+(c / component 
+      :ARG1-of (r / relate-01 
+            :ARG2-of (p / perform-01 
+                  :ARG0 (g / group) 
+                  :ARG1 (t / task-777))))
+
+# ::snt A general-purpose machine that processes data according to a set of instructions stored internally
+# ::term computer
+# ::sntId 3
+# ::treeId 0
+# ::note purpose is optional? maybe just ARG0-of process-01 is enough
+# ::note can "general-purpose" be as a single concept?
+# ::note is it ok to use "internally" at store :ARG2 position?
+# ::todo very hard to express according to set of instructions, too context bound... (btw. see “according to” in amr-guidelines)
+# ::src manual 1 "that processes" as a purpose
+(m / machine
+      :mod general-purpose
+      :purpose (p / process-01
+            :ARG0 m
+            :ARG1 (d / data)
+            :prep-according-to (s / set
+                  :consist-of (i / instruction
+                        :ARG1-of (s2 / store
+                              :ARG2 internally)))))
+# ::src manual 2 "that processes" as a event
+(m / machine
+      :mod general-purpose
+      :ARG0-of (p / process-01
+            :ARG1 (d / data)
+            :prep-according-to (s / set
+                  :consist-of (i / instruction
+                        :ARG1-of (s2 / store
+                              :ARG2 internally)))))
+# ::src jamr
+(s3 / say-01
+      :ARG0 (s2 / set 
+            :consist-of (i2 / instruction 
+                  :ARG1-of (s / store-01 
+                        :ARG0 (i / internally)))) 
+      :ARG1 (m / machine-777 
+            :mod (p2 / purpose 
+                  :mod (g / general))) 
+      :ARG2 (p / processes-777 
+            :op1 (d / data-777)))
+
+# ::snt The most widely used operating system for desktop and laptop computers
+# ::term windows
+# ::sntId 4
+# ::treeId 0
+# ::note can't find nothing better than ":prep-for"
+# ::note actually "and" here does not meant logically and, that desktop and laptop should be used in couple... maybe it should be "or"?
+# ::src manual 1
+(s / system
+      :mod (o / operate-01)
+      :ARG1-of (u / use1-01
+            :degree (w / wide
+                  :degree (m / most)))
+      :beneficiary (c / computer
+            :mod (a / and
+                  :op1 desktop
+                  :op2 laptop)))
+# ::src jamr
+(a / and
+      :ARG1-of (u / use-01 
+            :ARG0 (o / operating-system-777) 
+            :degree (w / wide 
+                  :degree (m / most))) 
+      :op1 (d / desktop-777) 
+      :op2 (l / laptop-777) 
+      :op3 (c / computer))
+
+# ::snt Any arrangement of elements that are interconnected
+# ::term network
+# ::sntId 5
+# ::treeId 0
+# ::note "arrangement of" pattern was not met in the training set
+# ::note "that are interconnected" pattern looks like a "related components" pattern
+# ::src manual
+(a / arrangement
+      :ARG2 (e / element
+            :ARG1-of (i / interconnect-01)
+      :mod (a2 / any))
+# ::src jamr
+(a / arrange-01
+      :ARG1 (e / element 
+            :ARG1-of (i / interconnect-01)) 
+      :mod (a2 / any))
+
+# ::snt A system that transmits data between users , which includes the user devices and the network equipment
+# ::term network
+# ::sntId 6
+# ::treeId 0
+# ::note part1 actually in many sentences with "<obj1> that <action>" pattern "that <action>" can be treated both as :purpose and as a :ARG0-of predicate (as action)
+# ::note part2 actually "function" or "usage"/"use" role would fit better that just "purpose" role
+# ::note How to properly express "between users" in transmit-01 predicate?
+# ::src manual
+(s / system
+      :ARG0-of (е / transmit-01
+            :ARG1 (d / data)
+            :ARG2 (u / user)
+      :ARG2-of (i / include-91
+            :ARG1 (d / device
+                  :poss (u / user)))
+      :ARG2-of (i2 / include-91
+            :ARG1 (e / equipment
+                  :mod network)))
+# ::src jamr
+(a / and
+      :ARG1-of (i / include-01 
+            :ARG0 (u2 / user 
+                  :op1-of (b / between 
+                        :mod-of (d2 / data-777 
+                              :poss (s / system-777))))) 
+      :op1 (u / user-777) 
+      :op2 (d / device) 
+      :op3 (e / equipment-777 
+            :mod (n / network-777)))
+
+# ::snt A collection of bytes stored as an individual entity on the computer's hard drive or SSD
+# ::term file
+# ::sntId 7
+# ::treeId 0
+# ::src manual
+(c / collection
+      :consist-of (b / byte)
+      :ARG1-of (s / store-01
+            :location (o / or
+                  :op1 (s / SSD)
+                  :op2 (d / drive
+                        :mod (h / hard))))
+      :manner (todo / as an individual entity))
+# ::src jamr
+(c2 / collect-01
+      :ARG0 (i / individual) 
+      :ARG1 (b / byt 
+            :ARG1-of (s2 / store-01 
+                  :ARG0 (s / SSD-777 
+                        :op2-of (o / or 
+                              :op1 (h / hard-drive-777 
+                                    :mod (' / ') 
+                                    :poss (c / computer-777)))) 
+                  :ARG2 (e / entity-777))))
+
+# ::snt A collection of instructions that tell the computer what to do
+# ::term program
+# ::sntId 8
+# ::treeId 0
+# ::note "collection" word or "collection-01" frame or "collect-01" frame ?
+# ::note i use "thing" here and do not use "unknown" because it is not a question
+# ::src manual
+(c / collection
+      :consist-of (i / instructions)
+      :ARG0-of (t / tell-01
+            :ARG1 (t2 / thing
+                  :ARG0 c2
+                  :ARG1 do-02)
+            :ARG2 (c2 / computer)))
+# ::src jamr
+(t / tell-01
+      :ARG0 (i / instruction 
+            :ARG1-of (c2 / collect-01)) 
+      :ARG1 (d / do-02 
+            :ARG0 (c / computer-777) 
+            :ARG1 (a / amr-unknown)))
+
+# ::snt Data in binary form
+# ::term digital
+# ::sntId 9
+# ::treeId 0
+# ::src manual
+(d / data
+      :mod binary)
+# ::src jamr
+(f / form-777
+      :mod (b / binary-777))
+
+# ::snt Software that is used for business or entertainment
+# ::term application
+# ::sntId 10
+# ::treeId 0
+# ::note Quite a good result of JAMR! =)
+# ::src manual
+(s / software
+      :ARG1-of (u / use-01
+            :ARG2 (o / or
+                  :op1 business
+                  :op2 entertainment)))
+# ::src jamr
+(s / software
+      :ARG1-of (u / use-01 
+            :ARG2 (b / business 
+                  :op1-of (o / or 
+                        :op2 (e / entertainment-777)))))
+
+# ::snt An individual who uses a computer or some other equipment
+# ::term user
+# ::sntId 11
+# ::treeId 0
+# ::note JAMR is very close!
+# ::src manual
+(i / individual
+      :ARG0-of (u / use-01
+            :ARG1 (o2 / or
+                  :op1 (c / computer)
+                  :op2 (e / equipment
+                        :mod (o / other)))))
+# ::src jamr
+(i / individual
+      :cause (u / use-01 
+            :ARG1 (o2 / or 
+                  :op1 (c / computer-777) 
+                  :op2 (e / equipment-777 
+                        :mod (o / other) 
+                        :mod (s / some)))))
+
+# ::snt Any digital moving picture object , which includes a computer file in video formats such as MP4 , MOV , M4V , AVI , DivX or FLV
+# ::term video
+# ::sntId 12
+# ::treeId 0
+# ::note i am really not sure whether we want to place computer-file-777 concept... and in general use -777 concepts at all...
+# ::note maybe we would like to have some custom roles for our specific dictionay, like format-666
+# ::note really not sure about the AMR notation in this sentence...
+# ::src manual
+(o / picture
+      :ARG2-of (i / include-91
+            :ARG1 (f / file
+                  :mod (c / computer)
+                  :mod (f / format
+                        :domain video
+                        :example (o / or
+                           :op1 MP4
+                           :op2 MOV
+                           :op3 M4V
+                           :op4 AVI
+                           :op5 DivX
+                           :op6 FLV)))))
+      :mod (d / digital)
+      :mod (m / moving))
+# ::src jamr
+(i / include-01
+      :ARG0 (o2 / object-777 
+            :ARG1-of (m2 / move-02 
+                  :mod (d / digital-777)) 
+            :mod (p / picture-777) 
+            :mod (a / any)) 
+      :ARG1 (c / computer-file-777 
+            :location (v / video-formats-777 
+                  :op1-of (s / such) 
+                  :topic (m / MP-777 
+                        :op1-of (o / or 
+                              :op2 4 
+                              :op3 (f / FLV-777))))))
+
+# ::snt The moving picture technology developed for the television industry , initially for real-time capture and transmission and subsequently for recording and playback
+# ::term video
+# ::sntId 13
+# ::treeId 0
+# ::note How to be with :mod "moving picture"? Seeing how :mod are done in for example data-training.txt of LDC2014T12-proxy we can do as done below...
+# ::note The sabe problem with whether we should use for "developed for" ":purpose" or "develop-02"... if we use the second, the meaning of AMR will not be appropriate... =(
+# ::note see "develop-02" frame and its roles
+# ::note real-time capture is too context bound.... capture-01 seams to be useless, specific frameset needed
+# ::note quite complex "and" structure, it is hard to understand it...
+# ::note "recording-01" vs "record-01"? "transmission-02" vs "transmit-01"? Which should be prefered?
+# ::note what with "playback"?
+# ::todo check variable uniqueness
+# ::src manual
+(t / technology
+      :ARG1-of (d / develop-02
+            :time (i / initial)
+            :ARG3 (i2 / industry
+                  :mod television)
+            :ARG4 (a / and
+                  :op1 (c / capture-01
+                        :mod (r / real-time))
+                  :op2 (t / transmit-01)
+                  :op3 (r / record-01)
+                  :op4 (p / playback)))
+      :mod (p / picture
+            :ARG1-of move-01))
+# ::src jamr
+(a / and
+      :ARG0-of (m / move-02 
+            :ARG1 (t4 / technology-777 
+                  :ARG0-of (d / develop-02 
+                        :ARG1 (i2 / industry 
+                              :mod (t3 / television-777)) 
+                        :time (c / capture-777 
+                              :mod (t2 / time) 
+                              :op1-of (a3 / and 
+                                    :op2 (t / transmission-777) 
+                                    :op3 (a2 / and 
+                                          :mod (r2 / realty) 
+                                          :time (i / initial))))) 
+                  :mod (p2 / picture-777))) 
+      :op1 (r / record-01 
+            :ARG1 (s / subsequent)) 
+      :op2 (p / playback-777))
+
+# ::snt The computer's workspace , which is physically a collection of dynamic RAM chips
+# ::term memory
+# ::sntId 14
+# ::treeId 0
+# ::note !!! Quite a good JAMR result! Try to run without -777 detection
+# ::note Hmmm, right now it is hard to me to express "physically"
+# ::src manual
+(w / workspace
+      :poss (c / computer)
+      :ARG0-of (c2 / collect-01
+            :ARG1 (c3 / chip
+                  :mod (r / RAM
+                        :mod (d / dynamic)))))
+# ::note Where came this " / " symbol from??
+# ::src jamr
+(w / workspace
+      :mod (' / ') 
+      :poss (c3 / computer-777 
+            :ARG0-of (c2 / collect-01 
+                  :ARG1 (c / chip 
+                        :mod (d / dynamic-RAM-777)) 
+                  :op1-of (p / physically))))
+
+# ::snt A computer system in a network that is shared by multiple users
+# ::term server
+# ::sntId 15
+# ::treeId 0
+# ::note this sentence is really ambiguous - "that is shared" can be for "network" and for "system", i am sure that it should be highly dependent on dependency tree (todo: check)
+# ::note this is just another example of the fact that we should have some probabilistic model, like in PCFG
+# ::note can multiple be applied here?
+# ::src manual
+(s / system
+      :mod (c / computer)
+      :location (n / network)
+      :ARG1-of (s / share-01)
+            :ARG0 (u / user
+                  :quant (m / multiple))
+# ::src jamr
+(c / computer-system-777
+      :mod (n / network-777 
+            :ARG0-of (s / share-01 
+                  :ARG1 (u / user 
+                        :quant (m / multiple)))))
+
+# ::snt The white level of a display screen
+# ::term contrast
+# ::sntId 16
+# ::treeId 0
+# ::note see example for sentence "the wisdom of the girl" (https://www.isi.edu/~ulf/amr/lib/amr-dict.html#of)
+# ::src manual
+(l / level 
+      :domain (s / screen
+            :mod (d / display))
+      :mod (w / white))
+# ::src jamr
+(l / level
+      :mod (d / display-screen-777)
+      :mod (w / white))
+
+# ::snt Functionality derived from a particular software program
+# ::term service
+# ::sntId 17
+# ::treeId 0
+# ::note JAMR is very close 1) wrong root 2) a bit wrong ARGs for `derive-01`
+# ::src manual
+(f / functionality
+      :ARG1-of (d / derive-01
+            :ARG2 (p / program
+                  :mod (s / software)
+                  :mod (p / particular))))
+# ::src jamr
+(d / derive-01
+      :ARG0 (f / functionality) 
+      :ARG1 (s / software-program-777 
+            :mod (p / particular)))
+
+# ::snt The display area of a computer monitor or TV set
+# ::term screen
+# ::sntId 18
+# ::treeId 0
+# ::note rule Abbreviations are generally expanded (https://www.isi.edu/~ulf/amr/lib/amr-dict.html#abbreviation)
+# ::src manual
+(a / area
+      :part-of (o / or
+            :op1 (m / monitor
+                  :mod (c / computer)
+            :op2 (t / television)))
+      :mod (d / display))
+# ::src jamr
+(t / TV-777 
+      :mod-of (s / set 
+            :op3-of (o / or 
+                  :op1 (a / area 
+                        :mod (d / display-777)) 
+                  :op2 (m / monitor-777 
+                        :mod (c / computer-777)))))
+
+# ::snt A specification for hardware or software that is either widely used and accepted or is sanctioned by a standards organization
+# ::term standard
+# ::sntId 19
+# ::treeId 0
+# ::note how do we distinguish between "specification-01" as a process or event or "specification-01" as a noun?
+# ::note in data-training "specification" is used without "-01"
+# ::note How on earth parser can get the meaning of sanction? "sanction-01" or "sanction-02" ? Very deep context expertize is really needed.
+# ::note Hmm.... very complex sentence, on the othe hand "specification" should be on the top, on the other "or"...
+# ::note I think that in such case it is better to split one big AMR into two small peaces (split original sentence into two)
+# ::note 1st: Standard is a specification for hardware or software
+# ::note 2st: Such specification is either widely used and accepted or is sanctioned by a standards organization
+# ::note Anyway should we express that either
+# ::TODO: i don't know what to do with this currently...
+# ::note JAMR result is a complete disaster!
+# ::src manual 1
+(s / specification
+      :beneficiary (o / or
+            :op1 (h / hardware)
+            :op2 (s / software))
+      :ARG1-of (u / use-01
+            :mod (w / wide))
+(e / either
+      :op1 (a / and
+            :op1 (u / use-01
+                 :ARG1 s
+                 :mod (w / widely))
+            :op2 (a2 / accept-01
+                  :ARG1 s))
+      :op2 (s / sanction-01
+           :ARG0 (o / organization
+                 :mod (s2 / standard))))
+# ::src manual DRAFT PEACE 1
+(s / specification
+      :beneficiary (o / or
+            :op1 (h / hardware)
+            :op2 (s / software)))
+# ::src manual DRAFT PEACE 2
+(e / either
+      :op1 (a / and
+            :op1 (u / use-01
+                 :ARG1 s
+                 :mod (w / widely))
+            :op2 (a2 / accept-01
+                  :ARG1 s))
+      :op2 (s / sanction-01
+           :ARG0 (o / organization
+                 :mod (s2 / standard))))
+# ::src jamr
+(u / use-01
+      :ARG0 (e / eith) 
+      :op1-of (o2 / or) 
+      :op1-of (a2 / and 
+            :op2 (a / accept-01 
+                  :ARG1 (w / wide)) 
+            :op3 (s2 / sanction-01 
+                  :ARG0 (s4 / specification-777 
+                        :op1-of (o3 / or 
+                              :op2 (h / hardware-777) 
+                              :op3 (s3 / software-777))) 
+                  :ARG1 (o / organization-777 
+                        :mod (s / standards-777)))))
+
+# ::snt The entrance to the Internet or other online service or network
+# ::term access
+# ::sntId 20
+# ::treeId 0
+# ::note if we use "entrance" i don't know which role to use...
+# ::src manual 1
+(e / entrance-01
+      :ARG1 (o / or
+            :op1 (i / internet)
+            :op2 (s / service
+                  :mod (o / online))
+            :op3 (n / network
+                  :mod (o2 / other))))
+# ::note Quite close to JAM
+# ::note TODO !!! Hm... nested OR clauses could be logically collapsed somehow before comparing two JAMRs... !!!
+# ::src manual 2
+(e / entrance
+      :prep-to (o / or
+            :op1 (i / internet)
+            :op2 (s / service
+                  :mod (o / online))
+            :op3 (n / network
+                  :mod (o2 / other))))
+# ::src manual 3 hmm.... for me it is currently doubtful that this is OK
+(e / entrance
+      :destination (o / or
+            :op1 (i / internet)
+            :op2 (s / service
+                  :mod (o / online))
+            :op3 (n / network
+                  :mod (o2 / other))))
+# ::src jamr
+(e / entrance
+      :prep-to (o4 / or 
+            :op1 (i / Internet-777) 
+            :op2 (o2 / online-service-777) 
+            :op3 (o / or 
+                  :op1 (n / network-777 
+                        :mod (o3 / other)))))
+
+# ::snt The opportunity for use of a resource
+# ::term access
+# ::sntId 21
+# ::treeId 0
+# ::note MODIFIED SENTENCE!!!
+# ::note no idea where "computer security" could be... it is just a context constraint
+# ::src manual
+(o / opportunity
+      :prep-for (u / use-01
+            :ARG1 (r / resource)))
+# ::src jamr
+(o / opportunity
+      :beneficiary (u / use-01 
+            :ARG1 (r / resource-777)) 
+      :beneficiary (c / computer-security-777))
+
+# ::snt A specific edition or release of a software package
+# ::term version
+# ::sntId 22
+# ::treeId 0
+# ::src manual 1
+(o / or
+      :op1 (e / edition)
+      :op2 (r / release)
+      :poss (p / package
+            :mod (s / software))
+      :mod (s2 / specific))
+# ::src manual 2
+(o / or
+      :op1 (e / edition)
+      :op2 (r / release)
+      :domain (p / package
+            :mod (s / software))
+      :mod (s2 / specific))
+# ::src jamr
+(e / edition
+      :mod (s2 / specific) 
+      :op1-of (o / or 
+            :op2 (r / release-777 
+                  :poss (s / software-package-777))))
+
+# ::snt A direct access storage device
+# ::term disk
+# ::sntId 23
+# ::treeId 0
+# ::src manual
+(d / device
+      :mod (s / storage
+            :mod (a / access
+                  :mod (d2 / direct))))
+# ::src jamr
+(d / direct-access-storage-device-777)
+
+# ::snt Words , sentences and paragraphs
+# ::term text
+# ::sntId 24
+# ::treeId 0
+# ::src manual NOTHING TO DO
+# ::src jamr
+(a / and 
+      :op1 (w / word) 
+      :op2 (s / sentence-01) 
+      :op3 (p / paragraph))
+
+# ::snt The connection and interaction between hardware , software and the user
+# ::term interface
+# ::sntId 25
+# ::treeId 0
+# ::src manual TODO do not know how to express..
+# ::src jamr
+(a2 / and
+      :op1 (c / connect-01 
+            :ARG1 (h / hardware-777 
+                  :op1-of (b / between 
+                        :op2 (s / software-777)))) 
+      :op2 (i / interact-01 
+            :ARG0 (a / and 
+                  :op1 (u / user-777))))
+
+# ::snt In text-based systems , a row of characters
+# ::term line
+# ::sntId 26
+# ::treeId 0
+# ::node "In text-based systems" is just a context constraint
+# ::src manual
+(r / row
+      :consist-of (c / character))
+# ::src jamr
+(r / row-777
+      :poss (s / systems-777 
+            :ARG1-of (b / base-01 
+                  :ARG0 (c / character) 
+                  :location (t / text-777))))
+
+# ::snt In graphics-based systems , a row of pixels
+# ::term line
+# ::sntId 27
+# ::treeId 0
+# ::src manual
+(r / row
+      :consist-of (c / pixels))
+# ::src jamr
+(r / row-777 
+      :location (p / pixels-777 
+            :ARG0-of (b / base-01 
+                  :ARG1 (s / systems-777) 
+                  :location (g / graphics-777))))
+
+# ::snt A communications channel
+# ::term line
+# ::sntId 28
+# ::treeId 0
+# ::src manual ???
+# ::src jamr
+(c / communications-channel-777)
+
+# ::snt The permanent holding place for digital data , until purposely erased
+# ::term storage
+# ::sntId 29
+# ::treeId 0
+# ::note JAMR variant with "location-of" is good =)
+# ::note see example for until in data-training.txt ("The peace process is arduous but will not be abandoned until peace is achieved.")
+# ::src manual
+(p1 / place
+      :location-of (h / hold-01
+            :ARG0 (d / data
+                  :mod (d2 / digital))
+            :time (u / until
+                  :op1 (e / erase
+                        :ARG1 p
+                        :mod (p2 / purposely)))
+            :mod (p3 / permanent)))
+# ::src jamr
+(p2 / place
+      :location-of (h / hold-01 
+            :ARG0 (u / until 
+                  :op1 (p / purposely)) 
+            :ARG1 (d / digital-data-777)) 
+      :mod (p3 / permanent))
+
+# ::snt The structure of an item
+# ::term format
+# ::sntId 30
+# ::treeId 0
+# ::src manual
+(s / structure
+      :domain (i / item))
+# ::src jamr
+(s / structure-777 
+      :location (i / item-777))
+
+# ::snt Any electronic or electromechanical unit of equipment
+# ::term machine
+# ::sntId 31
+# ::treeId 0
+# ::src manual 1
+(t / thing
+       :mod (o / or
+             :op1 (e / electronic)
+             :op2 (e2 / electromechanical))
+       :part-of (e3 / equipment))
+# ::src manual 2
+(u / unit
+       :mod (o / or
+             :op1 (e / electronic)
+             :op2 (e2 / electromechanical))
+       :part-of (e3 / equipment))
+# ::src manual 3
+(u / unit
+       :mod (o / or
+             :op1 (e / electronic)
+             :op2 (e2 / electromechanical))
+       :domain (e3 / equipment))
+# ::src jamr
+(o / or 
+      :op1 (e3 / electronic-777) 
+      :op2 (u / unit 
+            :location (e / equipment-777) 
+            :mod (e2 / electromechanical-777) 
+            :mod (a / any)))
+
+# ::snt A set of symbols and rules used to convey information
+# ::term language
+# ::sntId 32
+# ::treeId 0
+# ::note Another example of pattern "used to". How should we treat it? "purpose" or ":ARG1-of use-01"
+# ::src manual 1
+(s / set
+      :consist-of (a / and
+            :op1 (s2 / symbol)
+            :op1 (r / rule))
+      :purpose (c / convey-01
+            :ARG1 (i / information)))
+# ::note see "https://verbs.colorado.edu/propbank/framesets-english-aliases/use.html"
+# ::src manual 2
+(s / set
+      :consist-of (a / and
+            :op1 (s2 / symbol)
+            :op1 (r / rule))
+      :ARG1-of (u / use-01
+            :ARG2 (c / convey-01
+                  :ARG1 (i / information))))
+# ::src jamr
+(a / and
+      :op1 (t / thing 
+            :ARG1-of (s / symbolize-01) 
+            :consist (s2 / set 
+                  :ARG1-of (u / use-01 
+                        :ARG2 (i / information-777)))) 
+      :op2 (r / rules-777))
+
+# ::snt Any laptop or desktop computer such as a Windows , Mac or Linux machine
+# ::term pc
+# ::sntId 33
+# ::treeId 0
+# ::note not sure how to indicate laptop or desktop computer.... i suppose those should be non-splittable terms? Synonims for "laptop"? "laptop computer" should be somehow detected ant treated as single concept "laptop"
+# ::note "such as" becomes one of the most-used patterns... stands for ":example"
+# ::todo name entities should be used here i suppose (for Windows, Mac, Linux)
+# ::note NER did very badly (search for JAMR postprocessing outputs), did not recognize Mac & Linux
+# ::todo CHANGE NamedEntityTagger
+# ::src manual
+(o / or
+      :op1 (l / laptop)
+      :op2 (d / desktop)
+      :example (m / machine
+            :mod (o2 / or
+                  :op1 "Windows"
+                  :op1 "Mac"
+                  :op1 "Linux")))
+# ::src jamr
+(d / desktop-computer-777 
+      :cause-of (s / such) 
+      :mod (a / any) 
+      :op2-of (o2 / or 
+            :op1 (l2 / laptop-777)) 
+      :poss (m / machine-777 
+            :op3-of (o / or 
+                  :op1 (t / thing 
+                        :name (n / name 
+                              :op1 "Windows" 
+                              :op2 "," 
+                              :op3 "Mac")) 
+                  :op2 (l / Linux-777))))
+
+# ::snt A program module or routine that enhances the functionality of a program
+# ::term control
+# ::sntId 34
+# ::treeId 0
+# ::note actually both can be valid (with coreference and without), it highly-depends on the context...
+# ::src manual 1 with coreference
+(o / or
+      :op1 (m / module
+            :domain (p / program))
+      :op2 (r / routine)
+      :ARG0-of (e / enhance-01
+            :ARG1 (f / functionality
+                  :domain p)))
+# ::src manual 2 without coreference
+(o / or
+      :op1 (m / module
+            :domain (p / program))
+      :op2 (r / routine)
+      :ARG0-of (e / enhance-01
+            :ARG1 (f / functionality
+                  :domain program)))
+# ::src jamr
+(p2 / program-module-777
+      :op1-of (o / or 
+            :cause (r / routine-777 
+                  :cause (f / functionality-777 
+                        :mod (p / program)))))
+
+# ::snt Creating a computer program
+# ::term programming
+# ::sntId 35
+# ::treeId 0
+# ::note ":mod (c / computer)))" or ":domain (c / computer)))" ?
+# ::src manual
+(c / create-01
+      :ARG1-of(p / program
+            :mod (c / computer)))
+# ::src jamr
+(c / computer-program-777)
+
+# ::snt A set of machine symbols that represents data or instructions
+# ::term code
+# ::sntId 36
+# ::treeId 0
+# ::note JAMR is very close!
+# ::note see "represent-01" and "represent-02" difference (https://verbs.colorado.edu/propbank/framesets-english-aliases/represent.html)
+# ::src manual
+(s2 / set
+      :ARG0-of (r / represent-02
+            :ARG1 (o / or
+                  :op1 (d / data)
+                  :op2 (i / instruction)))
+      :consist-of (s / symbol
+            :mod (m / machine)))
+# ::src jamr
+(s2 / set
+      :ARG0-of (r / represent-01 
+            :ARG1 (o / or 
+                  :op1 (d / data-777) 
+                  :op2 (i / instruction))) 
+      :consist-of (t / thing 
+            :ARG1-of (s / symbolize-01 
+                  :ARG0 (m / machine-777))))
+
+# ::snt Any representation of one set of data for another
+# ::term code
+# ::sntId 37
+# ::treeId 0
+# ::note Hmmm, here "one" does not really stands for "quantity"... it should be very difficult for parsers to understand... some pattern should be learnt for "one"..."another/other"
+# ::note Actually "another" should be implicitly treated as "another set of data" this should also be somehow learned by model
+# ::note todo Do not know how to express "for another" another properly, is another like an article here?
+# ::src manual
+(r / represent-02
+      :ARG1 (s / set
+            :consist-of (d / data))
+      :ARG2 (s2 / set
+            :consist-of (d / data))
+      :mod (a / any))
+# ::src jamr
+(r / representation
+      :mod (a2 / any
+            :time-of (s / set-03
+                  :ARG0 1
+                  :time (d / data-777)
+                  :time (a / another))))
+
+# ::snt The range of frequencies within human hearing , which is approximately 20Hz at the low end to a high of 20000Hz
+# ::term audio
+# ::sntId 38
+# ::treeId 0
+# ::note see for examples of "range of" in data-training.txt
+# ::note This "range of frequencies within human hearing" is really hard to annotate even for person!
+# ::note How to express "within" properly?? Ther should be implicit "range": "within human hearing range"?
+# ::src manual 1 TODO: HAARD!
+(f / frequency
+      :quant (r / range))
+# ::src manual 2 TODO: HAARD!
+(r / range
+      :consist-of (f / frequency))
+# ::src jamr
+(r / range-777
+      :ARG0-of (e / end-01 
+            :ARG2 (l / low) 
+            :destination (h / high) 
+            :location (2 / 20000Hz 
+                  :mod (a / approximately))) 
+      :mod (f / frequenci) 
+      :mod (h2 / hearing 
+            :mod (h3 / human) 
+            :op1-of (w / within)))
+
+# ::snt Manipulating data within the computer
+# ::term processing
+# ::sntId 39
+# ::treeId 0
+# ::src manual
+(m / manipulate-01
+      :ARG1 (d / data)
+      :location (c / computer))
+# ::src jamr
+(d / data-777
+      :mod (m / manipulate) 
+      :mod (w / within 
+            :op1 (c / computer-777)))
+
+# ::snt A number computed from the contents of a text message that is used to prove the integrity of a message
+# ::term mac
+# ::sntId 40
+# ::treeId 0
+# ::note see example of "content of" in data-training.txt
+# ::note Another example of pattern "that is used to". How should we treat it? "purpose" or ":ARG1-of use-01"
+# ::note see "https://verbs.colorado.edu/propbank/framesets-english-aliases/use.html"
+# ::src manual 1 ":domain message"
+(n / number
+      :ARG2-of (c / compute-01
+            :ARG1 (t / thing
+                  :ARG1-of (c2 / contain-01
+                        :ARG0 (m / message
+                              :mod text))))
+      :ARG1-of (u / use-01
+            :ARG2 (c / prove-01
+                  :ARG1 (i / integrity
+                        :domain message))))
+# ::src manual 2 ":poss message"
+(n / number
+      :ARG2-of (c / compute-01
+            :ARG1 (t / thing
+                  :ARG1-of (c2 / contain-01
+                        :ARG0 (m / message
+                              :mod text))))
+      :ARG1-of (u / use-01
+            :ARG2 (c / prove-01
+                  :ARG1 (i / integrity
+                        :poss message))))
+# ::src manual 3 ":purpose"
+(n / number
+      :ARG2-of (c / compute-01
+            :ARG1 (t / thing
+                  :ARG1-of (c2 / contain-01
+                        :ARG0 (m / message
+                              :mod text))))
+      :purpose (c / prove-01
+                  :ARG1 (i / integrity
+                        :poss message)))
+# ::src jamr
+(u / use-01
+      :ARG0 (n / number) 
+      :ARG1 (t / text-message-777 
+            :topic-of (c / content)) 
+      :ARG2 (i / integrity-777 
+            :location (m / message-777)))
+
+# ::snt The format and procedure that governs the transmitting and receiving of data
+# ::term protocol
+# ::sntId 41
+# ::treeId 0
+# ::subgraph 1 for "transmitting and receiving of data" -> "data that is being transmitted and received"
+(d / data
+   :ARG1-of (t / transmit-01)
+   :ARG1-of (r / recieve-01))
+# ::subgraph 1 for "transmitting and receiving of data" -> "data that is being transmitted and received"
+(d / data
+   :ARG1-of (t / transmit-01
+         :op1-of (a / and
+               :op2 (r / recieve-01
+                     :ARG1 d))))
+# ::src manual
+(a  / and
+      :op1 (f / format)
+      :op2 (p / procedure)
+      :ARG0-of (g / govern-01
+            :ARG1 (a / and
+                  :op1 (t / transmit-01
+                        :ARG1 (d / data))
+                  :op2 (r / receive-01
+                        :ARG1 d))))
+# ::src jamr
+(a / and
+      :op1 (t / transmit) 
+      :op2 (r / receive-01 
+            :ARG0 (a2 / and 
+                  :op1 (f / format) 
+                  :op2 (p / procedure-777)) 
+            :ARG1 (d / data-777)))
+
+# ::snt The layout of a graphical user interface , which simulates a physical desktop by allowing objects to be placed anywhere on its surface
+# ::term desktop
+# ::sntId 42
+# ::treeId 0
+# ::note search examples of "by allowing" by regexp "by \w+?ing" in data-training.txt
+# ::src manual
+(l / layout
+      :poss (i / interface
+            :mod (u / user
+                  :mod (g / graphical)))
+      :ARG0-of (s / simulate-01
+            :ARG1 (d / desktop
+                  :mod (p / physical))
+            :manner (a / allow-01
+                  :ARG1 (r / place-01
+                        :ARG1 (o / object)
+                        :ARG2 (s / surface
+                              :poss d)))))
+# ::src jamr
+(p / place-01
+      :ARG0 (l / layout) 
+      :ARG1 (a / anywhere) 
+      :ARG2 (s / surface-777) 
+      :purpose-of (a2 / allow-01 
+            :ARG0 (d / desktop-777 
+                  :mod (p2 / physical-777)) 
+            :ARG1 (o / objects-777) 
+            :time (g / graphical-user-interface-777)))
+
+# ::snt A segment of a running program that is transferred back and forth between memory and disk
+# ::term page
+# ::sntId 43
+# ::treeId 0
+# ::note which ARG1 is in ":ARG1-of (t / transfer-01)" really depends on the structure of dependency tree. In this case JAMR did wrong...
+# ::note how to express "back and forth"? and should it be?
+# ::src manual 1
+(s / segment
+      :part-of (p / program
+            :ARG1-of (r / run-01))
+      :ARG1-of (t / transfer-01
+            :ARG3(a / and
+                  :op1 (m / memory)
+                  :op2 (d / disk))
+            :ARG4(a / and
+                  :op1 d
+                  :op2 m)))
+# ::src manual 2
+(s / segment
+      :part-of (p / program
+            :ARG1-of (r / run-01))
+      :ARG1-of (t / transfer-01
+            :manner (b / between
+                  :op1 (m / memory)
+                  :op2 (d / disk))))
+# ::src jamr
+(a2 / and 
+      :op1 (t / transfer-01 
+            :ARG0 (p / program 
+                  :mod (r / run-01) 
+                  :mod-of (s / segment-777)) 
+            :ARG2 (b / between 
+                  :op1 (m / memory-777 
+                        :op1-of (a / and 
+                              :op2 (d / disk-777)))) 
+            :direction (b2 / back)) 
+      :op2 (f / forth))
+
+# ::snt A set of microminiaturized , electronic circuits fabricated on a single piece of semiconducting material
+# ::term chip
+# ::sntId 44
+# ::treeId 0
+# ::note "set of <something>" should be a strong pattern already... many occurrences...
+# ::note should "microminiaturized" be in mod or as a predicate "miniaturize"?
+# ::note todo what should ":location" mean from the perspective of the AMR reader??? 1) "Where it was fabricated?" or maybe 2) "On what it was fabricated"
+# ::note for now i will just use "prep-on"
+# ::note see "https://www.isi.edu/~ulf/amr/lib/amr-dict.html#:consist-of" "substance that something is composed of"
+# ::note Should "semiconducting" be split up to subrapsh with "conduct-03" as a root? Hmm... don't think so... too complex. Let it be just ":mod semiconducting" for now
+# ::src manual
+(s / set
+      :consist-of (c / circuit
+            :mod (e / electronic))
+            :ARG1-of (m / miniaturize-01
+                  :degree (m2 / micro))
+      :ARG1-of (f / fabricate-01
+            :prep-on (p / piece
+                  :consist-of (m3 / material
+                        :ARG1-of (c2 / conduct-03
+                              :mod (s / semiconducting))))))
+# ::src jamr
+(s3 / set
+      :consist-of (c / circuit 
+            :ARG1-of (f / fabricate-01 
+                  :ARG0 (s / semiconduct 
+                        :mod-of (m / material)) 
+                  :ARG2 (p / piece 
+                        :mod (s2 / single))) 
+            :mod (e / electronic-777) 
+            :mod (m2 / microminiaturiz)))
+
+# ::snt A screen or monitor
+# ::term display
+# ::sntId 45
+# ::treeId 0
+# ::note definition plays a role of list of synonyms
+# ::src manual
+(o / or
+      :op1 (s / screen)
+      :op2 (m / monitor))
+# ::src jamr
+(s / screen-777
+      :op1-of (o / or 
+            :op2 (m / monitor-777)))
+
+# ::snt A set of related files that is created and managed by a database management system
+# ::term database
+# ::sntId 46
+# ::treeId 0
+# ::note Hmm... in this case i am sure database management system should go as one -777 term
+# ::note TODO at the same time we do not want to use all of the terms in the terms list as -777 always because some of the words can be used outside our dictionarry context
+# ::note TODO perhaps we should manually highlight the words that are 99% from -777 terms... e.g. database management system can't be used in some other context!
+# ::note TODO + probably those terms should be those that are not presented in FramesSet
+# ::note TODO the point to such a suggestion is that in AMR for example "TV-set" is parsed as a "television"
+# ::note search examples of "related \w+" in data-training.txt
+# ::note I AM SURE that in such structures "and" should not be encoded literally as (a / and). Cant we just place two ":ARG1-of" to set
+# ::src manual 0
+(s / set
+      :consist-of (f / file
+            :ARG1-of (r / relate-01))
+      :ARG1-of (c / create-01
+            :ARG0 (s2 / system
+                  :mod (d / database
+                        :domain (m / management))
+            :op1-of (a / and
+                  :op2 c))
+      :ARG1-of (m / manage-01
+            :ARG0 s))
+# ::src manual 1 without "(a / and)"
+(s / set
+      :consist-of (f / file
+            :ARG1-of (r / relate-01))
+      :ARG1-of (c / create-01
+            :ARG0 (s / database-management-system-777))
+      :ARG1-of (c / manage-01
+            :ARG0 s))
+# ::src manual 2 with "(a / and)"
+(s / set
+      :consist-of (f / file
+            :ARG1-of (r / relate-01))
+      :ARG1-of (c / create-01
+            :ARG0 (s / database-management-system-777)
+            :op1-of (a / and
+                  :op2 c))
+      :ARG1-of (c / manage-01
+            :ARG0 s))
+# ::src jamr
+(a / and
+      :op1 (c / create-01 
+            :ARG1 (d / database-management-system-777)) 
+      :op2 (m / manage-02 
+            :ARG1 (r / related-files-777 
+                  :consist (s / set))))
+
+# ::snt The computer's display system
+# ::term graphics
+# ::sntId 47
+# ::treeId 0
+# ::src manual
+(s / system
+      :mod (d / display)
+      :poss (c / computer))
+# ::src jamr
+(s / system-777
+      :location (c / computer-777) 
+      :mod (d / display-777) 
+      :mod (' / '))
+
+# ::snt The most successful software company in the industry
+# ::term microsoft
+# ::sntId 48
+# ::treeId 0
+# ::note "the industry" tells us that in "software industry", that is why we have a coreference ((i / industry :mod s)).
+# ::note But I can't even hope that some parsing algorithm will detect that... =)
+# ::src manual 1 "have-degree-91"
+(c / company
+      :mod (s / software)
+      :ARG1-of (h / have-degree-91
+            :ARG2 (s2 / successful)
+            :ARG3 (m / most))
+            :ARG5 (i / industry
+                  :mod s))
+# ::src note (search by " most \w+? .*?in the .*? " in data-training.txt) sometimes they do ot use "have-degree-91"
+# ::src note but i thing that it is an old way of expressing degree...
+# ::src manual 2 ":mod (m / most)"
+(c / company
+      :mod (s / software)
+      :mod (s2 / successful
+            :degree (m / most)
+            :compared-to (i / industry
+                  :mod s)))
+# ::src jamr
+(s / software-777
+      :mod-of (c / company 
+            :ARG1-of (s2 / succeed-01 
+                  :degree (m / most)) 
+            :poss (i / industry)))
+
+# ::snt Transmission through the air
+# ::term wireless
+# ::sntId 49
+# ::treeId 0
+# ::src manual
+(t / transmit-01
+      :instrument (a / air))
+# ::src jamr
+(a / air)
+
+# ::snt The transmission of text messages from sender to recipient
+# ::term e-mail
+# ::sntId 50
+# ::treeId 0
+# ::todo see on JAMRs result without using transmission-777 (transmit-01 IS IN FrameSet! so we should not override it with -777 version)
+# ::src manual
+(t / transmit-01
+      :ARG0 (s / sender)
+      :ARG1 (m / messages)
+      :ARG2 (r / recipient))
+# ::src jamr
+(t2 / transmission-777
+      :mod (s / send 
+            :destination (r / recipient-777)) 
+      :topic (m / message 
+            :mod (t / text-777)))
+
+# ::snt An electromechanical device that contains and reads and writes magnetic disks , optical discs or magnetic tapes
+# ::term drive
+# ::sntId 51
+# ::treeId 0
+# ::note it can be with "(a / and)" and without it... and would not really matter here. and can be added to `c`, `r` or `w`
+# ::src manual
+(d / device
+      :mod (e / electromechanical)
+      :ARG0-of (c / contain-01
+            :ARG1 (o / or
+                  :op1 (d2 / disk
+                        :mod (m  / magnetic)))
+                  :op2 (d3 / disk
+                        :mod (o2  / optical))
+                  :op3 (t / tape
+                        :mod (m2 / magnetic)))
+      :ARG0-of (r / read-01
+            :ARG1 (o / or
+                  :op1 d2
+                  :op2 d3
+                  :op3 t))
+      :ARG0-of (w / write-01
+            :ARG1 (o / or
+                  :op1 d2
+                  :op2 d3
+                  :op3 t))
+# ::src jamr
+(a2 / and
+      :op1 (c / contain-01 
+            :ARG0 (d3 / device-777 
+                  :mod (e / electromechanical-777)) 
+            :ARG1 (d2 / disks-777 
+                  :mod (m / magnetic)) 
+            :op1-of (a / and) 
+            :op1-of (o / or 
+                  :op2 (d / disc 
+                        :mod (o2 / optics)) 
+                  :op3 (t / tap))))
+
+# ::snt A solid state flash drive that contains no moving parts
+# ::term drive
+# ::sntId 52
+# ::treeId 0
+# ::note not sure that we cant use "s / solid-state" like that
+# ::note JAMR is 100% wrong about "move-02" (see "move.02 - take measures...")
+# ::note One of the problem is that "no moving parts" is very similar to "non-moving parts", even for a man it is quite hard to determine who does "no" belong to - "contains no" or "no moving"?
+# ::src manual
+(d / drive
+      :mod (f / flash)
+      :mod (s / solid-state)
+      :ARG0-of (c / contain-01
+            :ARG1 (p / part
+                  :ARG1-of (m / move-01))
+            :polarity -))
+# ::src jamr
+(c / contain-01
+      :ARG0 (f / flash-drive-777 
+            :mod (s / solid-state-777)) 
+      :ARG1 (p / part 
+            :ARG0-of (m / move-02 
+                  :ARG1 -)))
+
+# ::snt One of the world's oldest and largest computer companies with revenues of USD $93 billion in 2014
+# ::term ibm
+# ::sntId 53
+# ::treeId 0
+# ::note search for "one of the <superset>" pattern in "data-training.txt" this is quite a complex pattern to parse... "superset ", e.g. "companies" must be used twice (see examples)
+# ::note search exactly "one of the largest"
+# ::note ...thus JAMR had no chances
+# ::TODO revenues?  I doubt that it the parser could or should do some logical inference like "company with revenues" -> "company earns..." -> "earn-01 :ARG0 company"
+# ::TODO perhaps this is a work for some next stages that analise the AMR parser output and make some inference?
+# ::TODO On the other hand... AMR does not tell anything about parsing...
+# ::src manual 1 with "have-degree-91"
+(c / company
+      :quant 1
+      :ARG1-of (i / include-91
+            :ARG2 (c2 / company
+                  :mod (c3 / computer)
+                  :ARG1-of (h / have-degree-91
+                        :ARG2 (o / old-01
+                              :ARG1 c2)
+                         :ARG3 (m / most))
+                  :ARG1-of (h2 / have-degree-91
+                         :ARG2 (l / large-01
+                               :ARG1 c2)
+                         :ARG3 (m2 / most)))))
+# ::note not sure which to use: "old" or "old-01", "large" or "large-01"... in data-training they do not use "-01" for those...
+# ::src manual 2 with ":mod"
+(c / company
+      :ARG1-of (i / include-91
+            :ARG2 (c2 / company
+                  :mod (c3 / computer)
+                  :mod(o / old
+                        :degree (m / most))
+                  :mod (l / large
+                        :degree (m2 / most)))))
+# ::src jamr
+(a / and
+      :op1 (c / company 
+            :cause (l / large 
+                  :degree (m / most)) 
+            :op1-of (r / revenu 
+                  :location (u / USD-777 
+                        :op1 (9 / 93 
+                              :mod-of (b / billion-777))) 
+                  :quant 1) 
+            :poss (w / world 
+                  :mod (d / date-entity 
+                        :year 2014)) 
+            :quant (c2 / computer-777)) 
+      :op1-of (o / old 
+            :op1-of (' / ')))
+
+# ::snt Any information that is available for retrieval by the user Including Web pages , images , music , audio , white papers , driver and software downloads as well as training , educational and reference materials
+# ::term content
+# ::sntId 54
+# ::treeId 0
+# ::note MODIFIED SENTENCE!!!
+# ::src jamr
+(r / reference-01 
+      :location (u / user-777 
+            :location-of (a4 / available 
+                  :cause (i2 / information-777 
+                        :domain (c / content-777) 
+                        :mod (a5 / any) 
+                        :topic (i3 / Internet-777)) 
+                  :purpose (r2 / retrieval))) 
+      :op3-of (a / and 
+            :mod-of (p2 / page 
+                  :mod (w3 / Web-777) 
+                  :op1-of (a2 / and 
+                        :op2 (i / image) 
+                        :op3 (m2 / music) 
+                        :op4 (a3 / audio-777) 
+                        :op5 (p / paper 
+                              :mod (w2 / white)) 
+                        :op6 (d2 / driver-777) 
+                        :op7 (d / download 
+                              :cause-of (w / well) 
+                              :mod (s / software-777)))) 
+            :op1 (t / training-777) 
+            :op2 (e / educational) 
+            :op4 (m / material)))
+
+# ::snt To engage a file for reading and writing
+# ::term open
+# ::sntId 55
+# ::treeId 0
+# ::note it is written "reading and writing" but actually the meaning is "reading or writing" =)
+# ::src manual
+(e / engage-01
+      :ARG1 (f / file)
+      :ARG2 (a / and
+            :op1 (r / read
+                  :ARG1 f)
+            :op2 (w / write)))
+# ::src jamr
+(e / engage-01
+      :ARG0 (a / and 
+            :op1 (r / read) 
+            :op2 (w / write-01)) 
+      :ARG1 (f / file-777))
+
+# ::snt The communications technology used worldwide in local networks , wide area networks and the Internet
+# ::term ip
+# ::sntId 56
+# ::treeId 0
+# ::src manual
+(t / technology
+      :mod (c / communication)
+      :ARG1-of (u / use-01
+            :extent (w / worldwide))
+            :ARG2 (a / and
+                  :op1 (n / network
+                        :mod (l / local))
+                  :op2 (n2 / network
+                        :mod (a2 / area
+                              :mod (w2 / wide)))
+                  :op3 (i / internet)))
+# ::src jamr
+(a / and
+      :op1 (u / use-01 
+            :ARG0 (c / communications-777) 
+            :ARG1 (t / technology-777) 
+            :ARG2 (n2 / network 
+                  :mod (l / local-777)) 
+            :location (w2 / worldwide)) 
+      :op2 (n / network 
+            :consist-of (a2 / area) 
+            :mod (w / wide)) 
+      :op3 (i / Internet-777))
+
+# ::snt The numeric address assigned to every laptop and desktop computer , server , router , smartphone and tablet in an IP network
+# ::term ip
+# ::sntId 57
+# ::treeId 0
+# ::src manual
+(a / address
+      :mod (n / numeric)
+      :ARG1-of (a2 / assign-01
+            :ARG2 (a3 / and
+                  :op1 (c / computer
+                        :mod (e / every)
+                        :mod (l / laptop)
+                        :mod (d / desktop))
+                  :op2 (s / server)
+                  :op3 (r / router)
+                  :op4 (s2 / smartphone)
+                  :op5 (t / tablet)
+                  :location (n2 / network
+                        :mod (i / ip)))))
+# ::src jamr
+(a / and
+      :op1 (d / desktop-computer-777 
+            :location-of (i / IP-network-777) 
+            :op2-of (a2 / and 
+                  :op1 (a3 / assign-01 
+                        :ARG0 (a4 / address-777 
+                              :mod (n / numeric)) 
+                        :ARG1 (l / laptop-777 
+                              :mod (e / every))))) 
+      :op2 (s2 / server-777) 
+      :op3 (r / router-777) 
+      :op4 (s / smartphone-777) 
+      :op5 (t / tablet-777))
+
+# ::snt A keyboard button
+# ::term key
+# ::sntId 58
+# ::treeId 0
+# ::src manual
+(b / button
+      :mod (k / keyboard))
+# ::src jamr
+(b / button-777
+      :mod (k / keyboard-777))
+
+# ::snt A numeric code that is used to encrypt text for security purposes
+# ::term key
+# ::sntId 59
+# ::treeId 0
+# ::src manual
+(c / code
+      :mod (n / numeric)
+      :ARG1-of (u / use-01
+            :ARG2 (e / encrypt
+                  :ARG1 (t / text)
+                  :purpose (s / security))))
+# ::src jamr
+(u / use-01
+      :ARG0 (p / purpose 
+            :mod (s / security-777)) 
+      :ARG1 (c / code-777 
+            :mod (n / numeric)) 
+      :ARG2 (e / encrypt-777 
+            :op1 (t / text-777)))
+
+# ::snt An essential field in a database record
+# ::term key
+# ::sntId 60
+# ::treeId 0
+# ::src manual
+(f / field
+      :mod (e / essential)
+      :location (r / record
+            :mod (d / database)))
+# ::src jamr
+(f / field-777
+      :location (d / database-record-777) 
+      :mod (e / essential))
+
+# ::snt A wireless charging system
+# ::term key
+# ::sntId 61
+# ::treeId 0
+# ::src manual
+(s / system
+      :instrument-of (с / charge-03
+            :manner (w / wireless)))
+# ::src jamr
+(s / system-777
+      :location (w / wireless-charging-777))
+
+# ::snt The transfer of data over a communications channel
+# ::term transmission
+# ::sntId 62
+# ::treeId 0
+# ::note maybe it should be ":instrument-of (communicate-01)" instead of ":mod (communicate-01)"?
+# ::src manual
+(t / transfer-01
+      :ARG1 (d / data)
+      :instrument (c / channel
+            :mod (communicate-01)))
+# ::src jamr
+(t / transfer-777
+      :location (d / data-777 
+            :mod (o / over 
+                  :op1 (c / communications-channel-777))))
+
+# ::snt The computing part of the computer
+# ::term cpu
+# ::sntId 63
+# ::treeId 0
+# ::src manual 1
+(p / part
+      :ARG0-of (c / compute-01)
+      :part-of (c2 / computer))
+# ::src manual 2
+(t / thing
+      :ARG0-of (c / compute-01)
+      :part-of (c2 / computer))
+# ::src jamr
+(c / computer-777)
+
+# ::snt The processing that an object performs
+# ::term method
+# ::sntId 64
+# ::treeId 0
+# ::note MODIFIED SENTENCE!!!
+# ::src manual
+(p / process-01
+      :ARG0 (o / object))
+# ::src jamr
+(p / processing-777
+      :domain (m / method-777) 
+      :mod (o / object-777) 
+      :poss (o2 / object-technology-777))
+
+# ::snt The location of a Web site or other Internet facility
+# ::term address
+# ::sntId 65
+# ::treeId 0
+# ::manual JAMR is very close!
+# ::src manual
+(l / location
+      :location-of (o / or
+            :op1 (s  / site
+                  :mod (w / web))
+            :op2 (f / facility
+                  :mod (o2 / other)
+                  :mod (i / internet))))
+# ::src jamr
+(l / location 
+      :op1-of (o2 / or 
+            :op2 (w / Web-site-777) 
+            :op3 (f / facility 
+                  :mod (i / Internet-777) 
+                  :mod (o / other))))
+
+# ::snt The common hostname for a Web server
+# ::term www
+# ::sntId 66
+# ::treeId 0
+# ::src manual
+(h / hostname
+      :mod (c / common)
+      :beneficiary (s / server
+            :mod (w / web)))
+# ::src jamr
+(h / hostname-777
+      :location (w / Web-server-777) 
+      :mod (c / common))
+
+# ::snt Any form of information Including music and movies
+# ::term media
+# ::sntId 67
+# ::treeId 0
+# ::src manual
+(i / information
+      :mod (f / form)
+      :ARG2-of (i2 / include-01
+            :ARG1 (a / and
+                  :op1 (m / music)
+                  :op2 (m / movie))))
+# ::src jamr
+(a / and
+      :op1 (m2 / music 
+            :topic-of (i / information-777 
+                  :location-of (f / form-777 
+                        :mod (a2 / any)))) 
+      :op2 (m / movi))
+
+# ::snt The computer's internal storage unit
+# ::term word
+# ::sntId 68
+# ::treeId 0
+# ::src manual
+(u / unit
+      :ARG2-of (s / store-01
+            :mod (i / internal))
+      :part-of (c / computer))
+# ::src jamr
+(u / unit
+      :mod (i / internal-storage-777) 
+      :mod (' / ') 
+      :poss (c / computer-777))
+
+# ::snt An umbrella term for any company or association
+# ::term organization
+# ::sntId 69
+# ::treeId 0
+# ::src manual
+(t / term
+      :mod (u / umbrella)
+      :prep-fore (o / or
+            :op1 (c / company)
+            :op2 (a / association)
+            :mod (a2 / any)))
+# ::src jamr
+(u / umbrella-term-777
+      :ARG1-of (a / associate-01 
+            :op2-of (o / or 
+                  :op1 (c / company) 
+                  :quant (a2 / any))))
+
+# ::snt A program that lets you look through a collection of data
+# ::term browser
+# ::sntId 70
+# ::treeId 0
+# ::TODO do not know how to express
+# ::src manual
+(p / program
+      :instrument-of (l / look-01))
+# ::src jamr
+(l / look-01
+      :ARG0 (p / program) 
+      :ARG2 (c / collect-01 
+            :ARG1 (d / data-777)) 
+      :cause (y / you))
+
+# ::snt Any paper form whether printed , typed or handwritten that is used to transact business or make some official statement
+# ::term document
+# ::sntId 71
+# ::treeId 0
+# ::note "transact-01" has only one meaning in Probbank frames, see meaning of "transact business", it means "conduct or carry out business",
+# ::note so JAMR has NO chances to detect this at the concept identification stage!
+# ::note it should be some Recursive parser that first understands that part of sentence i about business leading and then infer that transact means "lead"
+# ::note2 "make" is a helper word that is used in dozens of collocations and i thing it should not be used as make-N concept
+# ::note2 search for "make.LV" frame https://en.wikipedia.org/wiki/Light_verb
+# ::src manual
+(p / paper
+      :mod (f / form
+            :mod (a / any)
+            :mod (o / or
+                  :op1 (p2 / print-02)
+                  :op2 (t / type-02)
+                  :op3 (h / handwrite-01)))
+      :ARG1-of (u / use-01
+            :ARG2 (o2 / or
+                  :op1 (t2 / transact-01
+                        :ARG1 (b / business))
+                  :op2 (s / state-01
+                        :manner (o3 / official)))))
+# ::src jamr
+(f / form-777
+      :mod (p2 / paper 
+            :mod (a / any)) 
+      :op1 (w / wheth 
+            :ARG0-of (u / use-01 
+                  :ARG1 (o2 / or 
+                        :op1 (b / business) 
+                        :op2 (m / make-777 
+                              :cause (s / statement-777 
+                                    :mod (o / official 
+                                          :ARG2-of (h / have-org-role-91 
+                                                :ARG0 (p / person))) 
+                                    :quant (s2 / some)))) 
+                  :ARG2 (o3 / or 
+                        :op1 (h2 / handwritten)))))
+
+# ::snt A flexible metal or glass wire or group of wires
+# ::term cable
+# ::sntId 72
+# ::treeId 0
+# ::src manual
+(o / or
+      :op1 (w / wire
+            :mod (f / flexible)
+            :consist-of (o2 / or
+                  :op1 (m / metal)
+                  :op2 (g / glass)))
+      :op2 (g / group
+            :consist-of w))
+
+# ::src jamr
+(w2 / wire-777
+      :op3-of (o2 / or 
+            :op1 (m / metal 
+                  :op1-of (o / or 
+                        :op2 (g / group 
+                              :mod (f / flexible))) 
+                  :poss (w / wire)) 
+            :op2 (g2 / glass)))
+
+# ::snt A family of IBM mainframe operating systems
+# ::term dos
+# ::sntId 73
+# ::treeId 0
+# ::note "family of" is like of "group of"?
+# ::TODO do not know how to express
+# ::src manual
+(f / family
+      :consist-of (s / system
+            :mod (o / operate-01)))
+# ::src jamr
+(f / family
+      :poss (s / systems-777 
+            :mod (o / operate-01 
+                  :ARG1 (c / company 
+                        :name (n / name 
+                              :op1 "IBM")) 
+                  :ARG2 (m / mainframe-777))))
+
+# ::snt The world's second largest manufacturer of computers and consumer electronics with revenues of USD $184 billion in 2014
+# ::term apple
+# ::sntId 74
+# ::treeId 0
+# ::note search for "world's second largest" in data-training.txt
+# ::note "with revenues of USD $184 billion in 2014" is very dirty sentence... even I do not understand the structure...
+# ::src manual
+(o / organization
+      :ARG0-of (m / manufacture-01
+            :ARG1 (a / and
+                  :op1 (c / computer)
+                  :op2 (e / electronics
+                        :mod (c2 / consumer))))
+      :mod (l / large
+            :degree (m2 / most)
+            :compared-to (w / world)
+            :ord (o2 / ordinal-entity :value 2))
+      :prep-with (r / revenue
+            :quant 184000000000
+            :unit (d / dollar)
+            :time (d2 / date-entity
+                  :year 2014)))
+# ::src jamr
+(a / and
+      :destination-of (m / manufacture-01 
+            :ARG1 (r / revenu 
+                  :location (u / USD-777)) 
+            :ARG2 (' / ' 
+                  :op1 (w / world)) 
+            :duration (t / temporal-quantity 
+                  :op1 (l / large 
+                        :degree (m2 / most)) 
+                  :unit (s / second)) 
+            :location (c2 / computer) 
+            :subevent (d / date-entity 
+                  :year 2014) 
+            :time (b / billion-777 
+                  :mod 184)) 
+      :op1 (c / consumer-electronics-777))
+
+# ::snt A multiuser , multitasking operating system that is widely used as the master control program in workstations and servers
+# ::term unix
+# ::sntId 75
+# ::treeId 0
+# ::note search for "used as" pattern in data-training.txt, for me a bit of strange use of :ARG2 (...)
+# ::src manual
+(s / system
+      :mod (o / operate-01)
+      :mod (m / multiuser)
+      :mod (m2 / multitasking)
+      :ARG1-of (u / use-01
+            :ARG2 (p / program
+                  :ARG0-of (c / control-01)
+                  :mod (m3 / master))
+            :degree (w / wide))
+            :location (a / and
+                  :op1 (w2 / workstation)
+                  :op2 (s / server)))
+# ::src jamr
+(a / and
+      :op1 (w / workstation 
+            :ARG0-of (u / use-01 
+                  :ARG1 (o / operating-system-777 
+                        :mod (m2 / multitasking-777)) 
+                  :ARG2 (m / master-control-program-777) 
+                  :degree (w2 / wide) 
+                  :purpose-of (m3 / multiuser-777))) 
+      :op2 (s / servers-777))
+
+# ::snt A desktop computer , laptop , smartphone or tablet , as well as any other electronic device that sends or receives data from a server
+# ::term client
+# ::sntId 76
+# ::treeId 0
+# ::note "as well as <subj>" should be treated as if <subj> was used in OR clause (or AND clause if we had AND claase here)
+# ::note search for "as well as" here: https://www.isi.edu/~ulf/amr/lib/amr-dict.html#as%20...%20as
+# ::src manual
+(o / or
+      :op1 (c / computer
+            :mod (d / desktop))
+      :op2 (l / laptop)
+      :op3 (s / smartphone)
+      :op4 (t / tablet)
+      :op5 (d2 / device
+            :mod (a / any)
+            :mod (o2 / other)
+            :mod (e / electronic))
+      ARG0-of (s2 / send-01
+            :ARG1 (d3 / data
+                  :source (s3 / server))
+            :op1-of (o3 / or
+                  :op2 r))
+      ARG0-of (r / receive
+            :ARG1 d3))
+# ::src jamr
+(d3 / desktop-computer-777
+      :location-of (r / receive-01 
+            :ARG1 (d / data-777 
+                  :topic (s / server-777)) 
+            :ARG2 (d2 / device-777 
+                  :mod (e / electronic-777) 
+                  :mod (o2 / other) 
+                  :mod (a / any)) 
+            :op1-of (o / or) 
+            :time (w / well)) 
+      :op1-of (o3 / or 
+            :op2 (l / laptop-777) 
+            :op3 (s2 / smartphone-777) 
+            :op4 (t / tablet-777)))
+
+# ::snt The customer of a vendor or consultant
+# ::term client
+# ::sntId 77
+# ::treeId 0
+# ::src manual
+(c / customer
+      :prep-of (o / or
+            :op1 (v / vendor)
+            :op2 (c / consultant)))
+# ::src jamr
+(c2 / customer
+      :location (v / vendor-777 
+            :op1-of (o / or 
+                  :op2 (c / consultant-777))))
+
+# ::snt Protection against illegal or wrongful intrusion
+# ::term security
+# ::sntId 78
+# ::treeId 0
+# ::src manual
+(p / protect-01
+      :ARG2 (i / intrusion
+            :mod (o / or
+                  :op1 (l2 / legal :polarity -)
+                  :op2 (w / wrongful))))
+# ::src jamr
+(o / or
+      :op1 (i2 / illegal-777) 
+      :op2 (i / intrusion-777 
+            :mod (w / wrongful)))
+
+# ::snt A Microsoft architecture for building software modules that are executed in Windows
+# ::term com
+# ::sntId 79
+# ::treeId 0
+# ::note search for "Microsoft" usage in data-training.txt
+# ::note STRANGE, but sometimes they use ":poss" sometimes ":mod"
+# ::note JAMR subtrees are very close!
+# ::note "Windows" is detected so by Named Entity Tagger
+# ::src manual
+(a / architecture
+      :poss (c / company
+            :name (n / name
+                  :op1 "Microsoft"))
+      :instrument-of (b / build-01
+            :ARG1 (m / module
+                  :mod (s / software)
+                  :ARG1-of (e / execute
+                        :location (t / thing
+                              :name (n / name
+                                    :op1 "Windows"))))))
+# ::src jamr
+(a / architecture-777
+      :ARG1-of (e / execute-01 
+            :ARG0 (w / Windows-777)) 
+      :poss (c / company 
+            :ARG0-of (b / build-01 
+                  :ARG1 (m / module) 
+                  :mod-of (s / software-777)) 
+            :name (n / name 
+                  :op1 "Microsoft")))
+
+# ::snt To look for specific data in a file or an occurrence of text in a file
+# ::term search
+# ::sntId 80
+# ::treeId 0
+# ::note "look for" actually means to "search (for)" but the AMR does not have any hint abaout "searching"
+# ::note and this is still used in amr-bank-struct-v1.6-training.txt
+# ::note if we use ":location" how can we reestablish the original meaning?
+# ::note there could be several meanings...
+# ::note e.g. meaning1: "The process of `looking` was done while being located in the file"
+# ::note or meaning2: "The process of `looking` was done within the files"
+# ::note concept "occurrence": read "Nouns that invoke predicates" https://github.com/unkarjedy/amr-guidelines/blob/master/amr.md#degree
+# ::note see ::note42 in the beginning: it is really hard to understand where should go ":location (f / file)" if we talk about predicate "occur-01"
+# ::src manual
+(l / look-01
+      :ARG1 (o / or
+            :op1 (d / data
+                  :mod (s / specific))
+            :op2 (o2 / occur-01
+                  :ARG1 (t / text)))
+      :location (f / file))
+# ::src jamr
+(l / look-01
+      :ARG0 (f2 / file-777) 
+      :ARG1 (d / data-777 
+            :mod (s / specific) 
+            :op1-of (o2 / or 
+                  :op2 (o / occurrence 
+                        :location (t / text-777) 
+                        :location (f / file-777)))))
+
+# ::snt An e-mail that contains text and possibly other file attachments
+# ::term message
+# ::sntId 81
+# ::treeId 0
+# ::src manual
+(e / e-mail
+      :ARG0-of (c / contain-01
+            :ARG1 (a / and
+                  :op1 (t / text)
+                  :op2 (a2 / attachment
+                        :mod (p3 / possible)
+                        :mod (o / other)
+                        :mod (f / file)))))
+# ::src jamr
+(p / possible
+      :mod-of (a2 / and 
+            :op1 (c / contain-01 
+                  :ARG0 (e / e-mail) 
+                  :ARG1 (t / text-777)) 
+            :op2 (a / attachment 
+                  :mod (f / file-777))) 
+      :time-of (o / other))
+
+# ::snt The standard wireless local area network technology for connecting computers and myriad electronic devices to each other and to the Internet
+# ::term wi-fi
+# ::sntId 82
+# ::treeId 0
+# ::note quite a queer word "myriad"... but how to use? As a ":quant"? Or as a ":mod"?
+# ::note in data-training there was only one "myriad" with usage of ":mod" but currently i am sure that is should be ":quant"
+# ::note Unfortunately our AMR does not represents the meaning of "connected to each other" WELL
+# ::note Actually "each other" is a coreference
+# ::note !!! search for "each other" in data-training.txt, there is a good example!
+# ::src manual
+(t / technology
+      :mod (s / standard)
+      :mod (n / network
+            :mod (w / wireless)
+            :mod (a / area
+                  :mod (l / local)))
+      :purpose (c / connect-01
+            :ARG1 (a2 / and
+                  :op1 (c2 / computer)
+                  :op2 (d / device
+                        :mod (e / electronic)
+                        :quant (m / myriad)))
+            :ARG2 (a3 / and
+                  :op1 a2
+                  :op2 (i / Internet))))
+# ::src jamr
+(a / and
+      :location-of (t / technology-777 
+            :mod (l / local-area-network-777) 
+            :mod (w / wireless-777) 
+            :mod (s / standard-777)) 
+      :mod (e / each) 
+      :op1 (a2 / and 
+            :cause (c / computer) 
+            :op1 (m / myriad) 
+            :op2 (d / device 
+                  :cause-of (e2 / electronic-777))) 
+      :op2 (o / other) 
+      :op3 (i / Internet-777))
+
+# ::snt A device that converts computer output into printed images
+# ::term printer
+# ::sntId 83
+# ::treeId 0
+# ::src manual
+(d / device
+      :ARG0-of (c / convert-01
+            :ARG1 (o / output
+                  :mod (c2 / computer))
+            :ARG2 (i / image
+                  ARG1-of (p / print-01))))
+# ::src jamr
+(d / device-777
+      :poss-of (o / output-777 
+            :mod (c / computer-777) 
+            :time (i / image)))
+
+# ::snt A self-contained software routine that performs a task
+# ::term function
+# ::sntId 84
+# ::treeId 0
+# ::note MODIFIED SENTENCE!!!
+# ::src manual
+(r / routine
+      :mod (s / self-contained)
+      :mod (s2 / software)
+      :ARG0-of (p / perform-02
+            :ARG1 (t / task)))
+# ::src jamr
+(c / contain-01
+      :ARG0 (s2 / self) 
+      :ARG1 (s / software-777 
+            :mod (r / routine-777) 
+            :poss-of (t / task-777) 
+            :poss-of (p / programming-777)))
+
+# ::snt The master control program in a computer or mobile device
+# ::term os
+# ::sntId 85
+# ::treeId 0
+# ::src manual
+(p / program
+      :ARG0-of (c / control-01)
+      :mod (m / master)
+      :location (o / or
+           :op1 (c2 / computer)
+           :op2 (d / device
+                 :mod (m2 / mobile))))
+# ::src jamr
+(m2 / master-control-program-777
+      :location (c / computer-777 
+            :op1-of (o / or 
+                  :op2 (m / mobile-device-777))))
+
+# ::snt A set of electronic components that perform a particular function in an electronic system
+# ::term circuit
+# ::sntId 86
+# ::treeId 0
+# ::note JAMR is VERY VERY VERY close!! "perform-02" should be instead of "perform-01"
+# ::note I have some common difficulties with ":location"... Should it belong to "function" or "perform-02"?
+# ::src manual
+(s / set
+      :consist-of (c / component
+            :ARG0-of (p / perform-02
+                  :ARG1 (f / function
+                        :location (s2 / system
+                              :mod (e / electronic))
+                        :mod (p2 / particular)))
+            :mod (e2 / electronic)))
+# ::src jamr
+(s2 / set
+      :consist-of (c / component 
+            :ARG0-of (p2 / perform-01 
+                  :ARG1 (f / function-777 
+                        :location (s / system-777 
+                              :mod (e / electronic-777)) 
+                        :mod (p / particular))) 
+            :mod (e2 / electronic-777)))
+
+# ::snt Any electrical or light pulse or frequency whether in a wire or fiber or wireless
+# ::term signal
+# ::sntId 87
+# ::treeId 0
+# ::note For some reason in data-training.txt and data-test.txt "electrical" is trasformed to "e / electricity"
+# ::note Hmmm... hard to build AMR for "Any electrical or light pulse or frequency" to difficult OR usage
+# ::note Really hard part: "in a wire or fiber or wireless", here `wire` and `fiber` are nouns, wireless (as I understand)
+# ::note is a noun as well (in the meaning of "radio"), but i am 99% sure that parsers will treat as an adjective... to infer
+# ::note the fact that it is not and adjective the parser should explore the context and see that other operands in OUR are actually nouns...
+# ::src manual
+(o / or
+      :op1 (p / pulse
+            :mod (a / any)
+            :mod (o2 / or
+                  :op1 (e / electricity)
+                  :op1 (l / light)))
+      :op2 (f / frequency)
+      :location (o3 / or
+            :op1 (w / wire)
+            :op2 (f2 / fiber)
+            :op3 (w2 / wireless)))
+# ::src jamr
+(o4 / or
+      :cause (e / electricity) 
+      :mod (a / any) 
+      :op1 (p / pulse-777 
+            :mod (l / light-777)) 
+      :op2 (o3 / or 
+            :op1 (f2 / frequency-777 
+                  :location (w3 / wheth) 
+                  :op1-of (o / or 
+                        :op2 (w2 / wire-777) 
+                        :op3 (w / wireless-777 
+                              :op2-of (o2 / or 
+                                    :op1 (f / fiber-777)))))))
+
+# ::snt To manipulate data in the computer
+# ::term process
+# ::sntId 88
+# ::treeId 0
+# ::src manual
+(m / manipulate-01
+      :ARG1 (d / data)
+      :location (c / computer))
+# ::src jamr
+(m / manipulate-01
+      :ARG0 (c / computer-777) 
+      :ARG1 (d / data-777))
+
+# ::snt Software running in the computer
+# ::term process
+# ::sntId 89
+# ::treeId 0
+# ::note JAMR is very close
+# ::note Actually I do not know whether we should use ":location" or ":ARG0",
+# ::note on the one hand the software is run by user, but on the other hand the computer is running the software too
+# ::note I think that if we had "by the computer" we would definitely use ":ARG0"...
+# ::src manual
+(s / software
+      :ARG1-of (r / run-01
+            :location (c / computer)))
+# ::src jamr
+(s / software
+      :ARG1-of (r / run-01 
+            :ARG0 (c / computer-777)))
+
+# ::snt A videoconferencing technology that uses Intel's Indeo compression method
+# ::term pcs
+# ::sntId 90
+# ::treeId 0
+# ::src manual
+(t / technology
+      :mod (v / videoconferencing)
+      :ARG0-of (u / use-01
+            :ARG1 (m / method
+                  :mod (c / compress-01)
+                  :name (n / name
+                        :op1 "Indeo")
+                  :poss (c / company
+                        :name (n / name
+                              :op1 "Intel")))))
+# ::src jamr
+(t / technology-777
+      :cause (u / use-01 
+            :ARG1 (m / method-777 
+                  :mod (c / compression-777 
+                        :mod (i / Indeo-777)) 
+                  :poss (o / organization 
+                        :name (n / name 
+                              :op1 "Intel's"))) 
+            :ARG2 (' / ')) 
+      :mod (v / videoconferencing-777))
+
+# ::snt A mechanical or electronic device that directs the flow of electrical or optical signals from one side to the other
+# ::term switch
+# ::sntId 91
+# ::treeId 0
+# ::note search for "flow" in data-training.txt and data-test.txt
+# ::note quite a complex structure "from one side to the other", `one` should not be treated as a `quant` and there is an implicit subject `size` after `other`
+# ::src manual
+(d / device
+      :mod (o / or
+            :op1 (m / mechanics)
+            :op2 (e / electronic))
+      :ARG0-of (d2 / direct-01
+            :ARG1 (f / flow-01
+                  :ARG0 (s / signal
+                        :mod (o2 / or
+                              :op1 (e2 / electricity
+                              :op2 (o3 / optics))))
+                  :source (s2 / side)
+                  :destination (s3 / side))))
+# ::src jamr
+(o4 / or
+      :op1 (m / mechanics) 
+      :op2 (d2 / device-777 
+            :ARG0-of (d / direct-01 
+                  :ARG1 (f / flow-01 
+                        :ARG0 (o / other) 
+                        :ARG1 (e / electricity) 
+                        :location (s / side 
+                              :quant 1) 
+                        :op1-of (o3 / or 
+                              :op2 (s2 / signal 
+                                    :mod (o2 / optics))))) 
+            :mod (e2 / electronic-777)))
+
+# ::snt A mathematical representation of a device or process used for analysis and planning
+# ::term model
+# ::sntId 92
+# ::treeId 0
+# ::note search for "represent" predicate in FrameSet
+# ::todo mathematical or mathematics? see how will concept decoder work...
+# ::src manual
+(r /  representation-02
+      :ARG1 (o / or
+            :op1 (d / device)
+            :op2 (p / process))
+      :ARG1-of (u / use-01
+            :ARG2 (a / and
+                  :op1 (a2 / analyze-01)
+                  :op2 (p2 / plan-01)))
+      :mod (m / mathematical))
+# ::src jamr
+(a / and
+      :ARG0-of (u / use-01 
+            :ARG1 (d / device-777 
+                  :location-of (r / representation 
+                        :mod (m / mathematical)) 
+                  :op1-of (o / or 
+                        :op2 (p2 / process-777)))) 
+      :op1 (a2 / analysis-777) 
+      :op2 (p / plan-01))
+
+# ::snt A high-speed mainframe subsystem that provides a pathway between the CPU and the control units of peripheral devices
+# ::term channel
+# ::sntId 93
+# ::treeId 0
+# ::note ":poss (d / device :mod (p / peripheral))" or ":part-of (d / device :mod (p / peripheral))"
+# ::note todo according to "https://www.isi.edu/~ulf/amr/lib/amr-dict.html#abbreviation" Abbreviations are generally expanded
+# ::src manual
+(s / subsystem
+      :mod (m / mainframe)
+            :mod (h / high-speed)
+      :ARG0-of (p / provide-01
+            :ARG1 (p2 / pathway
+                  :location (b / between
+                        :op1 (c / cpu)
+                        :op2 (u / unit
+                              :mod (c2 / control-01)
+                              :poss (d / device
+                                    :mod (p2 / peripheral)))))))
+# ::src jamr
+(a / and
+      :op1 (c2 / cpu 
+            :op1-of (b / between 
+                  :location-of (p2 / pathway 
+                        :ARG1-of (p3 / provide-01 
+                              :ARG0 (s / subsystem-777 
+                                    :mod (m / mainframe-777) 
+                                    :mod (s2 / speed-777 
+                                          :mod (h / high))) 
+                              :time (d / device 
+                                    :cause-of (p / peripheral-777)))))) 
+      :op2 (u / unit 
+            :poss (c / control-777)))
+
+# ::snt A frequency assigned to a TV or radio station , which allows it to transmit over the air simultaneously with other broadcasters
+# ::term channel
+# ::sntId 94
+# ::treeId 0
+# ::note 2 coreferences in "WHICH allows IT"... it is a really complex structure to decode
+# ::note I recon that "over the air" should correspond to ":instrument", but such structure was not met anywhere in datasets
+# ::note Strange, but "simultaneously" is used with ":time", ":mod" and ":manner" in data-training.txt
+# ::note TODO: (read below)
+# ::note77 actually in this sentence "broadcasters" does not mean a person who broadcast
+# ::note77 "(p / person :ARG0-of (b / broadcast-01)", it could be a device, not person
+# ::note77 For now I will use "thing" because it is thes "If none of these apply, then we use thing"
+# ::note77 search "-er” nouns in https://github.com/unkarjedy/amr-guidelines/blob/master/amr.md#named-entities
+# ::note77 I think currently amr is not ready for representing such structures. AMR communuty had a shared task related with
+# ::note77 Biomedicine/Bioinformatics/Bio... and after that AMR was extended with some "Biomedical"-speific structures,
+# ::note77 for example "molecular-physical-entity, small-molecule, protein"
+# ::note77 I think that in order that AMR is expressive enough there should be held another shared task related with
+# ::note77 IT / technology sphere of knowledge.
+# ::src manual
+(f / frequency
+      :ARG1-of (a / assign-01
+            :ARG2 (o / or
+                  :op1 (t / television)
+                  :op2 (s / station
+                        :mod (r / radio))))
+      :ARG0-of (a2 / allow-01
+            :ARG1 (t2 / transmit-01
+                  :ARG0 o
+                  :instrument (a3 / air)
+                  :manner (s2 / simultaneous
+                        :prep-with (p / thing
+                              :ARG0-of (b / broadcast-01)
+                              :mod (o2 / other))))))
+# ::src jamr
+(a3 / assign-01
+      :ARG1 (f / frequency-777) 
+      :ARG1-of (b / broadcast-01 
+            :ARG0 (p / person 
+                  :mod (o / other))) 
+      :ARG2 (s2 / station-777 
+            :ARG0-of (a2 / allow-01 
+                  :ARG1 (t / transmit-777 
+                        :location (o2 / over 
+                              :op1 (a / air) 
+                              :quant-of (s / simultaneous)))) 
+            :op3-of (o3 / or 
+                  :op1 (t2 / TV-777) 
+                  :op2 (r / radio-777))))
+
+# ::snt The largest Web search engine and one of the most influential companies in the high-tech world
+# ::term google
+# ::sntId 95
+# ::treeId 0
+# ::note if you search "search engine" in data-training.txt you will find that search is not detected as search-01
+# ::note but AFAIK AMR specification says that we should prefer existing predicates from Propbank
+# ::note search "largest" in data-training.txt, there are some errors there e.g. ":mod (l / large :quant (m / most))", it should be ":degree", not ":quant"
+# ::note "second largest source of opium" is completely wrong in data-training.txt
+# ::note search for "one of the most influential" in data-training.txt =)
+# ::note !!!! In LDC2014T12-proxy there is not "have-degree91" reified concept, so we do not use it here =( search examples by pattern "one of the .* in the world" in data-training.txt
+# ::note TODO so I am not sure which to use... AFAIK currently the preffered way is using of have-degree91 concept, but because we currently work only with corpus from 2014 year i will stic to old-fashioned way
+# ::src manual
+(a / and
+      :op1 (e / engine
+            :mod (s / search-01)
+            :mod (l / large
+                  :degree (m / most)))
+      :op2 (c / company
+            :ARG0-of (i / include-91
+                  :ARG1 (c2 / company
+                        :ARG0-of (i2 / influence-01
+                              :degree (m2 / most))
+                        :location (w / world
+                              :mod (h / high-tech))))))
+# ::src jamr
+(a / and
+      :ARG1-of (i / influence-01 
+            :ARG0 (c / company 
+                  :quant 1) 
+            :ARG2 (h / high 
+                  :mod-of (t / tech 
+                        :mod-of (w / world))) 
+            :degree (m / most)) 
+      :op1 (w2 / Web-search-engine-777 
+            :mod (l / large 
+                  :degree (m2 / most))))
+
+# ::snt A statement in a program that directs the compiler or interpreter to process another file of code at that point
+# ::term include
+# ::sntId 96
+# ::treeId 0
+# ::note see note77, "compiler", "interpreted" should be treated as "(p / program :ARG0-of (c / compile))"
+# ::note And how the hell I am supposed to decode "at that point"? Where is this coreference referring?
+# ::note TOOOO COMPLEX coreference... a lot of knowledge about context is needed,
+# ::note it is a coreference to the exact place in program where the statement is located.
+# ::note Decoder must be able to somehow infer that "statement in a program" denotes some "point" to which "that point" referes
+# ::note !! Currently i do not try to express "at that point" somehow
+# ::src manual
+(t / thing
+      :ARG1-of (s / state-01)
+      :location (p / program)
+      :ARG0-of (d / direct-01
+            :ARG1 (o / or
+                  :op1 (p2 / program
+                        :ARG0-of (c / compile-01))
+                  :op1 (p3 / program
+                        :ARG0-of (i / interpret-01)))
+            :ARG2 (p4 / process-01
+                  :ARG0 o
+                  :ARG1 (f / file
+                        :mod (a / another)
+                        :consist-of (c2 / code)))))
+# ::src jamr
+(p2 / process-777
+      :quant (f / file-777 
+            :location (c / code-777) 
+            :location (p / point-777) 
+            :mod (a / another)) 
+      :topic-of (i / interpreter-777 
+            :op2-of (o / or 
+                  :ARG1-of (d / direct-01 
+                        :ARG0 (p3 / program 
+                              :mod-of (s / statement-777))) 
+                  :op1 (c2 / compiler-777))))
+
+# ::snt The degree of sharpness of a displayed or printed image
+# ::term resolution
+# ::sntId 97
+# ::treeId 0
+# ::src manual
+(d / degree
+      :degree-of (s / sharp
+            :domain (i / image
+                  :ARG1-of (d2 / display-01)
+                  :ARG1-of (p / print-02))))
+# ::src jamr
+(d / degree
+      :location (s / sharpnes 
+            :poss (i / image-777 
+                  :cause (o / or))))
+
+# ::snt An instruction for the computer
+# ::term command
+# ::sntId 98
+# ::treeId 0
+# ::src manual
+(i / instruction
+      :mod (c / computer))
+# ::src jamr
+(i / instruction-777
+      :location (c / computer-777))
+
+# ::snt A number that identifies applications and services in a TCP/IP network
+# ::term port
+# ::sntId 99
+# ::treeId 0
+# ::note "TCP/IP" should be unsplitable and identified as a NamedEntity or some other concept detector...
+# ::src manual
+(n / number
+      :ARG0-of (i / identify-01
+            :ARG1 (a / and
+                  :op1 (a2 / application)
+                  :op2 (s / service))
+            :location(n / network
+                  :mod (t / tcp-ip))))
+# ::src jamr
+(a / and
+      :ARG2-of (i2 / identify-01 
+            :ARG0 (n / number) 
+            :ARG1 (a2 / application) 
+            :time (i / IP-network-777 
+                  :mod (/ / /-777 
+                        :mod (t / tcp)))) 
+      :op1 (s / service))
+
+    # ::snt An operating system for smartphones , tablets and laptops from the Google-sponsored Open Handset Alliance
+# ::term android
+# ::sntId 100
+# ::treeId 0
+# ::note TODO Hmm... is " Open Handset Alliance" a named entity? Try to run JAMR (without -777 concepts) and see what it says
+# ::note unfortunately current NER does not recognize it
+# ::src manual
+(s / system
+      :mod (o / operate-01)
+      :beneficiary (a / and
+            :op1 (s2 / smartphone)
+            :op2 (t / tablet)
+            :op3 (l / laptop))
+      :source (o2 / organization
+            :name (n / name
+                  :op1 "Open"
+                  :op2 "Handset"
+                  :op3 "Alliance")
+            :ARG1-of (s3 / sponsor-01
+                  :ARG0 (c / company
+                        :name (n2 / name
+                              :op1 "Google")))))
+# ::src jamr
+(a / and
+      :ARG0-of (s / sponsor-01 
+            :ARG1 (o / Open-Handset-Alliance-777)) 
+      :op1 (s2 / smartphon 
+            :mod-of (o2 / operating-system-777)) 
+      :op2 (t / tablet) 
+      :op3 (l / laptop))
+
+# ::snt To transfer or transmit from the computer to a peripheral device or communications line
+# ::term output
+# ::sntId 101
+# ::treeId 0
+# ::note OMG, another one "or" that unions two different predicates...
+# ::note "communications line" 1) "line :instrument-of communicate-01" or just 2) "line :mod communicate-01"?
+# ::src manual
+(o / or
+      :op1 (t / transfer-01)
+      :op2 (t2 / transmit-01)
+      :source (c / computer)
+      :destination (o2 / or
+            :op1 (d / device
+                  :mod (p / peripheral))
+            :op2 (l / line
+                  :mod (c / communicate-01))))
+# ::src jamr
+(t2 / transfer-777
+      :op1-of (o2 / or 
+            :manner (c2 / computer-777 
+                  :op1-of (o / or 
+                        :op2 (p / peripheral-device-777) 
+                        :op3 (l / line-777 
+                              :mod (c / communications-777)))) 
+            :op2 (t / transmit-777)))
+
+# ::snt A very popular open source operating system that runs on all major hardware platforms including x86 , Itanium , PowerPC , ARM and IBM mainframes
+# ::term linux
+# ::sntId 102
+# ::treeId 0
+# ::note "open source" should be treated as "open-source" single adjective, shouldn't it?
+# ::note "that runs" at first glance should be treated as ":ARG0-of run-01" but actually it is ":ARG1-of" because "linux" itself is not the agent that runs itself
+# ::note This is very complex structure... =/
+# ::src manual
+(s / system
+      :mod (o / operate-01)
+      :mod (o2 / open-source)
+      :mod (p / popular
+            :degree (v / very))
+      :ARG1-of (r / run-01
+            :location (p2 / platform
+                  :quant (a / all)
+                  :mod (m / major)
+                  :mod (h / hardware)
+                  :ARG2-of (i / include-91
+                        :ARG1 (a2 / and
+                              :op1 (t1 / thing
+                                    :name (n / name
+                                          :op1 "x86"))
+                              :op2 (t2 / thing
+                                    :name (n2 / name
+                                          :op1 "Itanium"))
+                              :op3 (t3 / thing
+                                    :name (n3 / name
+                                          :op1 "PowerPC"))
+                              :op4 (o3 / organization
+                                    :name (n4 / name
+                                          :op1 "ARM"))
+                              :op4 (m2 / mainframe
+                                    :poss (c / company
+                                          :name (n / name
+                                                :op1 "IBM"))))))))
+# ::src jamr
+(i3 / include-91
+      :ARG0 (a3 / all)
+      :ARG1 (x / x86-777 
+            :op1-of (a / and 
+                  :op2 (i2 / Itanium-777) 
+                  :op3 (p / PowerPC-777) 
+                  :op4 (a2 / ARM-777) 
+                  :op5 (i / IBM-mainframes-777))) 
+      :ARG2 (p2 / platform 
+            :ARG0-of (r / run-01 
+                  :ARG1 (o / operating-system-777 
+                        :ARG1-of (p3 / popular-41 
+                              :ARG0 (h / hardware-777) 
+                              :degree (v / very)) 
+                        :mod (o2 / open-source-777))) 
+            :mod (m / major)))
+
+# ::snt A hardware and/or software architecture that serves as a foundation or base
+# ::term platform
+# ::sntId 103
+# ::treeId 0
+# ::note Have no idea how to express "and/or", "/" char meaning is "or" as well (mind-blowing...!)
+# ::src jamr
+(f / foundation
+      :ARG1-of (s / serve-01 
+            :ARG0 (s2 / software-architecture-777 
+                  :mod (o2 / or 
+                        :mod (/ / /-777 
+                              :quant (a / and 
+                                    :mod (h / hardware-777)))))) 
+      :op1-of (o / or 
+            :op2 (b / base-777)))
+
+# ::snt To select an object by pressing the mouse button when the cursor is pointing to the required menu option , icon or hypertext link
+# ::term click
+# ::sntId 104
+# ::treeId 0
+# ::note todo: Is "(b / button :mod (m / mouse)" ok? or should it be "(b / button :poss (m / mouse)" or "(b / button :part-of (m / mouse)"
+# ::src manual
+(s / select-01
+      :ARG1 (o / object)
+      :manner (p / press-01
+            :ARG1 (b / button
+                  :mod (m / mouse))
+            :time (p2 / point-01
+                  :ARG0 (c / cursor)
+                  :ARG1 (o2 / or
+                        :op1 (o3 / option
+                              :mod (m2 / menu))
+                        :op2 (i / icon)
+                        :op3 (l / link
+                              :mod (h / hypertext))
+                        :ARG1-of (r / require-01)))))
+# ::src jamr
+(l / link-777
+      :cause (o / or 
+            :op1 (m / menu-777 
+                  :mod-of (o2 / option 
+                        :ARG1-of (r / require-01))) 
+            :op2 (i / icon-777 
+                  :ARG0-of (s / select-01 
+                        :ARG1 (o3 / object-777) 
+                        :ARG2 (p / press-01 
+                              :ARG0 (c / cursor-777) 
+                              :ARG1 (b / button-777 
+                                    :mod (m2 / mouse-777))))) 
+            :op3 (h / hypertext-777)))
+
+# ::snt A communications protocol for office systems developed in the early 1980s by the Computer Services division of Boeing in Seattle
+# ::term top
+# ::sntId 105
+# ::treeId 0
+# ::note search for "early \d+" in data-training.txt
+# ::note search for "in the early 1950s" example here: "https://www.isi.edu/~ulf/amr/lib/popup/date.html"
+# ::note :part-of vs :poss ???
+# ::src manual
+(p / protocol
+      :mod (c / communicate-01)
+      :beneficiary (s / system
+            :mod (o / office))
+      :ARG1-of (d / develop-01
+            :ARG0 (o2 / organization
+                  :name (n / name
+                        :op1 "Computer"
+                        :op2 "Services")
+                  :part-of (c2 / company
+                        :name (n2 / name
+                              :op1 "Boeing"))
+                  :location (c3 / city
+                        :name (n3 / name
+                              :op1 "Seattle")))
+            :time (e / early
+                  :op1 (d2 / date-entity
+                        :decade 1980))))
+# ::src jamr
+(c3 / communications-protocol-777
+      :poss (s / systems-777 
+            :mod (o2 / office) 
+            :topic (d2 / develop-02 
+                  :ARG0 (c / country 
+                        :name (n / name 
+                              :op1 "Seattle")) 
+                  :ARG1 (1 / 1980 
+                        :op1-of (e / early)) 
+                  :time (d / division 
+                        :poss (o / organization 
+                              :name (n3 / name 
+                                    :op1 "Computer" 
+                                    :op2 "Services")) 
+                        :poss (c2 / company 
+                              :name (n2 / name 
+                                    :op1 "Boeing"))))))
+
+# ::snt An electronic circuit that transmits and receives wireless signals
+# ::term radio
+# ::sntId 106
+# ::treeId 0
+# ::src manual
+(c / circuit
+      :mod (e / electronic)
+      :ARG0-of (t / transmit-01
+            :ARG1 (s / signal
+                  :mod (w / wireless)))
+      :ARG0-of (r / receives-01
+            :ARG0 s))
+# ::src jamr
+(a / and
+      :op1 (r / receive-01 
+            :ARG0 (e / electronic-circuit-777) 
+            :ARG1 (s / signal 
+                  :mod (w / wireless-777))))
+
+# ::snt A stand-alone device that records still or moving images as analog scenes on film or as pixels in digital storage
+# ::term camera
+# ::sntId 107
+# ::treeId 0
+# ::TODO DRAFT: Do not know how to express "as analog scenes on film or as pixels in digital storage" and even what it means "scenes on film"
+# ::src manual
+(d / device
+      :ARG0-of (r / record-01
+            :ARG1 (i / image
+                  :mod (o / or
+                        :op1 (s / still)
+                        :op2 (m / moving TODO: use predicate?)))))
+                        as analog scenes on film or as pixels in digital storage
+# ::src jamr
+(d2 / device-777
+      :mod (a2 / alone) 
+      :mod (s4 / stand-off) 
+      :op1-of (o / or 
+            :op2 (f / film 
+                  :time-of (m / move-02 
+                        :ARG0 (s / storage-777 
+                              :mod (d / digital-777) 
+                              :topic-of (p / pixels-777)) 
+                        :ARG1 (i / image) 
+                        :ARG2 (s2 / scen 
+                              :mod (a / analog-777)) 
+                        :op2-of (o2 / or 
+                              :op1 (s3 / still))))))
+
+# ::snt A back-facing element in a smartphone or tablet that records still and moving images for later viewing
+# ::term camera
+# ::sntId 108
+# ::treeId 0
+# ::note Problem... according to "https://github.com/unkarjedy/amr-guidelines/blob/master/amr.md#adjectives-that-invoke-predicates"
+# ::note we should express "moving images" as "image :ARG0-of move-01" but how to deal with "and" in " still and moving images" ???
+# ::note "still" can be only used in :mod
+# ::note "for later viewing" - should it be ":time late" or ":time eventual"? I thing that meaning is eventual, not late,
+# ::note but in data-training.txt it is ":time (l / late :degree (m / more))"
+# ::src manual
+(e / element
+      :ARG0-of (f / face-01
+            :direction (b / back))
+      :part-of (o / or
+            :op1 (s / smartphone)
+            :op2 (t / tablet))
+      :ARG0-of (r / record-01
+             :ARG1 (i / image
+                   :mod (o2 / or
+                         :op1 (s2 / still)
+                         :op2 (m / move-01)))
+             :purpose (v / view-01
+                   :ARG1 i
+                   :time (l / late
+                         :degree (m2 / more)))))
+# ::src jamr
+(a / and
+      :op1 (m / move-02 
+            :ARG0 (s / still) 
+            :ARG1 (i / image) 
+            :ARG2 (v / view-01 
+                  :ARG1 (f / face-01 
+                        :ARG0 (b / back) 
+                        :ARG1 (e / element 
+                              :location (s2 / smartphone-777 
+                                    :op1-of (o / or 
+                                          :op2 (t / tablet-777))))) 
+                  :time (l / late))))
+
+# ::snt A front-facing element in a smartphone , tablet or laptop computer that captures and transmits images in real time for video calls
+# ::term camera
+# ::sntId 109
+# ::treeId 0
+# ::note Very problematic part "captures and transmits images in real time for video calls"
+# ::src manual
+(e / element
+      :ARG0-of (f / face-01
+            :direction (b / front))
+      :part-of (o / or
+            :op1 (s / smartphone)
+            :op2 (t / tablet)
+            :op3 (c / computer
+                  :mod (l / laptop)))
+      :ARG0-of (t2 / transmit-01
+            :ARG1 (i / image)
+            :manner (r / real-time)
+            :purpose (c2 / call
+                  :mod (v / video)))
+      :ARG0-of (c3 / capture-01
+            :ARG1 i
+            :manner r
+            :purpose c2))
+# ::src jamr
+(a / and
+      :ARG1-of (f / face-01 
+            :ARG0 (t / tablet-777) 
+            :ARG2 (f2 / front) 
+            :concession (c / call-03 
+                  :ARG0 (v / video-777) 
+                  :ARG2 (r / real-time-777) 
+                  :location (s / smartphone-777)) 
+            :mod-of (e / element)) 
+      :op1 (l / laptop-computer-777 
+            :cause-of (o / or)) 
+      :op2 (i / image))
+
+# ::snt A display screen used to provide visual output from a computer , cable box , video camera , VCR or other video generating device
+# ::term monitor
+# ::sntId 110
+# ::treeId 0
+# ::src manual
+(s / screen
+      :mod (d / display)
+      :ARG1-of (u / use-01
+            :ARG2 (p / provide-01
+                  :ARG1 (o / output
+                        :mod (v / visual)
+                        :source (o2 / or
+                              :op1 (c / computer)
+                              :op2 (b / box
+                                    :mod (c2 / cable))
+                              :op3 (c3 / camera
+                                    :mod (v2 / video))
+                              :op4 (v3 / vcr)
+                              :op5 (d2 / device
+                                    :ARG0-of (g / generate-01
+                                          :ARG1 (v4 / video))
+                                    :mod (o3 / other)))))))
+# ::src jamr
+(d2 / display-screen-777
+      :ARG1-of (u / use-01 
+            :ARG0 (o / other) 
+            :ARG2 (p / provide-01 
+                  :ARG1 (o3 / output-777 
+                        :location (c2 / computer-777 
+                              :op1-of (o2 / or 
+                                    :op2 (c / cable-box-777) 
+                                    :op3 (v3 / video-camera-777) 
+                                    :op4 (v2 / vcr) 
+                                    :op5 (d / device-777 
+                                          :ARG1-of (g / generate-01 
+                                                :ARG3 (v / video-777))))) 
+                        :mod (v4 / visual)))))
+
+# ::snt Software that monitors the progress of activities within a computer system
+# ::term monitor
+# ::sntId 111
+# ::treeId 0
+# ::src manual
+(s / software
+      :ARG0-of (m / monitor-01
+            :ARG1 (p / progress-01
+                  :ARG0 (a / activity
+                        :location (c / computer)))))
+# ::src jamr
+(p / progress-01
+      :ARG0 (w / within 
+            :op1 (c / computer-system-777)) 
+      :ARG1 (a / activity) 
+      :ARG1-of (m / monitor-01 
+            :ARG0 (s / software)))
+
+# ::snt A device that gathers performance statistics of a running system via direct attachment to the CPU's circuit boards
+# ::term monitor
+# ::sntId 112
+# ::treeId 0
+# ::note Hmm... do not know which role exactly to use for "statistics OF a running system"?
+# ::note ":ARG1-of (r / run-01)" because someone (ARG0) runs the system, not the system itself
+# ::note "attach-01" predicate is quite complex, there are many implicit roles there that we have to think about ourselves...
+# ::note (Arg1: patient, first thing being tied Arg2: tied to; second item tied Arg3: instrument)
+# ::src manual
+(d / device
+      :ARG0-of (g / gather-01
+            :ARG1 (s / statistics
+                  :mod (p / perfomance)
+                  :prep-of (s2 / system
+                        :ARG1-of (r / run-01)))
+            :manner (a / attach
+                  :ARG1 (b / board
+                        :mod (c / circuit)
+                        :poss (c2 / cpu))
+                  :mod (d2 / direct))))
+# ::src jamr
+(d2 / device-777
+      :poss-of (s2 / statistics-777 
+            :mod (p / performance 
+                  :ARG2-of (r / run-01 
+                        :mod-of (s / system-777 
+                              :location (v / via 
+                                    :op1 (a / attachment-777 
+                                          :domain (b / board 
+                                                :mod (c / circuit-777) 
+                                                :poss (o / organization 
+                                                      :name (n / name 
+                                                            :op1 "CPU's") 
+                                                      :op1-of (' / '))) 
+                                          :mod (d / direct))))))))
+
+# ::snt Software that provides utility and control functions such as setting communications parameters
+# ::term monitor
+# ::sntId 113
+# ::treeId 0
+# ::note "function :topic" or "function :mod"???
+# ::note there are toooo many manings for "set" predicate, i am not sure which to choose
+# ::src manual
+(s / software
+      :ARG0-of (p / provide
+            :ARG1 (f / function
+                  :topic (a / and
+                        :op1 (u / utility)
+                        :op2 (c / control))
+                  :example (s2 / set-01
+                        :ARG1 (p2 / parameter
+                              :mod (c2 / communicate-01))))))
+# ::src jamr
+(a / and
+      :ARG1-of (p / provide-01 
+            :ARG0 (s3 / software)) 
+      :op1 (u / utility-777) 
+      :op2 (c2 / control-777) 
+      :op3 (f / function 
+            :topic (s / set-02 
+                  :ARG0 (s2 / such) 
+                  :ARG1 (c / communications-parameters-777))))
+

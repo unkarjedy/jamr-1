@@ -49,10 +49,12 @@ case class FeatureVectorFast(labelset : Array[String],
             f(Conjoined(i, unconjoinedTotal + conjoinedTotal(i)))
         }
     }
-    def iterateOverLabels2(v: List[(String, Value, immutable.Map[Int, Double])], f: (Conjoined) => Unit) {
+
+    def iterateOverLabels2(featureValue: List[(String, Value, immutable.Map[Int, Double])],
+                           f: (Conjoined) => Unit) {
         var unconjoinedTotal : Double = 0.0
         val conjoinedTotal : Array[Double] = labelset.map(x => 0.0)
-        for ((feature, value, conjoinedMap) <- v if fmap.contains(feature)) {
+        for ((feature, value, conjoinedMap) <- featureValue if fmap.contains(feature)) {
             val myValues : ValuesMap = fmap(feature)
             unconjoinedTotal += myValues.unconjoined * value.unconjoined
             for ((labelIndex, value) <- conjoinedMap) {   // reusing value name, but it's ok
@@ -66,6 +68,7 @@ case class FeatureVectorFast(labelset : Array[String],
             f(Conjoined(i, unconjoinedTotal + conjoinedTotal(i)))
         }
     }
+
     def apply(feature: String, label: Option[Int]) : Double = {
         if (fmap.contains(feature)) {
             if (label.isEmpty) {
@@ -192,8 +195,9 @@ case class FeatureVectorFast(labelset : Array[String],
         }
         return f
     } */
+
     def read(iterator: Iterator[String]) {
-        val regex = ("""(.*?)(\+L=("""+labelset.mkString("|")+"""))?[ \t]([^ \t]*)""").r  // .*? is non-greedy
+        val regex = ("""(.*?)(\+L=(""" + labelset.mkString("|") + """))?[ \t]([^ \t]*)""").r // .*? is non-greedy
         // (feature, _, label, value)
         // matches featurename+L=label 1.0
         fmap.clear()
@@ -209,6 +213,7 @@ case class FeatureVectorFast(labelset : Array[String],
             }
         }
     }
+
     def fromFile(filename: String) {
         val iterator = Source.fromFile(filename).getLines()
         read(iterator)

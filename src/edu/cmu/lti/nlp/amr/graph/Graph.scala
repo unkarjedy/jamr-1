@@ -39,6 +39,41 @@ case class Graph(var root: Node,
     Graph(root2, spans.clone, getNodeById2, getNodeByName2)
   }
 
+  // NAUMENKO: i changed original `duplicate` method so that it Really duplicates it deeply.
+  // default implementation still reused some of the objects (e.g. Nodes)
+  // TODO: not implemented yet =(
+  def deepCopy: Graph = {
+    val getNodeById2: Map[String, Node] = Map()
+
+    for (node <- nodes) {
+      val Node(id, name, concept, _, _, _, alignment, spans) = node
+      getNodeById2(id) = Node(id, name, concept, List(), List(), List(), alignment, spans)
+    }
+
+    for (node <- nodes) {
+      val node2 = getNodeById2(node.id)
+      node2.relations = node.relations.map(x => (x._1, getNodeById2(x._2.id)))
+      node2.topologicalOrdering = node.topologicalOrdering.map(x => (x._1, getNodeById2(x._2.id)))
+      node2.variableRelations = node.variableRelations.map(x => (x._1, getNodeById2(x._2.id)))
+    }
+
+    val getNodeByName2 = getNodeByName.map(x => (x._1, getNodeById2(x._2.id)))
+    logger(1, "getNodeById = " + getNodeById)
+    logger(1, "getNodeById2 = " + getNodeById2)
+    val root2 = if (getNodeById2.contains(root.id)) {
+      getNodeById2(root.id)
+    } else {
+      // sometimes the root is not in the spans
+      // (if it is from automatically aligned spans, and the root is not in the spans).
+      // So we create a dummy root which will get re-assigned later
+      // TODO: handle null roots
+      Graph.Null().root
+    }
+
+    Graph(root2, spans.clone, getNodeById2, getNodeByName2)
+    ???
+  }
+
   def clearUnalignedNodes() {
     // Removes all the unaligned nodes from the graph (useful for oracle experiments)
     // WARNING: this can break the topological ordering
