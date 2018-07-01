@@ -84,11 +84,6 @@ class StanfordProcessor(verbose: Boolean = false) extends SimpleLoggerLike {
     splitAnnotator.annotate(annotation)
     parserAnnotator.annotate(annotation)
     parserKBestAnnotator.annotate(annotation)
-    //    val sentence: CoreMap = annotation.get(classOf[CoreAnnotations.SentencesAnnotation]).head // assume that we have one sentence in input
-    //    val words: Seq[CoreLabel] = sentence.get(classOf[CoreAnnotations.TokensAnnotation])
-    //    val constraints: Seq[ParserConstraint] = sentence.get(classOf[ParserAnnotations.ConstraintAnnotation])
-    //    val tree = doOneSentence(constraints, words)
-
     annotation
   }
 
@@ -101,9 +96,6 @@ class StanfordProcessor(verbose: Boolean = false) extends SimpleLoggerLike {
     val sentences: Seq[CoreMap] = annotation.get(classOf[SentencesAnnotation])
 
     for ((sentence, idx) <- sentences.zipWithIndex) yield {
-      //      if (verbose) {
-      //        logger.info(s"parsing sentence $idx")
-      //      }
       val tree: Tree = sentence.get(classOf[TreeAnnotation])
       val tokens: Seq[ConllToken] = buildConllTokens(input, sentence, tree)
       SentenceSingleParseResult(sentence, idx, ConllTokensList(tokens))
@@ -165,9 +157,6 @@ class StanfordProcessor(verbose: Boolean = false) extends SimpleLoggerLike {
   }
 
   def parseToKBestConllString(input: String, inputIdx: Int): Seq[String] = {
-//    if (verbose) {
-//      logger.info(s"parsing sentence $inputIdx")
-//    }
     // we expect that input contains only one sentence
     parseKBest(input).take(1).map { case SentenceKBestParseResults(sentence, sentenceIdx, bestConllTokens) =>
       val parseResultTextBlocks: Seq[String] = bestConllTokens.map(_.tokens.mkString("\n"))

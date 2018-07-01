@@ -1,0 +1,101 @@
+An Internet domain name made up of standard ASCII characters
+A file that contains one or more compressed files
+A type of TDMA transmission system developed by the University of Hawaii used for satellite and terrestrial radio links
+A connection between an ISDN customer and an information service provider using the X.25-based D channel, which is a signaling channel that is always active
+An analog video camera such as a VHS camcorder
+A Web server technology from Microsoft that allows for the creation of dynamic, interactive sessions with the user
+An advanced Linux file system designed for the ultra-large storage requirements of the 21st century
+A group, or collection, of items
+A collaboration platform from blueKiwi Software
+An executable program that can run without change in a different hardware platform 
+A computer specialized for "cloud computing," in which most of the software and data reside in network servers
+A message integrity method that uses block ciphers such as DES and AES
+A model for describing management information from the DMTF
+A hard disk failure
+A particular usage of Microsoft's COM-based component software architecture that lets applications expose their internal functions as COM objects
+An earlier full-featured 2D CAD program for the Macintosh from Claris that was noted for its ease of use
+A motor-driven fan that is part of the computer case
+A terminal or desktop computer used to monitor and control a network
+An early daisy wheel printer from the Diablo division of Xerox
+A Web site that delivers custom Web pages to the user
+A duplicate copy of data on a different storage medium
+A model railroad control system that allows multiple trains to be operated independently
+A DVD with two data layers on one side
+A computer that is processing data, in contrast with a computer performing another task, such as controlling a network
+An early family of QIC-based tape drives originally from Iomega
+A programming technique that uses two buffers to speed up a computer that can overlap I/O with processing
+A Burlington, Massachusetts software tools company founded in 1981
+An illustration in which all the elements of an assembly are slightly separated from each other, enabling each element to be viewed independently
+A rewritable memory chip that holds its content without power
+A digital single lens reflex camera with a sensor the same size as a 35mm camera
+A Fast Wide SCSI implementation that uses the common single ended signaling
+A type of video game in which players shoot a gun or rocket at an ever-changing scene of "bad guys." Introduced in 1993, DOOM popularized the first-person shooter game with its 3D graphics
+A flash memory-based music player
+A standard set of 128 sounds for MIDI sound cards and devices 
+A satellite-based radio navigation system run by the U.S
+An earlier database and runtime engine from Ross Enterprise that was noted for its high transaction performance and scalability
+A family of modems developed by Hayes, which was the industry leader for many years 
+An earlier time period in which something was very popular
+A permanent, unrecoverable error such as a disk read error or circuit malfunction
+A telephone call within the same LATA 
+A user interface that displays graphic elements to represent menu options
+A high-speed circuit that holds an instruction for decoding and execution
+A household refrigerator with a built-in computer for Web browsing and appliance control
+A family of business intelligence products from IQ Software
+A Java compiler from IBM that has been turned into an open source product
+An earlier application development system for DOS, OS/2, VMS and Unix environments from Micro Data Base Systems Inc., Lafayette, IN 
+A software company that specialized in the information appliance field
+A major upgrade to the LTE cellular communications technology
+An earlier SPEC benchmark for file servers
+A microminiaturized display, typically with a screen size less than two inches diagonal
+An application program that is executed within a runtime engine installed in the same machine
+An acoustic fingerprint technology from MusicIP Corporation, Monrovia, CA that is used to identify songs by their waveform characteristics
+A communications network that covers a geographic area such as a town, city or suburb
+A virus that is written in a macro language and placed within a document
+A series of conversion steps that allow an organization to evolve smoothly to newer hardware and software in order to keep pace with changing technology
+A smartphone or tablet user
+A person who has a passion for the Internet
+A manufacturer of PC display adapters founded in 1982 as Number Nine Computer Corporation by Andrew Najda and Stan Bialek
+An independent organization established in 1983 that evaluates computer hardware and software in the PC, mobile and gaming markets
+A client/server development system from CA Technologies that runs on Windows, X terminal and OS/2 clients
+A system that allows third parties to make products that plug into or interoperate with it
+A method for anonymous communications over a wide area network such as the Internet
+An earlier Macintosh computer that used a PowerPC CPU chip
+A Type 1 font file that contains the measurements of each character in the font
+A programmable microprocessor-based device that is used in discrete manufacturing to control assembly lines and machinery on the shop floor as well as many other types of mechanical, electrical and electronic equipment in a plant
+A reminder to you of how you made up your password
+A person who is responsible for the analysis, selection, installation, training and maintenance of PC hardware and software
+An algorithmic way of describing a texture
+A specification from Intel for memory chips that support the 100 MHz system bus
+An LED TV backlight technology that comprises a film of red and green nanocrystal dots between the blue LED layer and the LCD panel
+A peripheral device, such as a disk, modem or printer, that is available for shared use in the network
+An earlier family of MPP-based computer systems from Siemens Pyramid
+An external DOS/Window.s command that can be used to copy only updated files
+A programming language that uses symbols, or mnemonics, for expressing operations and operands
+An operating environment in which applications do not share memory or storage with each other
+A Microsoft tablet that runs the Windows 8 operating system
+A saved copy of a file before it is updated
+A hierarchical DBMS from the SAS Institute, Cary, NC that runs on IBM and Unisys mainframes
+A sensor that includes a microprocessor that conditions the signals before transmission to the control network
+A method for testing chips on the printed circuit board by building the chip with additional input and output pins that are used only for test purposes
+A popular method for adhering thin films onto a substrate
+An operation that is performed by the operating system or some other control program
+A failure in early hard drives that caused the read/write heads to stick to the platters
+A sorting procedure in which the key fields are sorted first to create the correct order, and then the actual data records are placed into that order
+An open source mobile operating system supported by the Tizen Association and the Linux Foundation
+A search for information based on a subject such as sports, automobiles or politics
+A device made up of two separate components
+A USB flash drive used for storage or as an identification key
+A powerline network used for controlling lights and appliances in the home from Powerline Control Systems 
+A single processor
+An electronic circuit that converts AC to DC and multiplies the source voltage
+A standard 68-pin interface for connecting UltraSCSI and other peripheral devices
+A voice-controlled application on a computer or mobile device
+A mobile video sharing app that takes six-second videos for posting on Facebook and Twitter
+A cooling system that uses water
+A reserved section of memory that is in constant use
+A subscription service from Microsoft that provided a one-stop source for protection against malware , system maintenance and backup and recovery
+An IEEE professional organization devoted to advancing women in the engineering and scientific fields
+An earlier online storage service from Xdrive Inc., Santa Monica, CA
+A feature of an A/V receiver that allows a video source to pass unaffected through the receiver to a 4K TV without any processing
+A chat room environment that incorporates 3D images

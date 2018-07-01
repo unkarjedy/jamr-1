@@ -2,7 +2,7 @@ package scripts.parse
 
 import java.io.File
 
-import org.apache.commons.io.FileUtils
+import org.apache.commons.io.{FileUtils, FilenameUtils}
 import scripts.DependencySvgPngDrawer
 import scripts.train.RunProperties
 import scripts.utils.FileExt._
@@ -22,7 +22,8 @@ object RunParse extends StageRunnerLike {
   ).distinct
 
   private val stage2Features = List(
-    "bias", "typeBias", "self", "fragHead", "edgeCount", "distance", "logDistance",
+    "bias",
+    "typeBias", "self", "fragHead", "edgeCount", "distance", "logDistance",
     "rootConcept",
     "conceptBigram",
     "rootDependencyPathv1", "posPathv3", "dependencyPathv4", "dependencyPathv5"
@@ -33,7 +34,7 @@ object RunParse extends StageRunnerLike {
     // "NEPassThrough",
     "PassThrough",
     "WordNetPassThrough"
-    // "TermsDict"
+    //"TermsDict"
   ).distinct
 
   def main(args: Array[String]): Unit = {
@@ -51,11 +52,19 @@ object RunParse extends StageRunnerLike {
       c
     }
 
+    val inputFolderNme = s"$jamrRoot/${runProperties.parserInputFolder}"
+    val inputFolder = new File(inputFolderNme)
+    require(inputFolder.exists())
+    val outputFolder = s"$inputFolderNme/out"
     val inputFilename = runProperties.parserInputFileName
-    val inputFolder = s"$jamrRoot/${runProperties.parserInputFolder}"
-    val outputFolder = s"$inputFolder/out"
+    val inputDepsFilename = Option(runProperties.parserInputDepFileName)
+      .orElse(inputFolder.listFiles.find { f =>
+        val fileName = f.getName
+        fileName.contains(FilenameUtils.getBaseName(inputFilename)) &&
+          (fileName.endsWith(".conll") || fileName.endsWith(".deps") || fileName.endsWith(".dep"))
+      } map(_.getName))
 
-    val parseStage = Parse(context, inputFolder, inputFilename, outputFolder)
+    val parseStage = Parse(context, Parse.ParseOptions(inputFolderNme, outputFolder, inputFilename, inputDepsFilename))
     parseStage.run()
 
     runStage("### Extract AMRs only ###", skip = false) {
@@ -64,7 +73,7 @@ object RunParse extends StageRunnerLike {
     }
 
     runStage("### Render dependency trees ###", runProperties.skipSvgRender) {
-      val baseFolder = new File(inputFolder)
+      val baseFolder = inputFolder
       val dependenciesFile: File = baseFolder.resolve(s"$inputFilename.deps.k_best.txt")
       val outputDir: File = baseFolder.resolve("out").resolve("images")
       renderDependencyTrees(dependenciesFile, outputDir)
@@ -109,15 +118,15 @@ object RunParse extends StageRunnerLike {
          |-v 1
       """.stripMargin
 
-    //    val trainingFile = "sentences1_fixed1.txt.amr_gold.aligned.no_opN"
-    //    val trainingFile = "sentences1.txt.amr_gold.aligned.no_opN"
-    val trainingFile = "sentences2.txt.amr_gold.aligned.no_opN"
-
-    val extra =
+    val extra = {
+      //    val trainingFile = "sentences1_fixed1.txt.amr_gold.aligned.no_opN"
+      //    val trainingFile = "sentences1.txt.amr_gold.aligned.no_opN"
+      val trainingFile = "sentences2.txt.amr_gold.aligned.no_opN"
       s"""--stage1-oracle
          |--training-data $jamrRoot/resources_terms/FinalOutputs/gold_amr/$trainingFile
       """.stripMargin // + "\n--stage2-cost-diminished"
+    }
 
-    base // + extra
+    base //+ extra
   }
 }

@@ -2,20 +2,20 @@ package scripts.parse
 
 import java.io.{File, PrintWriter}
 
-import com.typesafe.scalalogging.slf4j.StrictLogging
+import scripts.parse.Parse.ParseOptions
 import scripts.preprocess.Preprocessor
 import scripts.utils.context.{Context, ContextLike}
-import scripts.utils.logger.SimpleLoggerLike
 import scripts.utils.{AMRParserRunner, FileUtils, StageRunnerLike}
 
 import scala.io.Source
 
 // Analogue of PARSE.sh
 case class Parse(context: Context,
-                 inputFolder: String,
-                 inputFileName: String,
-                 outputFolder: String) extends ContextLike(context) with Runnable with StageRunnerLike {
-  private val inputFile = new File(inputFolder).toPath.resolve(inputFileName).toFile
+                 options: ParseOptions) extends ContextLike(context) with Runnable with StageRunnerLike {
+  private val ParseOptions(inputFolder, outputFolder, sentencesFileName, depsFileNameOpt) = options
+
+  private val inputFile = new File(inputFolder).toPath.resolve(sentencesFileName).toFile
+  private val inputDepFile = depsFileNameOpt.map(new File(inputFolder).toPath.resolve(_).toFile)
 
   override def run(): Unit = {
     FileUtils.mkDir(outputFolder)
@@ -68,7 +68,7 @@ case class Parse(context: Context,
     val returnCode = proc.waitFor()
     logger.info(s"tokenize-anything.sh  returned code: $returnCode")
     if(returnCode != 0) {
-      throw new RuntimeException(s"tokenize-anything.sh exited with error code: ${returnCode}")
+      throw new RuntimeException(s"tokenize-anything.sh exited with error code: $returnCode")
     }
   }
 
@@ -80,7 +80,7 @@ case class Parse(context: Context,
          |--stage1-weights "${context.stage1Weights}"
          |--stage2-weights "${context.stage2Weights}"
          |--dependencies "$inputFile.deps"
-         |--dependencies-kbest "$inputFile.deps.k_best.txt"
+         |--dependencies-kbest "${inputDepFile.getOrElse(s"$inputFile.deps.k_best.txt")}"
          |--ner "$inputFile.IllinoisNER"
          |--tok "$inputFile.tok"
          |--progress-file "${outputPath.resolve("parse-progress.txt").toString}"
@@ -90,8 +90,8 @@ case class Parse(context: Context,
     AMRParserRunner.run(
       argsString = args,
       inFilePath = inputFile.getPath,
-      outFilePath = outputPath.resolve(s"$inputFileName.out").toString,
-      errFilePath = outputPath.resolve(s"$inputFileName.err").toString
+      outFilePath = outputPath.resolve(s"$sentencesFileName.out").toString,
+      errFilePath = outputPath.resolve(s"$sentencesFileName.err").toString
     )
   }
 
@@ -103,4 +103,9 @@ case class Parse(context: Context,
 }
 
 
-
+object Parse {
+  case class ParseOptions(inputFolder: String,
+                          outputFolder: String,
+                          sentencesFileName: String,
+                          depsFileName: Option[String] = None)
+}

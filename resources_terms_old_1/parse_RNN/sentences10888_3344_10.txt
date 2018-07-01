@@ -1,0 +1,10 @@
+A storage drive : hard disk , solid state disk or USB drive
+An umbrella term for a variety of best practices in creating applications and information systems
+A programming interface for Apple's Rhapsody operating system , which later became Mac OS X
+A handheld computer or other device that was managed by the Windows CE operating system
+A voice recognition and natural language interface for a computer or mobile device
+A digital video file format from Adobe for digital cinema workflows
+A version control system for IBM mainframes from CA Technologies
+A hardware circuit that performs analog-to-digital conversion and/or digital-to-analog conversion
+An application development system from CA Technologies for IBM mainframes and Unix
+A high-level numerical control programming language used to generate instructions for numerical control devices

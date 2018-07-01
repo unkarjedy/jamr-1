@@ -42,19 +42,18 @@ case class Preprocessor(ctx: Context) extends ContextLike(ctx)
   }
 
   def extractSentencesAndTokens(amrFile: File): Unit = {
-    val sntOutputFile = new File(s"${amrFile.getPath}.snt")
-    val sntTokOutputFile = new File(s"${amrFile.getPath}.snt.tok")
-    val tokOutputFile = new File(s"${amrFile.getPath}.tok")
+    val amrFilePath = amrFile.getPath
+    val sntOutputFile = new File(s"$amrFilePath.snt")
+    val sntTokOutputFile = new File(s"$amrFilePath.snt.tok")
+    val tokOutputFile = new File(s"$amrFilePath.tok")
 
     //  ./cmd.snt
-    val sntWriter = new PrintWriter(sntOutputFile)
+    val sntPrintStream = new PrintStream(sntOutputFile)
     Source.fromFile(amrFile).getLines()
       .filter(_.startsWith("# ::snt "))
-      .map(snt => snt
-        .replaceAll("^# ::snt ", "")
-        .replaceAll("  +", " "))
-      .foreach(sntWriter.println)
-    sntWriter.close()
+      .map(_.replaceAll("^# ::snt ", "").replaceAll("  +", " "))
+      .foreach(sntPrintStream.println)
+    sntPrintStream.close()
 
     // ./cmd.snt.tok
     val pb = new ProcessBuilder("sh", s"${ctx.cdecPath}/corpus/tokenize-anything.sh")

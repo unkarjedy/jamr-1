@@ -19,9 +19,16 @@ object PrepareSmatchFileTuplesAndRun {
   private val smatchScriptPath = s"$jamrRoot/scripts/smatch_v1_0/smatch_modified.py"
   private val smatchPlaygroundDir =
     s"$jamrRoot/resources_terms/FinalOutputs/" +
-      s"smatch_evals_battlefield/sent2_without_features/"
+      "smatch_evals_battlefield/" +
+      "sent2_only_deps_features_stage1_oracle/"
+  //      "sent2_without_deps_features_stage1_oracle/"
+  //      "sent2_only_deps_features/"
+  //  private val smatchPlaygroundDir =
+  //    s"$jamrRoot/resources_terms/FinalOutputs/" +
+  //      s"smatch_evals_battlefield/which_that/sentences1&2/"
 
   private val fileNameBase = "sentences2.txt"
+  //  private val fileNameBase = "sentences1&2.txt"
   //  private val fileNameBase = "sentences1_fixed1.txt"
 
   private lazy val targetFolder = {
@@ -31,8 +38,15 @@ object PrepareSmatchFileTuplesAndRun {
   }
 
   private val amrFileSuffixGold = "amr_gold"
+  //  private val amrFileSuffixesTest = Seq(
+  //    "amr_deps_gold_nsubj",
+  //    "amr_deps_gold_ref",
+  //    "amr_deps_gold_ref2",
+  //    "amr_deps_0"
+  //  )
   private val amrFileSuffixesTest = Seq(
     "amr_deps_gold",
+    //    "amr_deps_skip",
     "amr_deps_0",
     "amr_deps_1",
     "amr_deps_2",

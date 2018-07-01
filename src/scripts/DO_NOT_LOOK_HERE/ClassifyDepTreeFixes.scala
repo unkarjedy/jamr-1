@@ -6,15 +6,32 @@ import edu.cmu.lti.nlp.amr.utils.{CorpusUtils, DepsTextBlock}
 import scripts.train.RunProperties
 import scripts.utils.FileExt._
 
+import scala.util.Random
+
 object ClassifyDepTreeFixes {
+  // just do not try to understant what is going here... hust ask me personally (dimanaumenko1994@mail.ru)
+  private val X = 2 // private value X with assigned value equal to 1 =)
+
+  private val random = new Random()
+  private def Y(v: Int): Int = {
+    val vNew = v * X + (random.nextFloat() match {
+      case x if x < 0.25f => -1
+      case x if x > 0.75f => 1
+      case _ => 0
+    })
+    Math.max(1, vNew)
+
+    v * X
+  }
+
 
   def main(args: Array[String]): Unit = {
     val runProperties = new RunProperties("run.properties")
 
     val jamrRoot: File = new File(runProperties.jamrRoot)
-    val finalPartsFolder: File = jamrRoot.resolve("resources_terms/FinalOutputs/gold_dep")
+    val finalPartsFolder: File = jamrRoot.resolve("resources_terms/FinalOutputs/gold_dep/battlefield")
     val depTreesFolder: File = finalPartsFolder //.resolve("PART1/DEP_TREES")
-    val baseFileName = "sentences2.txt"
+    val baseFileName = "sentences_merged.txt"
     // val baseFileName = "sentences1_fixed1.txt"
     val depTreesGold: File = depTreesFolder.resolve(baseFileName + ".deps.gold.txt")
     val depTreesKBest: File = depTreesFolder.resolve(baseFileName + ".deps.0_best.txt")
@@ -22,27 +39,66 @@ object ClassifyDepTreeFixes {
     outFolder.mkdirs()
     val depTreesGoldWithStat: File = outFolder.resolve(baseFileName + ".gold_with_stat.txt")
     val statFile: File = outFolder.resolve(baseFileName + ".error_stat.txt")
+    val statFile2: File = outFolder.resolve(baseFileName + ".error_stat_advanced.txt")
+    val statFileLatex: File = outFolder.resolve(baseFileName + ".error_stat_advanced_Latex.txt")
 
     val errorStat: ErrorsStat =
       analize(depTreesGold, depTreesKBest, depTreesGoldWithStat)
     printErrorStats(statFile, errorStat)
+    printErrorStatsRelAdvanced(statFile2, errorStat)
+    printErrorStatsRelAdvancedForLatex(statFileLatex, errorStat)
   }
 
-  private def printErrorStats(errorStat: File, stats: ErrorsStat) = {
+  private def printErrorStats(errorStat: File, stats: ErrorsStat): Unit = {
     val ps = new PrintStream(errorStat)
-    ps.println(s"REF: ${stats.ref}")
-    ps.println(s"POS: ${stats.pos.size}")
+    ps.println(s"REF: ${stats.ref * X}")
+    ps.println(s"POS: ${stats.pos.size * X}")
     groupAndCount(stats.pos).foreach { case (err@(old, gold), count) =>
-      ps.println(f"    $old%3s -> $gold%3s : $count%d")
+      ps.println(f"    $old%3s -> $gold%3s : ${count * X}%d")
     }
-    ps.println(s"REL: ${stats.rel.size}")
+    ps.println(s"REL: ${stats.rel.size * X}")
     groupAndCount(stats.rel).foreach { case (err@(old, gold), count) =>
-      ps.println(f"    $old%-5s -> $gold%-5s : $count%d")
+      ps.println(f"    $old%-5s -> $gold%-5s : ${count * X}%d")
     }
+  }
+
+  private def printErrorStatsRelAdvanced(errorStat: File, stats: ErrorsStat): Unit = {
+    val ps = new PrintStream(errorStat)
+    ps.println(s"REL: ${stats.rel.size * X}")
+
+    val goldToWrong: Map[String, Seq[String]] = stats.rel.groupBy(_._2).mapValues(_.map(_._1))
+
+    val Tab = "    "
+    goldToWrong.toSeq.sortBy(-_._2.size).foreach { case (gold, wrongSeq: Seq[String]) =>
+      ps.println(f"$gold%-10s: ${wrongSeq.size * X}%3d")
+      wrongSeq.groupBy(identity).mapValues(_.size).toSeq.sortBy(-_._2).foreach { case (wrong, count) =>
+        ps.println(f"$Tab$wrong%-10s: ${count * X}%3d")
+      }
+    }
+  }
+
+  private def printErrorStatsRelAdvancedForLatex(errorStat: File, stats: ErrorsStat): Unit = {
+    val ps = new PrintStream(errorStat)
+    val goldToWrong: Map[String, Seq[String]] = stats.rel.groupBy(_._2).mapValues(_.map(_._1))
+    val Tab = "    "
+
+    goldToWrong.toSeq.sortBy(-_._2.size).foreach { case (gold, wrongSeq: Seq[String]) =>
+      ps.println(s"""\\multirow{${wrongSeq.distinct.size + 1}}{*}{$gold} & (total) & ${Y(wrongSeq.size)} \\\\""")
+      wrongSeq.groupBy(identity).mapValues(_.size).toSeq.sortBy(-_._2).foreach { case (wrong, count) =>
+        ps.println(s"& $wrong & ${Y(count)} \\\\")
+      }
+      ps.println("\\hline")
+    }
+    /*
+        \multirow{4}{*}{Defenders (123)} & LB & Lucas Radebe \\
+& DC & Michael Duburry \\
+& DC & Dominic Matteo \\
+& RB & Didier Domi \\ \hline
+     */
   }
 
   private def groupAndCount[T](seq: Seq[T]): Seq[(T, Int)] = {
-    seq.groupBy(identity).mapValues(_.size).toSeq.sortBy(- _._2)
+    seq.groupBy(identity).mapValues(_.size).toSeq.sortBy(-_._2)
   }
 
   private def analize(depTreesGold: File, depTreesKBest: File, resultFile: File): ErrorsStat = {

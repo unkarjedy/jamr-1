@@ -1,0 +1,103 @@
+An application integration system originally from Active Software Inc that runs on Solaris, HP/UX, Windows and IRIX
+An umbrella term for capturing data about a person or object electronically
+An optical disc technology in which the creation of the bit permanently alters the recording material, and the data cannot be changed
+An advertising effort that places ads on a Web page or application via the Internet
+An English-like command language for the Macintosh introduced with System 7 Pro and supported in Mac OS X, even though OS X has its own Unix commands
+An additional power source that can be used in the event of power failure
+An initiative from Maxtor, Compaq, Microsoft and others to increase the maximum capacity of ATA drives from 137GB to 144PB by upgrading the address size to 48 bits
+An earlier Nortel Networks brand name for its Ethernet switches and hubs
+An entity bean that is responsible for its own storage, typically through JDBC code in its methods
+An integrated circuit that has been cut out from the wafer and is ready for packaging
+An early family of computers from Control Data that ranged from workstations to supercomputers
+An off-the-shelf device that is readily available for purchase
+An integrated information system that is used to plan, schedule and control the presales and postsales activities in an organization
+An IETF standard for exchanging policy information in a network
+An electronic astronaut
+An earlier application development system for Windows and OS/2 from CA Technologies
+An application development system from CA Technologies for IBM mainframes and Unix
+An increase in size of each dot of ink when printed due to temperature, ink and paper type
+An application that allows for the creation and management of information and ads on digital signs
+An earlier full-featured IBM word processing program for PCs that stemmed from the typewriter-oriented DisplayWriter word processing system first introduced in 1980
+An Internet-based global communications network created by the U
+An organization that sets up and manages PKI systems for companies and industry groups
+An electromechanical device that contains and reads and writes magnetic disks, optical discs or magnetic tapes
+An illegal change to a DNS server that directs a URL to a different Web site
+An automobile that is powered entirely or partially by electricity
+An undocumented function hidden in software that may or may not be sanctioned by management
+An e-cigarette for marijuana, available at medical marijuana dispensaries
+An arithmetic expression that equates one set of conditions to another; for example, A = B + C
+An application development system for enterprise client/server environments from Sun
+An Android smartphone from Amazon.com
+An earlier Windows 3.1 driver that speeded up disk access by running in 32-bit mode, bypassing DOS and the BIOS and communicating directly with the disk controller
+An RSS newsreader from Google that was launched in 2005
+An earlier name for router
+An early provider of IP voice services via the Internet, intranets and private WANs that sold its customer base in the late 1990s
+An always-on voice circuit between two or more parties
+An automobile from Hypercar Inc., Basalt, CO that uses advanced concepts
+An earlier, popular graphics file conversion and screen capture program for Windows from IMSI, Novato, CA
+An area with excessive heat in the datacenter
+An ANSI file format that is system independent and also intended for human interpretation
+An earlier DVD burner application from Apple
+An earlier family of desktop graphics computers from SGI
+An OS/2 feature that supports multiple file systems
+An IBM mainframe program that transfers files between the mainframe and a PC functioning as a 3270 terminal
+An information provider that gathers content from several sources and functions as a data aggregator for a target audience
+An application software platform from Oracle for smart cards based on a subset of the Java programming language
+An early family of client/server tools for analyzing data from multidimensional databases from Pilot Software, Cambridge, MA , a pioneer in the OLAP database field
+An evaluation of the print quality of an electric typewriter, indicating suitability for business correspondence
+An electronic circuit that performs some type of processing or controlling function
+An IP address in the range from 169.254.1.0 to 169.254.254.255
+An electromagnetic wave that oscillates in the range from 300,000 to 3,000,000 Hz
+An individual who modifies an off-the-shelf component, typically a PC
+An architecture for building applications that separates the logic and data , the user interface and processing 
+An enhancement to the IP protocol that forwards e-mail and other data to traveling users
+An intermediate-sized version of the SD memory card
+An electronic commerce transaction of very low value
+An input/output architecture developed by Intel that evolved into InfiniBand
+An organization that delivers telecommunications services over a typically large geographic area
+An ANSI-standard protocol for videotex and teletext
+An open source version of the SSL and TLS security protocols
+An X Window-based graphical user interface for Unix from Sun
+An initiative spearheaded in 2013 by Facebook to design server motherboards that accept different types of CPU chips
+An application that is available over the Web, typically via the Web browser
+An earlier keyboard macro processor for DOS and Windows from CE Software Inc., West Des Moines, IA that allowed users to eliminate repetitive typing by setting up an occurrence of text or a series of commands as a macro
+An architecture using multiple computers
+An early IBM personal computer
+An earlier online information service that provided access to the Internet, e-mail and a variety of databases
+An earlier OEM version of Novell's NetWare operating system that could be compiled for a specific vendor's machine
+An advertisement that is automatically played prior to the video content selected by the user
+An open source development platform from Qt Software, a Norwegian unit of Nokia
+An 8-line telephone interface used with alarm systems to seize the line even if it is being used
+An access point set up by an attacker outside a facility with a wireless network
+An operating state of a Linux/Unix operating system
+An open architecture for transmitting voice and video signals
+An umbrella term for integrating and managing multiple independent, self-contained systems as a single entity
+An Internet telephone and video calling service from Skype Technologies S
+An on-screen symbol that indicates the operating system is ready for a command
+An LCD technology that twists liquid molecules greater than 90 degrees in order to improve contrast and viewing angle
+An individual or organization that builds systems from a variety of diverse components
+An encryption method that uses the same secret key to encrypt and decrypt messages
+An application server that provides the facilities for running Java servlets
+An automobile with advanced electronics
+An addition of a new application, routine or device that works smoothly with the existing system
+An environment that is created for testing purposes
+An earlier letter quality printer similar to a daisy wheel printer
+An IBM circuit packaging technique that seals chips, boards and components into a module that serves as a heat sink
+An activity or request
+An early stand-alone data entry machine that stored data on magnetic tape for computer entry
+An earlier name for the low- power mode in Bluetooth 4, ULP is also used to describe various low-power sensor networks 
+An established relationship between a user and a computer, network or information service
+An earlier application development environment for Smalltalk for Windows and OS/2 from the now-defunct ObjectShare Inc., Sunnyvale, CA
+An open source video codec that supersedes VP9 and is expected in 2015
+An ITU standard for analog modem error checking that uses LAP-M as the primary protocol and provides MNP Classes 2 through 4 as an alternative protocol for compatibility
+An innovative video production and editing system for Windows from NewTek Inc., San Antonio, TX 
+An airplane's travel path
+An audio compression method from Microsoft
+An Internet-based system that enables an individual or a company to publish itself to the entire world, except to countries or locations that prohibit the free interchange of information
+An earlier version of Windows for the desktop
+An open source layout engine that is used to render Web pages in Apple's Safari, Google's Chrome and other Web browsers
+An XML-based language for defining business processes from Microsoft
+An XML markup language that describes how an XML document is converted into another XML document with a different tag structure, or into HTML or text
+An operational mode in Intel 64 and AMD64 CPUs that enables 32-bit applications to each use up to 4GB of RAM
+An IEEE standard for link layer discovery in Ethernet networks
+An IEEE working group that is defining methods for improved Wi-Fi management Including the ability to lower power when not needed and redirect packets to different access points to balance the traffic load

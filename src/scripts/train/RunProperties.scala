@@ -52,6 +52,7 @@ final class RunProperties(filePath: String = "run.properties") extends Propertie
   def skipSvgRender = getBool("skip.svg_render", default = true)
 
   def parserInputFileName = getProperty("parser.input.file_name")
+  def parserInputDepFileName = getProperty("parser.input.deps_file_name")
   def parserInputFolder = getProperty("parser.input.folder")
   def parserOutputFolder = getProperty("parser.output.folder")
 

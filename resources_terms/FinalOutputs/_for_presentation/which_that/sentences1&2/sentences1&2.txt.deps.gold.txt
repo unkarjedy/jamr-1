@@ -1,0 +1,1346 @@
+# ::snt A group of related components that interact to perform a task
+# ::sntId 2
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	group	_	NN	NN	_	0	root	_	_
+3	of	_	IN	IN	_	2	prep	_	_
+4	related	_	JJ	JJ	_	5	amod	_	_
+5	components	_	NNS	NNS	_	3	pobj	_	_
+6	that	_	WDT	WDT	_	7	nsubj	_	_
+7	interact	_	VBP	VBP	_	5	rcmod	_	_
+8	to	_	TO	TO	_	9	aux	_	_
+9	perform	_	VB	VB	_	7	xcomp	_	_
+10	a	_	DT	DT	_	11	det	_	_
+11	task	_	NN	NN	_	9	dobj	_	_
+
+# ::snt Any arrangement of elements that are interconnected
+# ::sntId 5
+# ::treeId GOLD
+1	Any	_	DT	DT	_	2	det	_	_
+2	arrangement	_	NN	NN	_	0	root	_	_
+3	of	_	IN	IN	_	2	prep	_	_
+4	elements	_	NNS	NNS	_	3	pobj	_	_
+5	that	_	WDT	WDT	_	7	nsubj	_	_
+6	are	_	VBP	VBP	_	7	cop	_	_
+7	interconnected	_	JJ	JJ	_	4	rcmod	_	_
+
+# ::snt A system that transmits data between users , which includes the user devices and the network equipment
+# ::sntId 6
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	system	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	transmits	_	VBZ	VBZ	_	2	rcmod	_	_
+5	data	_	NNS	NNS	_	4	dobj	_	_
+6	between	_	IN	IN	_	5	prep	_	_
+7	users	_	NNS	NNS	_	6	pobj	_	_
+8	,	_	,	,	_	7	punct	_	_
+9	which	_	WDT	WDT	_	10	nsubj	_	_
+10	includes	_	VBZ	VBZ	_	2	rcmod	_	_
+11	the	_	DT	DT	_	13	det	_	_
+12	user	_	NN	NN	_	13	nn	_	_
+13	devices	_	NNS	NNS	_	10	dobj	_	_
+14	and	_	CC	CC	_	13	cc	_	_
+15	the	_	DT	DT	_	17	det	_	_
+16	network	_	NN	NN	_	17	nn	_	_
+17	equipment	_	NN	NN	_	13	conj	_	_
+
+# ::snt A collection of instructions that tell the computer what to do
+# ::sntId 8
+# ::todo what about "csubj" instead of xcomp?
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	collection	_	NN	NN	_	0	root	_	_
+3	of	_	IN	IN	_	2	prep	_	_
+4	instructions	_	NNS	NNS	_	3	pobj	_	_
+5	that	_	WDT	WDT	_	6	nsubj	_	_
+6	tell	_	VBP	VBP	_	4	rcmod	_	_
+7	the	_	DT	DT	_	8	det	_	_
+8	computer	_	NN	NN	_	6	dobj	_	_
+9	what	_	WP	WP	_	6	dobj	_	_
+10	to	_	TO	TO	_	11	aux	_	_
+11	do	_	VB	VB	_	9	xcomp	_	_
+
+# ::snt Software that is used for business or entertainment
+# ::sntId 10
+# ::treeId GOLD
+1	Software	_	VB	VB	_	0	root	_	_
+2	that	_	WDT	WDT	_	4	nsubjpass	_	_
+3	is	_	VBZ	VBZ	_	4	auxpass	_	_
+4	used	_	VBN	VBN	_	1	dobj	_	_
+5	for	_	IN	IN	_	4	prep	_	_
+6	business	_	NN	NN	_	5	pobj	_	_
+7	or	_	CC	CC	_	6	cc	_	_
+8	entertainment	_	NN	NN	_	6	conj	_	_
+
+# ::snt An individual who uses a computer or some other equipment
+# ::sntId 11
+# ::treeId GOLD
+1	An	_	DT	DT	_	2	det	_	_
+2	individual	_	NN	NN	_	0	root	_	_
+3	who	_	WP	WP	_	4	nsubj	_	_
+4	uses	_	VBZ	VBZ	_	2	rcmod	_	_
+5	a	_	DT	DT	_	6	det	_	_
+6	computer	_	NN	NN	_	4	dobj	_	_
+7	or	_	CC	CC	_	6	cc	_	_
+8	some	_	DT	DT	_	10	det	_	_
+9	other	_	JJ	JJ	_	10	amod	_	_
+10	equipment	_	NN	NN	_	6	conj	_	_
+
+# ::snt A computer system in a network that is shared by multiple users
+# ::sntId 15
+# ::treeId GOLD
+1	A	_	DT	DT	_	3	det	_	_
+2	computer	_	NN	NN	_	3	nn	_	_
+3	system	_	NN	NN	_	0	root	_	_
+4	in	_	IN	IN	_	3	prep	_	_
+5	a	_	DT	DT	_	6	det	_	_
+6	network	_	NN	NN	_	4	pobj	_	_
+7	that	_	WDT	WDT	_	9	nsubjpass	_	_
+8	is	_	VBZ	VBZ	_	9	auxpass	_	_
+9	shared	_	VBN	VBN	_	3	rcmod	_	_
+10	by	_	IN	IN	_	9	prep	_	_
+11	multiple	_	JJ	JJ	_	12	amod	_	_
+12	users	_	NNS	NNS	_	10	pobj	_	_
+
+# ::snt A program module that enhances the functionality of a program
+# ::sntId 34
+# ::treeId GOLD
+1	A	_	DT	DT	_	3	det	_	_
+2	program	_	NN	NN	_	3	nn	_	_
+3	module	_	NN	NN	_	0	root	_	_
+4	that	_	WDT	WDT	_	5	nsubj	_	_
+5	enhances	_	VBZ	VBZ	_	3	rcmod	_	_
+6	the	_	DT	DT	_	7	det	_	_
+7	functionality	_	NN	NN	_	5	dobj	_	_
+8	of	_	IN	IN	_	7	prep	_	_
+9	a	_	DT	DT	_	10	det	_	_
+10	program	_	NN	NN	_	8	pobj	_	_
+
+# ::snt A set of machine symbols that represents data or instructions
+# ::sntId 36
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	set	_	NN	NN	_	0	root	_	_
+3	of	_	IN	IN	_	2	prep	_	_
+4	machine	_	NN	NN	_	5	nn	_	_
+5	symbols	_	NNS	NNS	_	3	pobj	_	_
+6	that	_	WDT	WDT	_	7	nsubj	_	_
+7	represents	_	VBZ	VBZ	_	2	rcmod	_	_
+8	data	_	NNS	NNS	_	7	dobj	_	_
+9	or	_	CC	CC	_	8	cc	_	_
+10	instructions	_	NNS	NNS	_	8	conj	_	_
+
+# ::snt The format that governs the transmitting of data
+# ::sntId 41
+# ::treeId GOLD
+1	The	_	DT	DT	_	2	det	_	_
+2	format	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	governs	_	VBZ	VBZ	_	2	rcmod	_	_
+5	the	_	DT	DT	_	6	det	_	_
+6	transmitting	_	NN	NN	_	4	dobj	_	_
+7	of	_	IN	IN	_	6	prep	_	_
+8	data	_	NNS	NNS	_	7	pobj	_	_
+
+# ::snt A segment of a running program that is transferred back and forth between memory and disk
+# ::sntId 43
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	segment	_	NN	NN	_	0	root	_	_
+3	of	_	IN	IN	_	2	prep	_	_
+4	a	_	DT	DT	_	6	det	_	_
+5	running	_	NN	NN	_	6	nn	_	_
+6	program	_	NN	NN	_	3	pobj	_	_
+7	that	_	WDT	WDT	_	9	nsubjpass	_	_
+8	is	_	VBZ	VBZ	_	9	auxpass	_	_
+9	transferred	_	VBN	VBN	_	2	rcmod	_	_
+10	back	_	RB	RB	_	9	advmod	_	_
+11	and	_	CC	CC	_	10	cc	_	_
+12	forth	_	RB	RB	_	10	conj	_	_
+13	between	_	IN	IN	_	9	prep	_	_
+14	memory	_	NN	NN	_	13	pobj	_	_
+15	and	_	CC	CC	_	14	cc	_	_
+16	disk	_	NN	NN	_	14	conj	_	_
+
+# ::snt A set of related files that is managed by a database management system
+# ::sntId 46
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	set	_	NN	NN	_	0	root	_	_
+3	of	_	IN	IN	_	2	prep	_	_
+4	related	_	JJ	JJ	_	5	amod	_	_
+5	files	_	NNS	NNS	_	3	pobj	_	_
+6	that	_	WDT	WDT	_	8	nsubjpass	_	_
+7	is	_	VBZ	VBZ	_	8	auxpass	_	_
+8	managed	_	VBN	VBN	_	5	rcmod	_	_
+9	by	_	IN	IN	_	8	prep	_	_
+10	a	_	DT	DT	_	13	det	_	_
+11	database	_	NN	NN	_	13	nn	_	_
+12	management	_	NN	NN	_	13	nn	_	_
+13	system	_	NN	NN	_	9	pobj	_	_
+
+# ::snt An electromechanical device that reads magnetic disks , optical discs or magnetic tapes
+# ::sntId 51
+# ::treeId GOLD
+1	An	_	DT	DT	_	3	det	_	_
+2	electromechanical	_	JJ	JJ	_	3	amod	_	_
+3	device	_	NN	NN	_	0	root	_	_
+4	that	_	WDT	WDT	_	5	nsubj	_	_
+5	reads	_	VBZ	VBZ	_	3	rcmod	_	_
+6	magnetic	_	JJ	JJ	_	7	amod	_	_
+7	disks	_	NNS	NNS	_	5	dobj	_	_
+8	,	_	,	,	_	7	punct	_	_
+9	optical	_	JJ	JJ	_	10	amod	_	_
+10	discs	_	NNS	NNS	_	7	conj	_	_
+11	or	_	CC	CC	_	7	cc	_	_
+12	magnetic	_	JJ	JJ	_	13	amod	_	_
+13	tapes	_	NNS	NNS	_	7	conj	_	_
+
+# ::snt A solid state flash drive that contains no moving parts
+# ::sntId 52
+# ::treeId GOLD
+1	A	_	DT	DT	_	5	det	_	_
+2	solid	_	JJ	JJ	_	5	amod	_	_
+3	state	_	NN	NN	_	5	nn	_	_
+4	flash	_	NN	NN	_	5	nn	_	_
+5	drive	_	NN	NN	_	0	root	_	_
+6	that	_	WDT	WDT	_	7	nsubj	_	_
+7	contains	_	VBZ	VBZ	_	5	rcmod	_	_
+8	no	_	DT	DT	_	10	neg	_	_
+9	moving	_	VBG	VBG	_	10	amod	_	_
+10	parts	_	NNS	NNS	_	7	dobj	_	_
+
+# ::snt Any information that is available for retrieval by the user Including Web pages , images , music , audio , white papers , driver and software downloads as well as training , educational and reference materials
+# ::sntId 54
+# ::treeId GOLD
+1	Any	_	DT	DT	_	2	det	_	_
+2	information	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	5	nsubj	_	_
+4	is	_	VBZ	VBZ	_	5	cop	_	_
+5	available	_	JJ	JJ	_	2	rcmod	_	_
+6	for	_	IN	IN	_	5	prep	_	_
+7	retrieval	_	NN	NN	_	6	pobj	_	_
+8	by	_	IN	IN	_	7	prep	_	_
+9	the	_	DT	DT	_	10	det	_	_
+10	user	_	NN	NN	_	8	pobj	_	_
+11	Including	_	VBG	VBG	_	2	prep	_	_
+12	Web	_	NN	NN	_	13	nn	_	_
+13	pages	_	NNS	NNS	_	11	pobj	_	_
+14	,	_	,	,	_	13	punct	_	_
+15	images	_	NNS	NNS	_	13	conj	_	_
+16	,	_	,	,	_	13	punct	_	_
+17	music	_	NN	NN	_	13	conj	_	_
+18	,	_	,	,	_	13	punct	_	_
+19	audio	_	NN	NN	_	13	conj	_	_
+20	,	_	,	,	_	13	punct	_	_
+21	white	_	JJ	JJ	_	22	amod	_	_
+22	papers	_	NNS	NNS	_	13	conj	_	_
+23	,	_	,	,	_	13	punct	_	_
+24	driver	_	NN	NN	_	13	conj	_	_
+25	and	_	CC	CC	_	13	cc	_	_
+26	software	_	NN	NN	_	27	nn	_	_
+27	downloads	_	NNS	NNS	_	13	conj	_	_
+28	as	_	RB	RB	_	29	advmod	_	_
+29	well	_	RB	RB	_	13	cc	_	_
+30	as	_	IN	IN	_	29	mwe	_	_
+31	training	_	NN	NN	_	36	nn	_	_
+32	,	_	,	,	_	31	punct	_	_
+33	educational	_	NN	NN	_	31	conj	_	_
+34	and	_	CC	CC	_	31	cc	_	_
+35	reference	_	NN	NN	_	31	conj	_	_
+36	materials	_	NNS	NNS	_	13	conj	_	_
+
+# ::snt A numeric code that is used to encrypt text for security purposes
+# ::sntId 59
+# ::treeId GOLD
+1	A	_	DT	DT	_	3	det	_	_
+2	numeric	_	JJ	JJ	_	3	amod	_	_
+3	code	_	NN	NN	_	0	root	_	_
+4	that	_	WDT	WDT	_	6	nsubjpass	_	_
+5	is	_	VBZ	VBZ	_	6	auxpass	_	_
+6	used	_	VBN	VBN	_	3	rcmod	_	_
+7	to	_	TO	TO	_	8	aux	_	_
+8	encrypt	_	VB	VB	_	6	xcomp	_	_
+9	text	_	NN	NN	_	8	dobj	_	_
+10	for	_	IN	IN	_	9	prep	_	_
+11	security	_	NN	NN	_	12	nn	_	_
+12	purposes	_	NNS	NNS	_	10	pobj	_	_
+
+# ::snt The processing that an object performs
+# ::sntId 64
+# ::treeId GOLD
+1	The	_	DT	DT	_	2	det	_	_
+2	processing	_	NN	NN	_	0	root	_	_
+3	that	_	IN	IN	_	6	dobj	_	_
+4	an	_	DT	DT	_	5	det	_	_
+5	object	_	NN	NN	_	6	nsubj	_	_
+6	performs	_	VBZ	VBZ	_	2	rcmod	_	_
+
+# ::snt A program that lets you look through a collection of data
+# ::sntId 70
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	program	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	lets	_	VBZ	VBZ	_	2	rcmod	_	_
+5	you	_	PRP	PRP	_	4	iobj	_	_
+6	look	_	VBP	VBP	_	4	xcomp	_	_
+7	through	_	IN	IN	_	6	prep	_	_
+8	a	_	DT	DT	_	9	det	_	_
+9	collection	_	NN	NN	_	7	pobj	_	_
+10	of	_	IN	IN	_	9	prep	_	_
+11	data	_	NNS	NNS	_	10	pobj	_	_
+
+# ::snt Any paper form that is used to transact business or make some official statement
+# ::sntId 71
+# ::treeId GOLD
+1	Any	_	DT	DT	_	3	det	_	_
+2	paper	_	NN	NN	_	3	nn	_	_
+3	form	_	NN	NN	_	0	root	_	_
+4	that	_	WDT	WDT	_	6	nsubjpass	_	_
+5	is	_	VBZ	VBZ	_	6	auxpass	_	_
+6	used	_	VBN	VBN	_	3	rcmod	_	_
+7	to	_	TO	TO	_	8	aux	_	_
+8	transact	_	VB	VB	_	6	xcomp	_	_
+9	business	_	NN	NN	_	8	dobj	_	_
+10	or	_	CC	CC	_	8	cc	_	_
+11	make	_	VB	VB	_	8	conj	_	_
+12	some	_	DT	DT	_	14	det	_	_
+13	official	_	JJ	JJ	_	14	amod	_	_
+14	statement	_	NN	NN	_	11	xcomp	_	_
+
+# ::snt A device that converts computer output into printed images
+# ::sntId 83
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	device	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	converts	_	VBZ	VBZ	_	2	rcmod	_	_
+5	computer	_	NN	NN	_	6	nn	_	_
+6	output	_	NN	NN	_	4	dobj	_	_
+7	into	_	IN	IN	_	4	prep	_	_
+8	printed	_	VBN	VBN	_	9	amod	_	_
+9	images	_	NNS	NNS	_	7	pobj	_	_
+
+# ::snt A set of electronic components that perform a particular function in an electronic system
+# ::sntId 86
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	set	_	NN	NN	_	0	root	_	_
+3	of	_	IN	IN	_	2	prep	_	_
+4	electronic	_	JJ	JJ	_	5	amod	_	_
+5	components	_	NNS	NNS	_	3	pobj	_	_
+6	that	_	WDT	WDT	_	7	nsubj	_	_
+7	perform	_	VBP	VBP	_	5	rcmod	_	_
+8	a	_	DT	DT	_	10	det	_	_
+9	particular	_	JJ	JJ	_	10	amod	_	_
+10	function	_	NN	NN	_	7	dobj	_	_
+11	in	_	IN	IN	_	10	prep	_	_
+12	an	_	DT	DT	_	14	det	_	_
+13	electronic	_	JJ	JJ	_	14	amod	_	_
+14	system	_	NN	NN	_	11	pobj	_	_
+
+# ::snt A videoconferencing technology that uses Intel's Indeo compression method
+# ::sntId 90
+# ::treeId GOLD
+1	A	_	DT	DT	_	3	det	_	_
+2	videoconferencing	_	NN	NN	_	3	nn	_	_
+3	technology	_	NN	NN	_	0	root	_	_
+4	that	_	WDT	WDT	_	5	nsubj	_	_
+5	uses	_	VBZ	VBZ	_	3	rcmod	_	_
+6	Intel	_	NNP	NNP	_	10	poss	_	_
+7	's	_	POS	POS	_	6	possessive	_	_
+8	Indeo	_	NNP	NNP	_	10	nn	_	_
+9	compression	_	NN	NN	_	10	nn	_	_
+10	method	_	NN	NN	_	5	dobj	_	_
+
+# ::snt A mechanical or electronic device that directs the flow of electrical or optical signals from one side to the other
+# ::sntId 91
+# ::treeId GOLD
+1	A	_	DT	DT	_	5	det	_	_
+2	mechanical	_	JJ	JJ	_	5	amod	_	_
+3	or	_	CC	CC	_	2	cc	_	_
+4	electronic	_	JJ	JJ	_	2	conj	_	_
+5	device	_	NN	NN	_	0	root	_	_
+6	that	_	WDT	WDT	_	7	nsubj	_	_
+7	directs	_	VBZ	VBZ	_	5	rcmod	_	_
+8	the	_	DT	DT	_	9	det	_	_
+9	flow	_	NN	NN	_	7	dobj	_	_
+10	of	_	IN	IN	_	9	prep	_	_
+11	electrical	_	JJ	JJ	_	14	amod	_	_
+12	or	_	CC	CC	_	11	cc	_	_
+13	optical	_	JJ	JJ	_	11	conj	_	_
+14	signals	_	NNS	NNS	_	10	pobj	_	_
+15	from	_	IN	IN	_	7	prep	_	_
+16	one	_	CD	CD	_	17	num	_	_
+17	side	_	NN	NN	_	15	pobj	_	_
+18	to	_	TO	TO	_	7	prep	_	_
+19	the	_	DT	DT	_	20	det	_	_
+20	other	_	JJ	JJ	_	18	pobj	_	_
+
+# ::snt A statement in a program that directs the compiler to process another file of code at that point
+# ::sntId 96
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	statement	_	NN	NN	_	0	root	_	_
+3	in	_	IN	IN	_	2	prep	_	_
+4	a	_	DT	DT	_	5	det	_	_
+5	program	_	NN	NN	_	3	pobj	_	_
+6	that	_	WDT	WDT	_	7	nsubj	_	_
+7	directs	_	VBZ	VBZ	_	2	rcmod	_	_
+8	the	_	DT	DT	_	9	det	_	_
+9	compiler	_	NN	NN	_	7	dobj	_	_
+10	to	_	TO	TO	_	11	aux	_	_
+11	process	_	VB	VB	_	7	xcomp	_	_
+12	another	_	DT	DT	_	13	det	_	_
+13	file	_	NN	NN	_	11	dobj	_	_
+14	of	_	IN	IN	_	13	prep	_	_
+15	code	_	NN	NN	_	14	pobj	_	_
+16	at	_	IN	IN	_	11	prep	_	_
+17	that	_	DT	DT	_	18	det	_	_
+18	point	_	NN	NN	_	16	pobj	_	_
+
+# ::snt A number that identifies applications and services in a TCP/IP network
+# ::sntId 99
+# ::todo check :location relation position in gold AMR
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	number	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	identifies	_	VBZ	VBZ	_	2	rcmod	_	_
+5	applications	_	NNS	NNS	_	4	dobj	_	_
+6	and	_	CC	CC	_	5	cc	_	_
+7	services	_	NNS	NNS	_	5	conj	_	_
+8	in	_	IN	IN	_	4	prep	_	_
+9	a	_	DT	DT	_	11	det	_	_
+10	TCP/IP	_	NN	NN	_	11	nn	_	_
+11	network	_	NN	NN	_	8	pobj	_	_
+
+# ::snt An electronic circuit that transmits wireless signals
+# ::sntId 106
+# ::treeId GOLD
+1	An	_	DT	DT	_	3	det	_	_
+2	electronic	_	JJ	JJ	_	3	amod	_	_
+3	circuit	_	NN	NN	_	0	root	_	_
+4	that	_	WDT	WDT	_	5	nsubj	_	_
+5	transmits	_	VBZ	VBZ	_	3	rcmod	_	_
+6	wireless	_	NN	NN	_	7	nn	_	_
+7	signals	_	NNS	NNS	_	5	dobj	_	_
+
+# ::snt Software that monitors the progress of activities within a computer system
+# ::sntId 111
+# ::treeId GOLD
+1	Software	_	VB	VB	_	0	root	_	_
+2	that	_	WDT	WDT	_	3	nsubj	_	_
+3	monitors	_	VBZ	VBZ	_	1	rcmod	_	_
+4	the	_	DT	DT	_	5	det	_	_
+5	progress	_	NN	NN	_	3	dobj	_	_
+6	of	_	IN	IN	_	5	prep	_	_
+7	activities	_	NNS	NNS	_	6	pobj	_	_
+8	within	_	IN	IN	_	7	prep	_	_
+9	a	_	DT	DT	_	11	det	_	_
+10	computer	_	NN	NN	_	11	nn	_	_
+11	system	_	NN	NN	_	8	pobj	_	_
+
+# ::snt A device that gathers performance statistics of a running system via direct attachment to the CPU's circuit boards
+# ::sntId 112
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	device	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	gathers	_	VBZ	VBZ	_	2	rcmod	_	_
+5	performance	_	NN	NN	_	6	nn	_	_
+6	statistics	_	NNS	NNS	_	4	dobj	_	_
+7	of	_	IN	IN	_	6	prep	_	_
+8	a	_	DT	DT	_	10	det	_	_
+9	running	_	JJ	JJ	_	10	amod	_	_
+10	system	_	NN	NN	_	7	pobj	_	_
+11	via	_	IN	IN	_	4	prep	_	_
+12	direct	_	JJ	JJ	_	13	amod	_	_
+13	attachment	_	NN	NN	_	11	pobj	_	_
+14	to	_	TO	TO	_	13	prep	_	_
+15	the	_	DT	DT	_	16	det	_	_
+16	CPU	_	NNP	NNP	_	19	poss	_	_
+17	's	_	POS	POS	_	16	possessive	_	_
+18	circuit	_	NN	NN	_	19	nn	_	_
+19	boards	_	NNS	NNS	_	14	pobj	_	_
+
+# ::snt A cellphone that created the greatest tech revolution since the Internet
+# ::sntId 114
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	cellphone	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	created	_	VBD	VBD	_	2	rcmod	_	_
+5	the	_	DT	DT	_	8	det	_	_
+6	greatest	_	JJS	JJS	_	8	amod	_	_
+7	tech	_	NN	NN	_	8	nn	_	_
+8	revolution	_	NN	NN	_	4	dobj	_	_
+9	since	_	IN	IN	_	8	prep	_	_
+10	the	_	DT	DT	_	11	det	_	_
+11	Internet	_	NN	NN	_	9	pobj	_	_
+
+# ::snt A viewing area on screen that contains a surrounding frame
+# ::sntId 117
+# ::treeId GOLD
+1	A	_	DT	DT	_	3	det	_	_
+2	viewing	_	NN	NN	_	3	nn	_	_
+3	area	_	NN	NN	_	0	root	_	_
+4	on	_	IN	IN	_	3	prep	_	_
+5	screen	_	NN	NN	_	4	pobj	_	_
+6	that	_	WDT	WDT	_	7	nsubj	_	_
+7	contains	_	VBZ	VBZ	_	3	rcmod	_	_
+8	a	_	DT	DT	_	10	det	_	_
+9	surrounding	_	VBG	VBG	_	10	amod	_	_
+10	frame	_	NN	NN	_	7	dobj	_	_
+
+# ::snt A computer company that became a software company and then merged into Apple
+# ::sntId 119
+# ::treeId GOLD
+1	A	_	DT	DT	_	3	det	_	_
+2	computer	_	NN	NN	_	3	nn	_	_
+3	company	_	NN	NN	_	0	root	_	_
+4	that	_	WDT	WDT	_	5	nsubj	_	_
+5	became	_	VBD	VBD	_	3	rcmod	_	_
+6	a	_	DT	DT	_	8	det	_	_
+7	software	_	NN	NN	_	8	nn	_	_
+8	company	_	NN	NN	_	5	dobj	_	_
+9	and	_	CC	CC	_	5	cc	_	_
+10	then	_	RB	RB	_	11	advmod	_	_
+11	merged	_	VBD	VBD	_	5	conj	_	_
+12	into	_	IN	IN	_	11	prep	_	_
+13	Apple	_	NNP	NNP	_	12	pobj	_	_
+
+# ::snt An address that points to a Web page or other file on a Web server
+# ::sntId 120
+# ::treeId GOLD
+1	An	_	DT	DT	_	2	det	_	_
+2	address	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	points	_	VBZ	VBZ	_	2	rcmod	_	_
+5	to	_	TO	TO	_	4	prep	_	_
+6	a	_	DT	DT	_	8	det	_	_
+7	Web	_	JJ	JJ	_	8	amod	_	_
+8	page	_	NN	NN	_	5	pobj	_	_
+9	or	_	CC	CC	_	8	cc	_	_
+10	other	_	JJ	JJ	_	11	amod	_	_
+11	file	_	NN	NN	_	8	conj	_	_
+12	on	_	IN	IN	_	8	prep	_	_
+13	a	_	DT	DT	_	15	det	_	_
+14	Web	_	NN	NN	_	15	nn	_	_
+15	server	_	NN	NN	_	12	pobj	_	_
+
+# ::snt A pointer embedded within a record that refers to data or the location of data in another record
+# ::sntId 121
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	pointer	_	NN	NN	_	0	root	_	_
+3	embedded	_	VBN	VBN	_	2	vmod	_	_
+4	within	_	IN	IN	_	3	prep	_	_
+5	a	_	DT	DT	_	6	det	_	_
+6	record	_	NN	NN	_	4	pobj	_	_
+7	that	_	WDT	WDT	_	8	nsubj	_	_
+8	refers	_	VBZ	VBZ	_	2	rcmod	_	_
+9	to	_	TO	TO	_	8	prep	_	_
+10	data	_	NNS	NNS	_	9	pobj	_	_
+11	or	_	CC	CC	_	10	cc	_	_
+12	the	_	DT	DT	_	13	det	_	_
+13	location	_	NN	NN	_	10	conj	_	_
+14	of	_	IN	IN	_	13	prep	_	_
+15	data	_	NNS	NNS	_	14	pobj	_	_
+16	in	_	IN	IN	_	15	prep	_	_
+17	another	_	DT	DT	_	18	det	_	_
+18	record	_	NN	NN	_	16	pobj	_	_
+
+# ::snt A statement that requests services from another subroutine or program
+# ::sntId 122
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	statement	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	requests	_	NNS	NNS	_	2	rcmod	_	_
+5	services	_	VBZ	VBZ	_	4	dobj	_	_
+6	from	_	IN	IN	_	5	prep	_	_
+7	another	_	DT	DT	_	8	det	_	_
+8	subroutine	_	NN	NN	_	6	pobj	_	_
+9	or	_	CC	CC	_	8	cc	_	_
+10	program	_	NN	NN	_	8	conj	_	_
+
+# ::snt A device that adapts one type of signal to another
+# ::sntId 127
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	device	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	adapts	_	VBZ	VBZ	_	2	rcmod	_	_
+5	one	_	CD	CD	_	6	num	_	_
+6	type	_	NN	NN	_	4	dobj	_	_
+7	of	_	IN	IN	_	6	prep	_	_
+8	signal	_	NN	NN	_	7	pobj	_	_
+9	to	_	TO	TO	_	4	prep	_	_
+10	another	_	DT	DT	_	9	pobj	_	_
+
+# ::snt A device that allows one system to connect to another device and work with the device
+# ::sntId 128
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	device	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	allows	_	VBZ	VBZ	_	2	rcmod	_	_
+5	one	_	CD	CD	_	6	num	_	_
+6	system	_	NN	NN	_	4	dobj	_	_
+7	to	_	TO	TO	_	8	aux	_	_
+8	connect	_	VB	VB	_	4	xcomp	_	_
+9	to	_	TO	TO	_	8	prep	_	_
+10	another	_	DT	DT	_	11	det	_	_
+11	device	_	NN	NN	_	9	pobj	_	_
+12	and	_	CC	CC	_	8	cc	_	_
+13	work	_	VB	VB	_	8	conj	_	_
+14	with	_	IN	IN	_	13	prep	_	_
+15	the	_	DT	DT	_	16	det	_	_
+16	device	_	NN	NN	_	14	pobj	_	_
+
+# ::snt Software that performs a very specific and repetitive function
+# ::sntId 129
+# ::treeId GOLD
+1	Software	_	VB	VB	_	0	root	_	_
+2	that	_	DT	DT	_	3	nsubj	_	_
+3	performs	_	VBZ	VBZ	_	1	rcmod	_	_
+4	a	_	DT	DT	_	9	det	_	_
+5	very	_	RB	RB	_	6	advmod	_	_
+6	specific	_	JJ	JJ	_	9	amod	_	_
+7	and	_	CC	CC	_	6	cc	_	_
+8	repetitive	_	JJ	JJ	_	6	conj	_	_
+9	function	_	NN	NN	_	3	dobj	_	_
+
+# ::snt An organization that issues digital certificates and makes its public key widely available to its intended audience
+# ::sntId 130
+# ::treeId GOLD
+1	An	_	DT	DT	_	2	det	_	_
+2	organization	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	issues	_	VBZ	VBZ	_	2	rcmod	_	_
+5	digital	_	JJ	JJ	_	6	amod	_	_
+6	certificates	_	NNS	NNS	_	4	dobj	_	_
+7	and	_	CC	CC	_	4	cc	_	_
+8	makes	_	VBZ	VBZ	_	4	conj	_	_
+9	its	_	PRP$	PRP$	_	11	poss	_	_
+10	public	_	JJ	JJ	_	11	amod	_	_
+11	key	_	NN	NN	_	8	dobj	_	_
+12	widely	_	RB	RB	_	13	advmod	_	_
+13	available	_	JJ	JJ	_	11	amod	_	_
+14	to	_	TO	TO	_	13	prep	_	_
+15	its	_	PRP$	PRP$	_	17	poss	_	_
+16	intended	_	JJ	JJ	_	17	amod	_	_
+17	audience	_	NN	NN	_	14	pobj	_	_
+
+# ::snt A network device that forwards data packets from one network to another
+# ::sntId 133
+# ::treeId GOLD
+1	A	_	DT	DT	_	3	det	_	_
+2	network	_	NN	NN	_	3	nn	_	_
+3	device	_	NN	NN	_	0	root	_	_
+4	that	_	WDT	WDT	_	5	nsubj	_	_
+5	forwards	_	VBZ	VBZ	_	3	rcmod	_	_
+6	data	_	NNS	NNS	_	7	nn	_	_
+7	packets	_	NNS	NNS	_	5	dobj	_	_
+8	from	_	IN	IN	_	5	prep	_	_
+9	one	_	CD	CD	_	10	num	_	_
+10	network	_	NN	NN	_	8	pobj	_	_
+11	to	_	TO	TO	_	5	prep	_	_
+12	another	_	DT	DT	_	11	pobj	_	_
+
+# ::snt A device that creates a uniform and coherent light that is very different from an ordinary light bulb
+# ::sntId 135
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	device	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	creates	_	VBZ	VBZ	_	2	rcmod	_	_
+5	a	_	DT	DT	_	9	det	_	_
+6	uniform	_	JJ	JJ	_	9	amod	_	_
+7	and	_	CC	CC	_	6	cc	_	_
+8	coherent	_	JJ	JJ	_	6	conj	_	_
+9	light	_	NN	NN	_	4	dobj	_	_
+10	that	_	WDT	WDT	_	13	nsubj	_	_
+11	is	_	VBZ	VBZ	_	13	cop	_	_
+12	very	_	RB	RB	_	13	advmod	_	_
+13	different	_	JJ	JJ	_	9	rcmod	_	_
+14	from	_	IN	IN	_	13	prep	_	_
+15	an	_	DT	DT	_	18	det	_	_
+16	ordinary	_	JJ	JJ	_	18	amod	_	_
+17	light	_	NN	NN	_	18	nn	_	_
+18	bulb	_	NN	NN	_	14	pobj	_	_
+
+# ::snt An external DOS or Windows command that moves a file to a new location
+# ::sntId 142
+# ::treeId GOLD
+1	An	_	DT	DT	_	6	det	_	_
+2	external	_	JJ	JJ	_	6	amod	_	_
+3	DOS	_	NNP	NNP	_	6	nn	_	_
+4	or	_	CC	CC	_	3	cc	_	_
+5	Windows	_	NNP	NNP	_	3	conj	_	_
+6	command	_	NN	NN	_	0	root	_	_
+7	that	_	WDT	WDT	_	8	nsubj	_	_
+8	moves	_	VBZ	VBZ	_	6	rcmod	_	_
+9	a	_	DT	DT	_	10	det	_	_
+10	file	_	NN	NN	_	8	dobj	_	_
+11	to	_	TO	TO	_	8	prep	_	_
+12	a	_	DT	DT	_	14	det	_	_
+13	new	_	JJ	JJ	_	14	amod	_	_
+14	location	_	NN	NN	_	11	pobj	_	_
+
+# ::snt An HTML layout feature that renders multiple documents on a Web page at the same time
+# ::sntId 143
+# ::treeId GOLD
+1	An	_	DT	DT	_	3	det	_	_
+2	HTML	_	JJ	JJ	_	3	amod	_	_
+3	layout	_	NN	NN	_	4	nn	_	_
+4	feature	_	VBP	VBP	_	0	root	_	_
+5	that	_	IN	IN	_	6	nsubj	_	_
+6	renders	_	VBZ	VBZ	_	4	rcmod	_	_
+7	multiple	_	JJ	JJ	_	8	amod	_	_
+8	documents	_	NNS	NNS	_	6	dobj	_	_
+9	on	_	IN	IN	_	6	prep	_	_
+10	a	_	DT	DT	_	12	det	_	_
+11	Web	_	NN	NN	_	12	nn	_	_
+12	page	_	NN	NN	_	9	pobj	_	_
+13	at	_	IN	IN	_	6	prep	_	_
+14	the	_	DT	DT	_	16	det	_	_
+15	same	_	JJ	JJ	_	16	amod	_	_
+16	time	_	NN	NN	_	13	pobj	_	_
+
+# ::snt The Apple device that revolutionized mobile computing and caused an explosion of smartphones worldwide
+# ::sntId 144
+# ::treeId GOLD
+1	The	_	DT	DT	_	3	det	_	_
+2	Apple	_	NNP	NNP	_	3	nn	_	_
+3	device	_	NN	NN	_	0	root	_	_
+4	that	_	DT	DT	_	5	nsubj	_	_
+5	revolutionized	_	VBD	VBD	_	3	rcmod	_	_
+6	mobile	_	JJ	JJ	_	7	amod	_	_
+7	computing	_	NN	NN	_	5	dobj	_	_
+8	and	_	CC	CC	_	5	cc	_	_
+9	caused	_	VBD	VBD	_	5	conj	_	_
+10	an	_	DT	DT	_	11	det	_	_
+11	explosion	_	NN	NN	_	9	dobj	_	_
+12	of	_	IN	IN	_	11	prep	_	_
+13	smartphones	_	NNS	NNS	_	12	pobj	_	_
+14	worldwide	_	RB	RB	_	11	advmod	_	_
+
+# ::snt An organization that provides communications and networking services
+# ::sntId 146
+# ::treeId GOLD
+1	An	_	DT	DT	_	2	det	_	_
+2	organization	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	provides	_	VBZ	VBZ	_	2	rcmod	_	_
+5	communications	_	NNS	NNS	_	4	dobj	_	_
+6	and	_	CC	CC	_	5	cc	_	_
+7	networking	_	NN	NN	_	8	nn	_	_
+8	services	_	NNS	NNS	_	5	conj	_	_
+
+# ::snt A small graphic symbol on screen that represents an action or a resource such as an application , file , folder , menu or setting
+# ::sntId 153
+# ::treeId GOLD
+1	A	_	DT	DT	_	4	det	_	_
+2	small	_	JJ	JJ	_	4	amod	_	_
+3	graphic	_	JJ	JJ	_	4	amod	_	_
+4	symbol	_	NN	NN	_	0	root	_	_
+5	on	_	IN	IN	_	4	prep	_	_
+6	screen	_	NN	NN	_	5	pobj	_	_
+7	that	_	WDT	WDT	_	8	nsubj	_	_
+8	represents	_	VBZ	VBZ	_	4	rcmod	_	_
+9	an	_	DT	DT	_	10	det	_	_
+10	action	_	NN	NN	_	8	dobj	_	_
+11	or	_	CC	CC	_	10	cc	_	_
+12	a	_	DT	DT	_	13	det	_	_
+13	resource	_	NN	NN	_	10	conj	_	_
+14	such	_	JJ	JJ	_	15	mwe	_	_
+15	as	_	IN	IN	_	13	prep	_	_
+16	an	_	DT	DT	_	17	det	_	_
+17	application	_	NN	NN	_	15	pobj	_	_
+18	,	_	,	,	_	17	punct	_	_
+19	file	_	NN	NN	_	17	conj	_	_
+20	,	_	,	,	_	17	punct	_	_
+21	folder	_	NN	NN	_	17	conj	_	_
+22	,	_	,	,	_	17	punct	_	_
+23	menu	_	NN	NN	_	17	conj	_	_
+24	or	_	CC	CC	_	17	cc	_	_
+25	setting	_	NN	NN	_	17	conj	_	_
+
+# ::snt A discipline for developing software that emphasizes customer involvement and teamwork
+# ::sntId 154
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	discipline	_	NN	NN	_	0	root	_	_
+3	for	_	IN	IN	_	2	prep	_	_
+4	developing	_	VBG	VBG	_	3	pcomp	_	_
+5	software	_	NN	NN	_	4	dobj	_	_
+6	that	_	WDT	WDT	_	7	nsubj	_	_
+7	emphasizes	_	VBZ	VBZ	_	2	rcmod	_	_
+8	customer	_	NN	NN	_	9	nn	_	_
+9	involvement	_	NN	NN	_	7	dobj	_	_
+10	and	_	CC	CC	_	9	cc	_	_
+11	teamwork	_	NN	NN	_	9	conj	_	_
+
+# ::snt A group of bits or bytes that is transmitted as a single unit
+# ::sntId 156
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	group	_	NN	NN	_	0	root	_	_
+3	of	_	IN	IN	_	2	prep	_	_
+4	bits	_	NNS	NNS	_	3	pobj	_	_
+5	or	_	CC	CC	_	4	cc	_	_
+6	bytes	_	NNS	NNS	_	4	conj	_	_
+7	that	_	WDT	WDT	_	9	nsubjpass	_	_
+8	is	_	VBZ	VBZ	_	9	auxpass	_	_
+9	transmitted	_	VBN	VBN	_	2	rcmod	_	_
+10	as	_	IN	IN	_	9	prep	_	_
+11	a	_	DT	DT	_	13	det	_	_
+12	single	_	JJ	JJ	_	13	amod	_	_
+13	unit	_	NN	NN	_	10	pobj	_	_
+
+# ::snt A monetary amount that is added to an account balance
+# ::sntId 159
+# ::treeId GOLD
+1	A	_	DT	DT	_	3	det	_	_
+2	monetary	_	JJ	JJ	_	3	amod	_	_
+3	amount	_	NN	NN	_	0	root	_	_
+4	that	_	WDT	WDT	_	6	nsubjpass	_	_
+5	is	_	VBZ	VBZ	_	6	auxpass	_	_
+6	added	_	VBN	VBN	_	3	rcmod	_	_
+7	to	_	TO	TO	_	6	prep	_	_
+8	an	_	DT	DT	_	10	det	_	_
+9	account	_	NN	NN	_	10	nn	_	_
+10	balance	_	NN	NN	_	7	pobj	_	_
+
+# ::snt A software control panel that enables the user to configure the appearance or actions in an application , operating system or the hardware
+# ::sntId 160
+# ::treeId GOLD
+1	A	_	DT	DT	_	4	det	_	_
+2	software	_	NN	NN	_	4	nn	_	_
+3	control	_	NN	NN	_	4	nn	_	_
+4	panel	_	NN	NN	_	0	root	_	_
+5	that	_	WDT	WDT	_	6	nsubj	_	_
+6	enables	_	VBZ	VBZ	_	4	rcmod	_	_
+7	the	_	DT	DT	_	8	det	_	_
+8	user	_	NN	NN	_	6	dobj	_	_
+9	to	_	TO	TO	_	10	aux	_	_
+10	configure	_	VB	VB	_	6	xcomp	_	_
+11	the	_	DT	DT	_	12	det	_	_
+12	appearance	_	NN	NN	_	10	dobj	_	_
+13	or	_	CC	CC	_	12	cc	_	_
+14	actions	_	NNS	NNS	_	12	conj	_	_
+15	in	_	IN	IN	_	12	prep	_	_
+16	an	_	DT	DT	_	17	det	_	_
+17	application	_	NN	NN	_	15	pobj	_	_
+18	,	_	,	,	_	17	punct	_	_
+19	operating	_	VBG	VBG	_	20	amod	_	_
+20	system	_	NN	NN	_	17	conj	_	_
+21	or	_	CC	CC	_	17	cc	_	_
+22	the	_	DT	DT	_	23	det	_	_
+23	hardware	_	NN	NN	_	17	conj	_	_
+
+# ::snt A storage device that converts chemical energy into electrical energy
+# ::sntId 164
+# ::treeId GOLD
+1	A	_	DT	DT	_	3	det	_	_
+2	storage	_	NN	NN	_	3	nn	_	_
+3	device	_	NN	NN	_	0	root	_	_
+4	that	_	WDT	WDT	_	5	nsubj	_	_
+5	converts	_	VBZ	VBZ	_	3	rcmod	_	_
+6	chemical	_	JJ	JJ	_	7	amod	_	_
+7	energy	_	NN	NN	_	5	dobj	_	_
+8	into	_	IN	IN	_	5	prep	_	_
+9	electrical	_	JJ	JJ	_	10	amod	_	_
+10	energy	_	NN	NN	_	8	pobj	_	_
+
+# ::snt The audio compression technology that revolutionized digital music
+# ::sntId 165
+# ::treeId GOLD
+1	The	_	DT	DT	_	4	det	_	_
+2	audio	_	JJ	JJ	_	4	amod	_	_
+3	compression	_	NN	NN	_	4	nn	_	_
+4	technology	_	NN	NN	_	0	root	_	_
+5	that	_	DT	DT	_	6	nsubj	_	_
+6	revolutionized	_	VBD	VBD	_	4	rcmod	_	_
+7	digital	_	JJ	JJ	_	8	amod	_	_
+8	music	_	NN	NN	_	6	dobj	_	_
+
+# ::snt A collection of software routines that programmers incorporate into their applications
+# ::sntId 166
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	collection	_	NN	NN	_	0	root	_	_
+3	of	_	IN	IN	_	2	prep	_	_
+4	software	_	NN	NN	_	5	nn	_	_
+5	routines	_	NNS	NNS	_	3	pobj	_	_
+6	that	_	IN	IN	_	8	dobj	_	_
+7	programmers	_	NNS	NNS	_	8	nsubj	_	_
+8	incorporate	_	VB	VB	_	5	rcmod	_	_
+9	into	_	IN	IN	_	8	prep	_	_
+10	their	_	PRP$	PRP$	_	11	poss	_	_
+11	applications	_	NNS	NNS	_	9	pobj	_	_
+
+# ::snt an executable software module that augments the operating system's functionality
+# ::sntId 168
+# ::treeId GOLD
+1	an	_	DT	DT	_	4	det	_	_
+2	executable	_	JJ	JJ	_	4	amod	_	_
+3	software	_	NN	NN	_	4	nn	_	_
+4	module	_	NN	NN	_	0	root	_	_
+5	that	_	WDT	WDT	_	6	nsubj	_	_
+6	augments	_	VBZ	VBZ	_	4	rcmod	_	_
+7	the	_	DT	DT	_	9	det	_	_
+8	operating	_	VBG	VBG	_	9	amod	_	_
+9	system	_	NN	NN	_	11	poss	_	_
+10	's	_	POS	POS	_	9	possessive	_	_
+11	functionality	_	NN	NN	_	6	dobj	_	_
+
+# ::snt A widely used programming language that is embedded in most Web pages
+# ::sntId 169
+# ::treeId GOLD
+1	A	_	DT	DT	_	5	det	_	_
+2	widely	_	RB	RB	_	5	advmod	_	_
+3	used	_	JJ	JJ	_	5	amod	_	_
+4	programming	_	NN	NN	_	5	nn	_	_
+5	language	_	NN	NN	_	0	root	_	_
+6	that	_	WDT	WDT	_	8	nsubjpass	_	_
+7	is	_	VBZ	VBZ	_	8	auxpass	_	_
+8	embedded	_	VBN	VBN	_	5	rcmod	_	_
+9	in	_	IN	IN	_	8	prep	_	_
+10	most	_	JJS	JJS	_	12	amod	_	_
+11	Web	_	NN	NN	_	12	nn	_	_
+12	pages	_	NNS	NNS	_	9	pobj	_	_
+
+# ::snt A facility that holds servers and related network equipment
+# ::sntId 170
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	facility	_	NN	NN	_	0	root	_	_
+3	that	_	IN	IN	_	4	nsubj	_	_
+4	holds	_	VBZ	VBZ	_	2	rcmod	_	_
+5	servers	_	NNS	NNS	_	4	dobj	_	_
+6	and	_	CC	CC	_	5	cc	_	_
+7	related	_	JJ	JJ	_	9	amod	_	_
+8	network	_	NN	NN	_	9	nn	_	_
+9	equipment	_	NN	NN	_	5	conj	_	_
+
+# ::snt Software that is installed into an existing application in order to enhance its capability
+# ::sntId 172
+# ::treeId GOLD
+1	Software	_	VB	VB	_	0	root	_	_
+2	that	_	IN	IN	_	4	nsubjpass	_	_
+3	is	_	VBZ	VBZ	_	4	auxpass	_	_
+4	installed	_	VBN	VBN	_	1	rcmod	_	_
+5	into	_	IN	IN	_	4	prep	_	_
+6	an	_	DT	DT	_	8	det	_	_
+7	existing	_	VBG	VBG	_	8	amod	_	_
+8	application	_	NN	NN	_	5	pobj	_	_
+9	in	_	IN	IN	_	12	mwe	_	_
+10	order	_	NN	NN	_	12	mwe	_	_
+11	to	_	TO	TO	_	12	aux	_	_
+12	enhance	_	VB	VB	_	4	xcomp	_	_
+13	its	_	PRP$	PRP$	_	14	poss	_	_
+14	capability	_	NN	NN	_	12	dobj	_	_
+
+# ::snt A removable storage module that contains magnetic disks , optical discs , magnetic tape or memory chips
+# ::sntId 173
+# ::treeId GOLD
+1	A	_	DT	DT	_	4	det	_	_
+2	removable	_	JJ	JJ	_	4	amod	_	_
+3	storage	_	NN	NN	_	4	nn	_	_
+4	module	_	NN	NN	_	0	root	_	_
+5	that	_	WDT	WDT	_	6	nsubj	_	_
+6	contains	_	VBZ	VBZ	_	4	rcmod	_	_
+7	magnetic	_	JJ	JJ	_	8	amod	_	_
+8	disks	_	NNS	NNS	_	6	dobj	_	_
+9	,	_	,	,	_	8	punct	_	_
+10	optical	_	JJ	JJ	_	11	amod	_	_
+11	discs	_	NNS	NNS	_	8	conj	_	_
+12	,	_	,	,	_	8	punct	_	_
+13	magnetic	_	JJ	JJ	_	14	amod	_	_
+14	tape	_	NN	NN	_	8	conj	_	_
+15	or	_	CC	CC	_	8	cc	_	_
+16	memory	_	NN	NN	_	17	nn	_	_
+17	chips	_	NNS	NNS	_	8	conj	_	_
+
+# ::snt A program that helps the user analyze data
+# ::sntId 177
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	program	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	helps	_	VBZ	VBZ	_	2	rcmod	_	_
+5	the	_	DT	DT	_	6	det	_	_
+6	user	_	NN	NN	_	4	iobj	_	_
+7	analyze	_	VBP	VBP	_	4	xcomp	_	_
+8	data	_	NNS	NNS	_	7	dobj	_	_
+
+# ::snt Software that converts a set of high-level language statements into a lower-level representation
+# ::sntId 181
+# ::treeId GOLD
+1	Software	_	VB	VB	_	0	root	_	_
+2	that	_	WDT	WDT	_	3	nsubj	_	_
+3	converts	_	VBZ	VBZ	_	1	rcmod	_	_
+4	a	_	DT	DT	_	5	det	_	_
+5	set	_	NN	NN	_	3	dobj	_	_
+6	of	_	IN	IN	_	5	prep	_	_
+7	high-level	_	JJ	JJ	_	9	amod	_	_
+8	language	_	NN	NN	_	9	nn	_	_
+9	statements	_	NNS	NNS	_	6	pobj	_	_
+10	into	_	IN	IN	_	3	prep	_	_
+11	a	_	DT	DT	_	13	det	_	_
+12	lower-level	_	JJ	JJ	_	13	amod	_	_
+13	representation	_	NN	NN	_	10	pobj	_	_
+
+# ::snt Software from Apple that is widely used to organize media on the computer as well as iPods , iPhones and iPads
+# ::sntId 182
+# ::treeId GOLD
+1	Software	_	NNP	NNP	_	0	root	_	_
+2	from	_	IN	IN	_	1	prep	_	_
+3	Apple	_	NNP	NNP	_	2	pobj	_	_
+4	that	_	WDT	WDT	_	7	nsubjpass	_	_
+5	is	_	VBZ	VBZ	_	7	auxpass	_	_
+6	widely	_	RB	RB	_	7	advmod	_	_
+7	used	_	VBN	VBN	_	1	rcmod	_	_
+8	to	_	TO	TO	_	9	aux	_	_
+9	organize	_	VB	VB	_	7	xcomp	_	_
+10	media	_	NNS	NNS	_	9	dobj	_	_
+11	on	_	IN	IN	_	10	prep	_	_
+12	the	_	DT	DT	_	13	det	_	_
+13	computer	_	NN	NN	_	11	pobj	_	_
+14	as	_	RB	RB	_	15	mwe	_	_
+15	well	_	RB	RB	_	17	mwe	_	_
+16	as	_	IN	IN	_	15	mwe	_	_
+17	iPods	_	NNS	NNS	_	13	conj	_	_
+18	,	_	,	,	_	13	punct	_	_
+19	iPhones	_	NNS	NNS	_	13	conj	_	_
+20	and	_	CC	CC	_	13	cc	_	_
+21	iPads	_	NNS	NNS	_	13	conj	_	_
+
+# ::snt The glass or plastic elements that focus light onto sensor in a video camera
+# ::sntId 184
+# ::treeId GOLD
+1	The	_	DT	DT	_	2	det	_	_
+2	glass	_	JJ	JJ	_	5	amod	_	_
+3	or	_	CC	CC	_	2	cc	_	_
+4	plastic	_	JJ	JJ	_	2	conj	_	_
+5	elements	_	NNS	NNS	_	0	root	_	_
+6	that	_	WDT	WDT	_	7	nsubj	_	_
+7	focus	_	VBP	VBP	_	5	rcmod	_	_
+8	light	_	NN	NN	_	7	dobj	_	_
+9	onto	_	IN	IN	_	7	prep	_	_
+10	sensor	_	NN	NN	_	9	pobj	_	_
+11	in	_	IN	IN	_	10	prep	_	_
+12	a	_	DT	DT	_	14	det	_	_
+13	video	_	NN	NN	_	14	nn	_	_
+14	camera	_	NN	NN	_	11	pobj	_	_
+
+# ::snt An organization that provides access to the Internet
+# ::sntId 185
+# ::treeId GOLD
+1	An	_	DT	DT	_	2	det	_	_
+2	organization	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	provides	_	VBZ	VBZ	_	2	rcmod	_	_
+5	access	_	NN	NN	_	4	dobj	_	_
+6	to	_	TO	TO	_	5	prep	_	_
+7	the	_	DT	DT	_	8	det	_	_
+8	Internet	_	NN	NN	_	6	pobj	_	_
+
+# ::snt Data that are turned into unreadable text in order to prevent unauthorized viewing
+# ::sntId 186
+# ::treeId GOLD
+1	Data	_	NNP	NNP	_	0	root	_	_
+2	that	_	IN	IN	_	4	nsubjpass	_	_
+3	are	_	VBP	VBP	_	4	auxpass	_	_
+4	turned	_	VBN	VBN	_	1	rcmod	_	_
+5	into	_	IN	IN	_	4	prep	_	_
+6	unreadable	_	JJ	JJ	_	7	amod	_	_
+7	text	_	NN	NN	_	5	pobj	_	_
+8	in	_	IN	IN	_	11	mwe	_	_
+9	order	_	NN	NN	_	11	mwe	_	_
+10	to	_	TO	TO	_	11	aux	_	_
+11	prevent	_	VB	VB	_	4	advcl	_	_
+12	unauthorized	_	JJ	JJ	_	13	amod	_	_
+13	viewing	_	NN	NN	_	11	dobj	_	_
+
+# ::snt A programming statement that points to the beginning of the loop that it is in
+# ::sntId 187
+# ::treeId GOLD
+1	A	_	DT	DT	_	3	det	_	_
+2	programming	_	NN	NN	_	3	nn	_	_
+3	statement	_	NN	NN	_	0	root	_	_
+4	that	_	WDT	WDT	_	5	nsubj	_	_
+5	points	_	VBZ	VBZ	_	3	rcmod	_	_
+6	to	_	TO	TO	_	5	prep	_	_
+7	the	_	DT	DT	_	8	det	_	_
+8	beginning	_	NN	NN	_	6	pobj	_	_
+9	of	_	IN	IN	_	8	prep	_	_
+10	the	_	DT	DT	_	11	det	_	_
+11	loop	_	NN	NN	_	9	pobj	_	_
+12	that	_	IN	IN	_	14	dobj	_	_
+13	it	_	PRP	PRP	_	14	nsubj	_	_
+14	is	_	VBZ	VBZ	_	11	rcmod	_	_
+15	in	_	RB	RB	_	14	advmod	_	_
+
+# ::snt A symbol that identifies a positive or negative numberbyte
+# ::sntId 188
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	symbol	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	identifies	_	VBZ	VBZ	_	2	rcmod	_	_
+5	a	_	DT	DT	_	6	dep	_	_
+6	positive	_	JJ	JJ	_	9	amod	_	_
+7	or	_	CC	CC	_	6	cc	_	_
+8	negative	_	JJ	JJ	_	6	conj	_	_
+9	numberbyte	_	NN	NN	_	4	dobj	_	_
+
+# ::snt A person that designs software
+# ::sntId 189
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	person	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	designs	_	VBZ	VBZ	_	2	rcmod	_	_
+5	software	_	NN	NN	_	4	dobj	_	_
+
+# ::snt An organization that provides communications services
+# ::sntId 191
+# ::treeId GOLD
+1	An	_	DT	DT	_	2	det	_	_
+2	organization	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	provides	_	VBZ	VBZ	_	2	rcmod	_	_
+5	communications	_	NNS	NNS	_	6	nn	_	_
+6	services	_	NNS	NNS	_	4	dobj	_	_
+
+# ::snt A program that renders the contents of a digital file on screen
+# ::sntId 192
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	program	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	renders	_	VBZ	VBZ	_	2	rcmod	_	_
+5	the	_	DT	DT	_	6	det	_	_
+6	contents	_	NNS	NNS	_	4	dobj	_	_
+7	of	_	IN	IN	_	6	prep	_	_
+8	a	_	DT	DT	_	10	det	_	_
+9	digital	_	JJ	JJ	_	10	amod	_	_
+10	file	_	NN	NN	_	7	pobj	_	_
+11	on	_	IN	IN	_	10	prep	_	_
+12	screen	_	NN	NN	_	11	pobj	_	_
+
+# ::snt An optical device that reads a printed page and that converts it into a graphics image for the computer
+# ::sntId 193
+# ::treeId GOLD
+1	An	_	DT	DT	_	3	det	_	_
+2	optical	_	JJ	JJ	_	3	amod	_	_
+3	device	_	NN	NN	_	0	root	_	_
+4	that	_	IN	IN	_	5	nsubj	_	_
+5	reads	_	VBZ	VBZ	_	3	rcmod	_	_
+6	a	_	DT	DT	_	8	det	_	_
+7	printed	_	VBN	VBN	_	8	amod	_	_
+8	page	_	NN	NN	_	5	dobj	_	_
+9	and	_	CC	CC	_	8	cc	_	_
+10	that	_	DT	DT	_	11	nsubj	_	_
+11	converts	_	VBZ	VBZ	_	3	rcmod	_	_
+12	it	_	PRP	PRP	_	11	dobj	_	_
+13	into	_	IN	IN	_	11	prep	_	_
+14	a	_	DT	DT	_	16	det	_	_
+15	graphics	_	NNS	NNS	_	16	nn	_	_
+16	image	_	NN	NN	_	13	pobj	_	_
+17	for	_	IN	IN	_	16	prep	_	_
+18	the	_	DT	DT	_	19	det	_	_
+19	computer	_	NN	NN	_	17	pobj	_	_
+
+# ::snt A very popular message broadcasting system that lets anyone send alphanumeric text messages to a list of followers
+# ::sntId 196
+# ::treeId GOLD
+1	A	_	DT	DT	_	6	det	_	_
+2	very	_	RB	RB	_	3	advmod	_	_
+3	popular	_	JJ	JJ	_	6	amod	_	_
+4	message	_	NN	NN	_	6	nn	_	_
+5	broadcasting	_	NN	NN	_	6	nn	_	_
+6	system	_	NN	NN	_	0	root	_	_
+7	that	_	WDT	WDT	_	8	nsubj	_	_
+8	lets	_	VBZ	VBZ	_	6	rcmod	_	_
+9	anyone	_	NN	NN	_	8	iobj	_	_
+10	send	_	VBP	VBP	_	8	xcomp	_	_
+11	alphanumeric	_	JJ	JJ	_	13	amod	_	_
+12	text	_	NN	NN	_	13	nn	_	_
+13	messages	_	NNS	NNS	_	10	dobj	_	_
+14	to	_	TO	TO	_	10	prep	_	_
+15	a	_	DT	DT	_	16	det	_	_
+16	list	_	NN	NN	_	14	pobj	_	_
+17	of	_	IN	IN	_	16	prep	_	_
+18	followers	_	NNS	NNS	_	17	pobj	_	_
+
+# ::snt The part of a network that handles the major traffic
+# ::sntId 199
+# ::treeId GOLD
+1	The	_	DT	DT	_	2	det	_	_
+2	part	_	NN	NN	_	0	root	_	_
+3	of	_	IN	IN	_	2	prep	_	_
+4	a	_	DT	DT	_	5	det	_	_
+5	network	_	NN	NN	_	3	pobj	_	_
+6	that	_	WDT	WDT	_	7	nsubj	_	_
+7	handles	_	VBZ	VBZ	_	2	rcmod	_	_
+8	the	_	DT	DT	_	10	det	_	_
+9	major	_	JJ	JJ	_	10	amod	_	_
+10	traffic	_	NN	NN	_	7	dobj	_	_
+
+# ::snt An organization that sets international standards , founded in 1946
+# ::sntId 200
+# ::treeId GOLD
+1	An	_	DT	DT	_	2	det	_	_
+2	organization	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	sets	_	VBZ	VBZ	_	2	rcmod	_	_
+5	international	_	JJ	JJ	_	6	amod	_	_
+6	standards	_	NNS	NNS	_	4	dobj	_	_
+7	,	_	,	,	_	2	punct	_	_
+8	founded	_	VBD	VBD	_	2	vmod	_	_
+9	in	_	IN	IN	_	8	prep	_	_
+10	1946	_	CD	CD	_	9	pobj	_	_
+
+# ::snt A memory chip that permanently stores instructions and data
+# ::sntId 202
+# ::treeId GOLD
+1	A	_	DT	DT	_	3	det	_	_
+2	memory	_	NN	NN	_	3	nn	_	_
+3	chip	_	NN	NN	_	0	root	_	_
+4	that	_	WDT	WDT	_	6	nsubj	_	_
+5	permanently	_	RB	RB	_	6	advmod	_	_
+6	stores	_	VBZ	VBZ	_	3	rcmod	_	_
+7	instructions	_	NNS	NNS	_	6	dobj	_	_
+8	and	_	CC	CC	_	7	cc	_	_
+9	data	_	NNS	NNS	_	7	conj	_	_
+
+# ::snt A brand name from Microsoft that has been used very specifically and very broadly
+# ::sntId 205
+# ::treeId GOLD
+1	A	_	DT	DT	_	3	det	_	_
+2	brand	_	NN	NN	_	3	nn	_	_
+3	name	_	NN	NN	_	0	root	_	_
+4	from	_	IN	IN	_	3	prep	_	_
+5	Microsoft	_	NNP	NNP	_	4	pobj	_	_
+6	that	_	WDT	WDT	_	9	nsubjpass	_	_
+7	has	_	VBZ	VBZ	_	9	aux	_	_
+8	been	_	VBN	VBN	_	9	auxpass	_	_
+9	used	_	VBN	VBN	_	3	rcmod	_	_
+10	very	_	RB	RB	_	11	advmod	_	_
+11	specifically	_	RB	RB	_	9	advmod	_	_
+12	and	_	CC	CC	_	11	cc	_	_
+13	very	_	RB	RB	_	14	advmod	_	_
+14	broadly	_	RB	RB	_	11	conj	_	_
+
+# ::snt A file that contains one or more compressed files
+# ::sntId 206
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	file	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	contains	_	VBZ	VBZ	_	2	rcmod	_	_
+5	one	_	CD	CD	_	9	num	_	_
+6	or	_	CC	CC	_	5	cc	_	_
+7	more	_	JJR	JJR	_	5	conj	_	_
+8	compressed	_	JJ	JJ	_	9	amod	_	_
+9	files	_	NNS	NNS	_	4	dobj	_	_
+
+# ::snt A device that converts sound waves into analogous electrical waves
+# ::sntId 207
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	device	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	converts	_	VBZ	VBZ	_	2	rcmod	_	_
+5	sound	_	JJ	JJ	_	6	amod	_	_
+6	waves	_	NNS	NNS	_	4	dobj	_	_
+7	into	_	IN	IN	_	4	prep	_	_
+8	analogous	_	JJ	JJ	_	10	amod	_	_
+9	electrical	_	JJ	JJ	_	10	amod	_	_
+10	waves	_	NNS	NNS	_	7	pobj	_	_
+
+# ::snt A line of source code that returns a value when executed
+# ::sntId 208
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	line	_	NN	NN	_	0	root	_	_
+3	of	_	IN	IN	_	2	prep	_	_
+4	source	_	NN	NN	_	5	nn	_	_
+5	code	_	NN	NN	_	3	pobj	_	_
+6	that	_	WDT	WDT	_	7	nsubj	_	_
+7	returns	_	VBZ	VBZ	_	2	rcmod	_	_
+8	a	_	DT	DT	_	9	det	_	_
+9	value	_	NN	NN	_	7	dobj	_	_
+10	when	_	WRB	WRB	_	11	advmod	_	_
+11	executed	_	VBN	VBN	_	7	advcl	_	_
+
+# ::snt An instruction that converts a decimal number into a packed decimal format
+# ::sntId 209
+# ::treeId GOLD
+1	An	_	DT	DT	_	2	det	_	_
+2	instruction	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	converts	_	VBZ	VBZ	_	2	rcmod	_	_
+5	a	_	DT	DT	_	7	det	_	_
+6	decimal	_	JJ	JJ	_	7	amod	_	_
+7	number	_	NN	NN	_	4	dobj	_	_
+8	into	_	IN	IN	_	4	prep	_	_
+9	a	_	DT	DT	_	12	det	_	_
+10	packed	_	JJ	JJ	_	12	amod	_	_
+11	decimal	_	JJ	JJ	_	12	amod	_	_
+12	format	_	NN	NN	_	8	pobj	_	_
+
+# ::snt A command that removes records that have been marked for deletion
+# ::sntId 210
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	command	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	removes	_	VBZ	VBZ	_	2	rcmod	_	_
+5	records	_	NNS	NNS	_	4	dobj	_	_
+6	that	_	WDT	WDT	_	9	nsubjpass	_	_
+7	have	_	VBP	VBP	_	9	aux	_	_
+8	been	_	VBN	VBN	_	9	auxpass	_	_
+9	marked	_	VBN	VBN	_	5	rcmod	_	_
+10	for	_	IN	IN	_	9	prep	_	_
+11	deletion	_	NN	NN	_	10	pobj	_	_
+
+# ::snt An arithmetic expression that solves a problem
+# ::sntId 211
+# ::treeId GOLD
+1	An	_	DT	DT	_	3	det	_	_
+2	arithmetic	_	JJ	JJ	_	3	amod	_	_
+3	expression	_	NN	NN	_	0	root	_	_
+4	that	_	DT	DT	_	5	nsubj	_	_
+5	solves	_	VBZ	VBZ	_	3	rcmod	_	_
+6	a	_	DT	DT	_	7	det	_	_
+7	problem	_	NN	NN	_	5	dobj	_	_
+
+# ::snt A machine that provides arithmetic capabilities
+# ::sntId 213
+# ::treeId GOLD
+1	A	_	DT	DT	_	2	det	_	_
+2	machine	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	provides	_	VBZ	VBZ	_	2	rcmod	_	_
+5	arithmetic	_	JJ	JJ	_	6	amod	_	_
+6	capabilities	_	NNS	NNS	_	4	dobj	_	_
+
+# ::snt An instruction that terminates a script or program
+# ::sntId 215
+# ::treeId GOLD
+1	An	_	DT	DT	_	2	det	_	_
+2	instruction	_	NN	NN	_	0	root	_	_
+3	that	_	WDT	WDT	_	4	nsubj	_	_
+4	terminates	_	VBZ	VBZ	_	2	rcmod	_	_
+5	a	_	DT	DT	_	6	det	_	_
+6	script	_	NN	NN	_	4	dobj	_	_
+7	or	_	CC	CC	_	6	cc	_	_
+8	program	_	NN	NN	_	6	conj	_	_
